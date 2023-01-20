@@ -1,5 +1,6 @@
 import download_youtube.download_by_url as ytdownload   #형훈
 from mmtracking.utils.tracker import tracking           #형훈
+import track_result_cleanser                # 형훈
 import sampler                              # 영동
 import face_embedding                       # 영동
 import body_embedding_extractor             # 상헌
@@ -22,6 +23,7 @@ def main(YOUTUBE_LINK):
                       config='/opt/ml/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py', 
                       score_thr=0.)
 
+    df1 = track_result_cleanser(df1)
     
     df2 = sampler.sampler(df1=df1, num_sample=3)
 
