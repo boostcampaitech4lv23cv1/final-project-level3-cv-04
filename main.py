@@ -11,6 +11,13 @@ import body_expector                        # 상헌
 import predictor                            # 휘준
 import video_generator                      # 휘준
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "face_embedding"))
+
+
+import json
 import pandas as pd
 import os.path as osp
 
@@ -25,12 +32,13 @@ def main(YOUTUBE_LINK):
 
     df1 = track_result_cleanser(df1)
     
-    df2 = sampler.sampler(df1=df1, num_sample=3)
-
-    df2 = face_embedding.face_embedding_extractor(
-                                                    df1=df1, df2=df2
-                                                )
+    df2 = sampler.sampler(df1, num_sample=3)
     
+    with open("/opt/ml/torchkpop/face_embedding/anchor_face_embedding.json", "r", encoding="utf-8") as f:
+        anchor_face_embedding = json.load(f)
+
+    df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding)
+    face_embedding.detect_face()
     
     #body anchor 를 만들기 위한 부분
     body_anchors = generate_body_anchor_idx(df2, 'aespa')
