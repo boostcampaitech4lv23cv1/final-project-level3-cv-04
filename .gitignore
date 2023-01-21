@@ -1,19 +1,10 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python,linux,jupyternotebooks,opencv
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,linux,jupyternotebooks,opencv
 
-### JupyterNotebooks ###
-# gitignore template for Jupyter Notebooks
-# website: http://jupyter.org/
+# Created by https://www.toptal.com/developers/gitignore/api/linux,python
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python
 
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# IPython
-profile_default/
-ipython_config.py
-
-# Remove previous ipynb_checkpoints
-#   git rm -r .ipynb_checkpoints/
+# personal
+pretrained_weight__mmtracking/*
+data/*
 
 ### Linux ###
 *~
@@ -29,15 +20,6 @@ ipython_config.py
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-
-### OpenCV ###
-#OpenCV for Mac and Linux
-#build and release folders
-*/CMakeFiles
-*/CMakeCache.txt
-*/Makefile
-*/cmake_install.cmake
-.DS_Store
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -118,8 +100,11 @@ docs/_build/
 target/
 
 # Jupyter Notebook
+.ipynb_checkpoints
 
 # IPython
+profile_default/
+ipython_config.py
 
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
@@ -202,5 +187,7 @@ cython_debug/
 # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
 poetry.toml
 
+# ruff
+.ruff_cache/
 
-# End of https://www.toptal.com/developers/gitignore/api/python,linux,jupyternotebooks,opencv
+# End of https://www.toptal.com/developers/gitignore/api/linux,python
