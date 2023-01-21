@@ -14,7 +14,8 @@ import json
 
 # tag of ananlysis, if ANLYSIS=True save clip image and tracking video
 # ANALYSIS = True
-WEIGHT_PTH = "../../pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
+
+WEIGHT_PTH = "./pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 CONFIG_PTH = "./mmtracking/"
 
 ## 클립을 하기위해서 만든 툴

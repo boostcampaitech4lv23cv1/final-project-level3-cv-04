@@ -26,7 +26,7 @@ def main(YOUTUBE_LINK):
     DOWNLOAD_PATH = './data' 
     meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH)
     clipped_df1, raw_df1 = tracking(meta_info, output='./test')
-    raw_df1 = postprocessing(raw_df1)
+    raw_df1 = postprocessing(df1=raw_df1, meta_info=meta_info, sec=5)
     
     # df2 = sampler.sampler(df1, num_sample=3)
     

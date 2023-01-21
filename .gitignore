@@ -5,6 +5,7 @@
 # personal
 pretrained_weight__mmtracking/*
 data/*
+test
 
 ### Linux ###
 *~
