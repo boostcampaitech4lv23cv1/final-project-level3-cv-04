@@ -65,9 +65,11 @@ def download_and_capture(youtube_url, download_dir_path):
     os.makedirs(img_capture_dir_path, exist_ok=True)
 
     ## 🐬캡처 시간조정을 원할 경우 "- t 20"를 사용하면 됨 -t 60
-    os.system("/usr/bin/ffmpeg " + 
+    # chmod u+x FILE
+    os.system("chmod u+x FILE ./ffmpeg") # 로컬 binary 실행을 위해서 
+    os.system("./ffmpeg " + 
     f"-i {file_path} " +
-            "-ss 00:00:0 -t 15 " +
+            "-ss 00:00:0 " +
                 f"-r {str(meta_info['fps'])} " +
                     "-f image2 " + img_capture_dir_path + "/%d.jpg")
 

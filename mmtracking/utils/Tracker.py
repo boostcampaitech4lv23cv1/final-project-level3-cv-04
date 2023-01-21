@@ -282,15 +282,18 @@ def tracking(meta_info,
             print(f"out_path:{out_path}")
             print(f"osp.join(args.output,'tracking_video.mp4'):{osp.join(output,'tracking_video.mp4')}")
             mmcv.frames2video(out_path, osp.join(output,"tracking_video.mp4"), fps=fps, fourcc='mp4v')
+
         img_dir_path = osp.join(output,"tracked_imgs")
+        
         if osp.isdir(img_dir_path):
             print(f"dir이 이미 존재하므로 overwriting을 위해서 삭제합니다")
             shutil.rmtree(img_dir_path)
         os.makedirs(img_dir_path, exist_ok=True)
         print()
-        for file_name in os.listdir(out_path):
-            new_file_name = str(int(file_name.split(".")[0])+1).zfill(10) + ".jpg"
-            shutil.copy(osp.join(out_path, file_name),osp.join(img_dir_path,new_file_name))
+        if ANALYSIS:
+            for file_name in os.listdir(out_path):
+                new_file_name = str(int(file_name.split(".")[0])+1).zfill(10) + ".jpg"
+                shutil.copy(osp.join(out_path, file_name),osp.join(img_dir_path,new_file_name))
 
         out_dir.cleanup() # temp폴더 삭제(mmtrack 디폴트로 만들어서 저장함)
 
@@ -330,9 +333,9 @@ def tracking(meta_info,
     """
 
     vanila_df1 = pd.DataFrame(raw_data) # 바닐라 predict result
-    vanila_df1.to_csv(osp.join(output,'df1_raw.csv'))
     df1 = pd.DataFrame(clipped_data) # 최종적으로 아웃할 자료
-    df1.to_csv(osp.join(output,'df1.csv'))
+    vanila_df1.to_csv(osp.join(output,'df1_raw.csv'))
+    df1.to_csv(osp.join(output,'df1_clipped_no_postprecessing.csv')) # modify file name
     return df1, vanila_df1
 
 def get_args_parser():

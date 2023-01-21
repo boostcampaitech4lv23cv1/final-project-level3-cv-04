@@ -1,4 +1,4 @@
-import download_youtube.YutubeDownloader as ytdownload   #형훈
+import download_youtube.YoutubeDownloader as ytdownload   #형훈
 from mmtracking.utils.Tracker import tracking
 from mmtracking.utils.Postprecesser import postprocessing # 형훈
 import sampler                              # 영동
@@ -24,10 +24,10 @@ import os.path as osp
 
 def main(YOUTUBE_LINK):
     DOWNLOAD_PATH = './data' 
-    meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH)
-    clipped_df1, raw_df1 = tracking(meta_info, output='./test')
-    raw_df1 = postprocessing(df1=raw_df1, meta_info=meta_info, sec=5)
-    
+    meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH) # download_path는 meta_info.json, mp4, jpg가 저장됩니다 
+    clipped_df1, raw_df1 = tracking(meta_info, output='./test') # output은 inference를 저장할 dir입니다
+    df1 = postprocessing(df1=raw_df1, meta_info=meta_info, sec=5)
+    df1.to_csv("./test/postprocessed_df1.csv")
     # df2 = sampler.sampler(df1, num_sample=3)
     
     # with open("/opt/ml/torchkpop/face_embedding/anchor_face_embedding.json", "r", encoding="utf-8") as f:
