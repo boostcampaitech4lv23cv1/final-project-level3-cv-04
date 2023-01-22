@@ -1,6 +1,6 @@
 import download_youtube.YoutubeDownloader as ytdownload   #형훈
 from mmtracking.utils.Tracker import tracking
-from mmtracking.utils.Postprecesser import postprocessing # 형훈
+from mmtracking.utils.Postprocesser import postprocessing # 형훈
 import sampler                              # 영동
 # import face_embedding                       # 영동
 # import body_embedding_extractor             # 상헌
