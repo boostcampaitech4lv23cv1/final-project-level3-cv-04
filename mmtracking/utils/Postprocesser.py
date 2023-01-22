@@ -1,43 +1,49 @@
-# hello world!
 import pandas as pd
 import numpy as np
 import json
 
-def postprocessing(df1:pd.DataFrame, meta_info:dict, sec:int=5):
-    # del short length ids, threshold 3sec
-    df1 = df1.copy()
-    print(f"before filtering id_cnt: {len(df1['track_id'].unique())}")
 
 
-    # just keeping ids which over 5sec 
-    high_rating_id_cnt = 0 # for counting remained ids
-    for id in df1['track_id'].unique():
-        if np.isnan(id): # nan id pass
+# default just keeping ids which over 5sec 
+def delete_short_id(df:pd.DataFrame, fps:int, sec:int=5)-> pd.DataFrame:
+    df = df.copy()
+    for trk_id in df['track_id'].unique():
+        # nan id pass
+        if np.isnan(trk_id): 
             continue
-        if len(df1[df1['track_id'] == id]) > meta_info['fps']*sec:
-            high_rating_id_cnt+=1
-        else:
-            df1.loc[df1['track_id'] == id,'track_id'] = np.NaN
-    
-    # print number of remain ids
-    print(f'after filtering high_rating_id_cnt: {high_rating_id_cnt}')
 
-    # clip the track bboxes
-    df1['track_body_xmin'] = df1['track_body_xmin'].clip(0, meta_info['width'])
-    df1['track_body_xmax'] = df1['track_body_xmax'].clip(0, meta_info['width'])
-    df1['track_body_ymin'] = df1['track_body_ymin'].clip(0, meta_info['height'])
-    df1['track_body_ymax'] = df1['track_body_ymax'].clip(0, meta_info['height'])
-    
-    # scailing track bboxes
-    # df1.loc[df1['track_id'].notna(), 'track_body_xmin'] = df1.loc[df1['track_id'].notna(), 'track_body_xmin']/meta_info['width']
-    # df1.loc[df1['track_id'].notna(), 'track_body_xmax'] = df1.loc[df1['track_id'].notna(), 'track_body_xmin']/meta_info['width']
-    # df1.loc[df1['track_id'].notna(), 'track_body_ymin'] = df1.loc[df1['track_id'].notna(), 'track_body_xmin']/meta_info['height']
-    # df1.loc[df1['track_id'].notna(), 'track_body_ymax'] = df1.loc[df1['track_id'].notna(), 'track_body_xmin']/meta_info['height']
-    return df1
+        # if num of frames over fps*second keep track_id
+        if len(df[df['track_id'] == trk_id]) > fps*sec:
+            pass
+        else:
+            df.loc[df['track_id'] == trk_id,'track_id'] = np.NaN
+    return df
+
+def clip(df:pd.DataFrame, meta_info:dict)-> pd.DataFrame:
+    df = df.copy()
+    df['track_body_xmin'] = df['track_body_xmin'].clip(0, meta_info['width'])
+    df['track_body_xmax'] = df['track_body_xmax'].clip(0, meta_info['width'])
+    df['track_body_ymin'] = df['track_body_ymin'].clip(0, meta_info['height'])
+    df['track_body_ymax'] = df['track_body_ymax'].clip(0, meta_info['height'])
+    return df
+
+def calculate_iou(df:pd.DataFrame)->pd.DataFrame:
+    return df
+
+def count_overlap(df:pd.DataFrame)->pd.DataFrame:
+    return df
+
+def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=5):
+    # del short length ids, threshold 3sec
+    df = delete_short_id(df, meta_info['fps'], sec)
+
+    # clip the dataframe
+    df = clip(df, meta_info)
+    return df
 
 if __name__ == "__main__":
-    RAW_DF1_PATH = "/opt/ml/output_mmtracking/20230121_1428/df1_raw.csv"
-    with open("/opt/ml/data/20230121_1428.json") as f:
+    RAW_DF1_PATH = "/opt/ml/final-project-level3-cv-04/test/df1_raw.csv"
+    with open("/opt/ml/final-project-level3-cv-04/data/20230122_0246.json") as f:
         meta_info = json.load(f)
     raw_df1 = pd.read_csv(RAW_DF1_PATH, index_col=0)
     postprocessed_df1 = postprocessing(raw_df1, meta_info, sec=5)
