@@ -1,6 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "torchreid"))
 import pandas as pd
 import numpy as np
-import os
 from torchreid.utils import load_pretrained_weights
 import torchreid
 import matplotlib.pyplot as plt
@@ -30,22 +32,32 @@ def make_body_img_list(df1, df2_member_sorted, meta_info=None, img_num=None):
         # body_img 가져오기
         df1_idx = df2_member_sorted.iloc[i]['df1_index']
         
-        x_min_rate = df1.loc[df1_idx]['track_body_xmin'] if df1.loc[df1_idx]['track_body_xmin'] >= 0 else np.float64(0)
-        y_min_rate = df1.loc[df1_idx]['track_body_ymin'] if df1.loc[df1_idx]['track_body_ymin'] >= 0 else np.float64(0)
-        x_max_rate = df1.loc[df1_idx]['track_body_xmax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
-        y_max_rate = df1.loc[df1_idx]['track_body_ymax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
+        # x_min_rate = df1.loc[df1_idx]['track_body_xmin'] if df1.loc[df1_idx]['track_body_xmin'] >= 0 else np.float64(0)
+        # y_min_rate = df1.loc[df1_idx]['track_body_ymin'] if df1.loc[df1_idx]['track_body_ymin'] >= 0 else np.float64(0)
+        # x_max_rate = df1.loc[df1_idx]['track_body_xmax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
+        # y_max_rate = df1.loc[df1_idx]['track_body_ymax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
+
+
+        x_min = df1.loc[df1_idx]['track_body_xmin'] # if df1.loc[df1_idx]['track_body_xmin'] >= 0 else np.float64(0)
+        y_min = df1.loc[df1_idx]['track_body_ymin'] # if df1.loc[df1_idx]['track_body_ymin'] >= 0 else np.float64(0)
+        x_max = df1.loc[df1_idx]['track_body_xmax'] # if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
+        y_max = df1.loc[df1_idx]['track_body_ymax'] # if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
+
         filename = df1.loc[df1_idx]['filename']        
         
-        img_path = os.path.join('/opt/ml/data/frame_full', filename) # ✅ meta_info를 이용하세요
+        img_path = os.path.join(meta_info["image_root"], filename) # ✅ meta_info를 이용하세요
         img = Image.open(img_path).convert('RGB')
         
         width = img.size[0]
         height = img.size[1]
+
+
+
         
-        x_min = width * x_min_rate
-        y_min = height * y_min_rate
-        x_max = width * x_max_rate
-        y_max = height * y_max_rate
+        # x_min = width * x_min_rate
+        # y_min = height * y_min_rate
+        # x_max = width * x_max_rate
+        # y_max = height * y_max_rate
         
         # 이미지 자르기 crop함수 이용 ex. crop(left,up, rigth, down)
         body_img=img.crop((x_min, y_min, x_max, y_max))
@@ -76,8 +88,7 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
         pretrained=True,
         use_gpu=True
     )
-
-    load_weights = '/opt/ml/torchkpop/body_embedding/pretrain/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
+    load_weights = '/opt/ml/final-project-level3-cv-04/body_embedding/pretrain/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
     load_pretrained_weights(model, load_weights)
     model.training = False
     
@@ -190,7 +201,7 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
         use_gpu=True
     )
 
-    load_weights = '/opt/ml/torchkpop/body_embedding/pretrain/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
+    load_weights = '/opt/ml/final-project-level3-cv-04/pretrain/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
     load_pretrained_weights(model, load_weights)
     model.training = False
     

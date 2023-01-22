@@ -7,6 +7,7 @@ pretrained_weight__mmtracking/*
 data/*
 test*
 mmtracking/utils/gen_videos
+face_embedding/model
 
 ### Linux ###
 *~

@@ -5,7 +5,7 @@ import wandb
 import matplotlib.pyplot as plt
 from typing import Optional
 from pandas.io.json._normalize import nested_to_record
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 from clearml import Task
 
 
@@ -33,7 +33,7 @@ class Logger:
         self.tensorboard_logger = None
         if cfg.project.logger.use_tensorboard:
             self.tensorboard_folder = os.path.join(cfg.data.save_dir, 'tensorboard')
-            self.tensorboard_logger = SummaryWriter(self.tensorboard_folder)
+            # self.tensorboard_logger = SummaryWriter(self.tensorboard_folder)
 
         self.allegro_clearml_task = None
         if cfg.project.logger.use_clearml:
