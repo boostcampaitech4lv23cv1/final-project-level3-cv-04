@@ -1,0 +1,1 @@
+from video_generator.main import video_generator
