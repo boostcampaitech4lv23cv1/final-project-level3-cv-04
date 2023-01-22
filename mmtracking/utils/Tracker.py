@@ -11,12 +11,17 @@ from mmtrack.apis import inference_mot, init_model
 import torch
 import argparse
 import json
+import numpy as np
 
 # tag of ananlysis, if ANLYSIS=True save clip image and tracking video
-# ANALYSIS = True
+
+# ignore this is just for testing
+# ABS_WEIGHT_PATH = "/opt/ml/final-project-level3-cv-04/pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
+# ABS_CONFIG_PATH = "/opt/ml/final-project-level3-cv-04/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
 WEIGHT_PTH = "./pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
-CONFIG_PTH = "./mmtracking/"
+CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
+
 
 ## 클립을 하기위해서 만든 툴
 def clip(num, min_value, max_value):
@@ -25,7 +30,7 @@ def clip(num, min_value, max_value):
 
 def tracking(meta_info, 
              output, 
-             config='./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py',
+             config=CONFIG_PTH,
              score_thr=0.,
              ANALYSIS=False): # mata_info:dict, output:str
     
@@ -98,12 +103,12 @@ def tracking(meta_info,
     for i, img in enumerate(imgs):
         frame_idx = i+1 # frame_idx
         if isinstance(img, str): # img is loaded by path,
-            img = osp.join(meta_info['image_root'], img) # filename to path
-            img = cv2.imread(img) # read img
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # convert BGR2RGB
+            img_path = osp.join(meta_info['image_root'], img) # filename to path
+            img = cv2.imread(img_path) # read img for get clip size
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # convert BGR2RGB
         input_img_height = img.shape[0] # for clip
         input_img_width = img.shape[1] # for clip
-        result = inference_mot(model, img, frame_id=i) # inference one img
+        result = inference_mot(model, img_path, frame_id=i) # inference one img
 
         frame_max_row = max(result["det_bboxes"][0].shape[0], result["track_bboxes"][0].shape[0]) # number of bboxes is basis
 
@@ -184,9 +189,10 @@ def tracking(meta_info,
 
         
         for tracked_info in result["track_bboxes"][0]:
-            id = tracked_info[0] # for mkdirs
-            raw_data["track_id"].append(id)
-            clipped_data["track_id"].append(id)
+            trk_id = tracked_info[0] # for mkdirs
+            # print(trk_id)
+            raw_data["track_id"].append(trk_id)
+            clipped_data["track_id"].append(trk_id)
 
             raw_xmin_t = tracked_info[1]
             raw_ymin_t = tracked_info[2]
@@ -208,7 +214,7 @@ def tracking(meta_info,
             cropped_track_img = img[int(ymin_t):int(ymin_t+bbox_height), int(xmin_t):int(xmin_t+bbox_width), :]
             
             # img save path
-            per_frame_save_path = osp.join(track_img_save_path_per_frame, f"{frame_idx}_{int(id)}.jpg")
+            per_frame_save_path = osp.join(track_img_save_path_per_frame, f"{frame_idx}_{int(trk_id)}.jpg")
 
             # not clip data
             raw_data["track_body_xmin"].append(raw_xmin_t)
@@ -217,7 +223,7 @@ def tracking(meta_info,
             raw_data["track_body_ymax"].append(raw_ymax_t)
 
             # make dir per each ids
-            per_id_save_path = osp.join(track_img_save_path_per_id, f'{int(id)}', f'{int(id)}'+"_"+f'{frame_idx}'+".jpg")
+            per_id_save_path = osp.join(track_img_save_path_per_id, f'{int(trk_id)}', f'{int(trk_id)}'+"_"+f'{frame_idx}'+".jpg")
 
             # generate id dirs
             os.makedirs(osp.dirname(per_id_save_path), exist_ok=True)
@@ -289,16 +295,23 @@ def tracking(meta_info,
 
         out_dir.cleanup() # delete default mmtracking dir
 
-    vanila_df1 = pd.DataFrame(raw_data) # raw_df
-    df1 = pd.DataFrame(clipped_data) # clipped_df
-    vanila_df1.to_csv(osp.join(output,'df1_raw.csv'))
-    df1.to_csv(osp.join(output,'df1_clipped_no_postprecessing.csv')) # modify file name
-    return df1, vanila_df1
+    raw_df1 = pd.DataFrame(raw_data) # raw_df
+    raw_df1.to_csv(osp.join(output,'df1_raw.csv'))
+
+    clipped_df1 = pd.DataFrame(clipped_data) # clipped_df
+    clipped_df1.to_csv(osp.join(output,'df1_clipped_no_postprecessing.csv')) # modify file name
+    
+    # if no analysis delete crop_img dirs
+    if not ANALYSIS:
+        imgs_paths = osp.join(output, "crop_imgs")
+        shutil.rmtree(imgs_paths)
+
+    return clipped_df1, raw_df1
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Hello world!', add_help=False)
-    parser.add_argument('--meta_path', type=str, default='/opt/ml/data/20230121_0424.json',help='input video file or folder')
-    parser.add_argument('--output_path', type=str, default='/opt/ml/output_mmtracking/20230121_0424', help='output video file (mp4 format) or folder')
+    parser.add_argument('--meta_path', type=str, default='/opt/ml/final-project-level3-cv-04/data/20230122_1745.json',help='input video file or folder')
+    parser.add_argument('--output_path', type=str, default='./test', help='output video file (mp4 format) or folder')
     parser.add_argument('--config', type=str, default='/opt/ml/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py')
     parser.add_argument('--score_thr', type=float, default=0.0, help='The threshold of score to filter bboxes.')
     parser.add_argument('--fps', type=int, default=24, help='FPS of the output video')

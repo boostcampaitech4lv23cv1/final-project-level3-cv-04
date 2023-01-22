@@ -31,19 +31,35 @@ def calculate_iou(df:pd.DataFrame)->pd.DataFrame:
     return df
 
 def count_overlap(df:pd.DataFrame)->pd.DataFrame:
+    for trk_id in sorted(df['track_id'].unique()):
+        if np.isnan(trk_id): 
+            continue
+        print(df[df['track_id'] == trk_id])
+        # print(df[df['track_id'] == trk_id])
+        
+        break
+
+
     return df
 
 def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=5):
     # del short length ids, threshold 3sec
     df = delete_short_id(df, meta_info['fps'], sec)
 
+    # add overlap column
+    # df = count_overlap(df) # 🐬 개발 중!
+
+    # front check
+
+    # re-assign id 
+
     # clip the dataframe
     df = clip(df, meta_info)
     return df
 
 if __name__ == "__main__":
-    RAW_DF1_PATH = "/opt/ml/final-project-level3-cv-04/test/df1_raw.csv"
-    with open("/opt/ml/final-project-level3-cv-04/data/20230122_0246.json") as f:
+    RAW_DF1_PATH = "/opt/ml/final-project-level3-cv-04/test_RGB/df1_raw.csv"
+    with open("/opt/ml/final-project-level3-cv-04/data/20230122_1446.json") as f:
         meta_info = json.load(f)
     raw_df1 = pd.read_csv(RAW_DF1_PATH, index_col=0)
     postprocessed_df1 = postprocessing(raw_df1, meta_info, sec=5)

@@ -25,8 +25,9 @@ import os.path as osp
 def main(YOUTUBE_LINK):
     DOWNLOAD_PATH = './data' 
     meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH) # download_path는 meta_info.json, mp4, jpg가 저장됩니다 
-    clipped_df1, raw_df1 = tracking(meta_info, output='/opt/ml/final-project-level3-cv-04/test_RGB', ANALYSIS=True) # output은 inference를 저장할 dir입니다
+    clipped_df1, raw_df1 = tracking(meta_info, output='./test_PATH', ANALYSIS=False) # output은 inference를 저장할 dir입니다
     df1 = postprocessing(raw_df1, meta_info, sec=5)
+    # df1.to_csv("./test_MINI/postprocessed_df1.csv")
     
     # df1.to_csv("./test/postprocessed_df1_2.csv")
     # df2 = sampler.sampler(df1, num_sample=3)
