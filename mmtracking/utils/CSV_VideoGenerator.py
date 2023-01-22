@@ -14,7 +14,7 @@ def clip_and_save(df1:pd.DataFrame, imgs_path:str, out_path:str) -> str:
     nan_cnt = 0
     plt.figure(figsize=(10,10))
     
-    for idx, r in df1.iterrows():
+    for idx, r in tqdm(df1.iterrows()):
         
         # np nan check
         if np.isnan(r["track_id"]): # np의 nan은 이런 방식으로 처리해야 함
@@ -42,7 +42,7 @@ def clip_and_save(df1:pd.DataFrame, imgs_path:str, out_path:str) -> str:
 
     # for check last img
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)) # BRG2RGB and show
-    
+    print('clip img fin')
     return out_path, os.listdir(out_path)
 
 
@@ -56,9 +56,9 @@ def gen_csv_to_video(df:pd.DataFrame, imgs_path:str, output_path:str):
     return output_path
 
 if __name__ == "__main__":
-    CSV_PATH = "/opt/ml/final-project-level3-cv-04/test/postprocessed_df1.csv"
-    FULL_IMG_PATH = "/opt/ml/final-project-level3-cv-04/data/20230122_0246"
+    CSV_PATH = "/opt/ml/final-project-level3-cv-04/test_RGB/under5sec.csv"
+    FULL_IMG_PATH = "/opt/ml/final-project-level3-cv-04/data/20230122_1446"
 
     df = pd.read_csv(CSV_PATH, index_col=0)
-    path = gen_csv_to_video(df, FULL_IMG_PATH, output_path="../../test/gen_videos")
+    path = gen_csv_to_video(df, FULL_IMG_PATH, output_path="../../test_RGB/gen_videos") # 🙅‍♂️ modify path
     print(f"{path}에 비디오가 생성되었습니다")
