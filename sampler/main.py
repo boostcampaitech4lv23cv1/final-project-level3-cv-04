@@ -1,5 +1,8 @@
+import os
+import json
 import pandas as pd
 import numpy as np
+
 pd.options.mode.chained_assignment = None
 
 
@@ -13,7 +16,7 @@ def equal_distance_frame(array: np.array, num_sample: int) -> np.array:
     return np.array(closest_df1_index)
 
 
-def sampler(df1: pd.DataFrame, num_sample: int) -> pd.DataFrame:
+def sampler(df1: pd.DataFrame, num_sample: int = -1, seconds_per_frame: int = -1) -> pd.DataFrame:
 
     # _df1 = pd.read_csv(df1, sep=",", index_col=0)
     _df1 = df1[["frame", "track_id"]]
@@ -23,12 +26,29 @@ def sampler(df1: pd.DataFrame, num_sample: int) -> pd.DataFrame:
     _df1 = _df1[_df1["track_id"] != -1]
     track_ids = _df1["track_id"].unique()
 
-    df2 = pd.DataFrame({"track_id": np.repeat(track_ids, num_sample), "df1_index": 0})
+
+    if num_sample != -1:
+        df2 = pd.DataFrame({"track_id": np.repeat(track_ids, num_sample), "df1_index": 0})
+    else:
+        frame_per_track = []
+        for track in track_ids:
+            frame_per_track.append(
+                len(_df1[_df1["track_id"] == track]) / meta_json["fps"] // seconds_per_frame
+            )
+        frame_per_track = np.array(frame_per_track, dtype=int)
+        df2 = pd.DataFrame(
+            {"track_id": np.repeat(track_ids, repeats=frame_per_track), "df1_index": 0}
+        )
+
 
     counter = 0
-    for track in track_ids:
+    for i, track in enumerate(track_ids):
         df1_index_array = _df1[_df1["track_id"] == track].index
-        closest_df1_index = equal_distance_frame(df1_index_array, num_sample + 1)
+        if num_sample != -1:
+            closest_df1_index = equal_distance_frame(df1_index_array, num_sample + 1)
+        else:
+            closest_df1_index = equal_distance_frame(df1_index_array, frame_per_track[i] + 1)
+
         # print(closest_df1_index)
         for idx in closest_df1_index:
             df2["df1_index"][counter] = idx
@@ -37,3 +57,13 @@ def sampler(df1: pd.DataFrame, num_sample: int) -> pd.DataFrame:
 
     # df2.to_csv("/opt/ml/torchkpop/df2.csv", sep=",")
     return df2
+
+
+
+for meta_json in os.listdir("./data/"):
+    if os.path.splitext(meta_json)[-1] == ".json":
+        break
+
+with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
+    meta_json = json.load(f)
+
