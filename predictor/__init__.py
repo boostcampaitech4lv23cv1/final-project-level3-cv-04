@@ -1,0 +1,1 @@
+from predictor.main import predictor
