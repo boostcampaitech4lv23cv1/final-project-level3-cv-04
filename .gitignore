@@ -7,6 +7,9 @@
 # for pretrain tracking weights
 pretrained_weight__mmtracking/*
 
+# for all pretrain models
+pretrained_weight/*
+
 # for data
 data/*
 

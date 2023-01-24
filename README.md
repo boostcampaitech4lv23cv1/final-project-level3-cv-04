@@ -1,7 +1,11 @@
 # final-project-level3-cv-04
 
-ffmpeg UPDATE  
+
+<font color='red'><b>This source code is dependent on ffmpeg v5.0<b></font>  
+
+ffmpeg v5.0 UPDATE [link](https://ubuntuhandbook.org/index.php/2022/02/install-ffmpeg-5-0-ubuntu/)  
 ```
+# not command in conda or virtual env
 sudo add-apt-repository ppa:savoury1/ffmpeg5
 sudo add-apt-repository ppa:savoury1/ffmpeg4
 sudo apt update
