@@ -66,6 +66,6 @@ def main(YOUTUBE_LINK):
     
 
 if __name__ == "__main__":
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
+    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     result = main(YOUTUBE_LINK)

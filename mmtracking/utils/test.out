@@ -1,1561 +1,0 @@
-/opt/ml/mmcv/mmcv/__init__.py:21: UserWarning: On January 1, 2023, MMCV will release v2.0.0, in which it will remove components related to the training process and add a data transformation module. In addition, it will rename the package names mmcv to mmcv-lite and mmcv-full to mmcv. See https://github.com/open-mmlab/mmcv/blob/master/docs/en/compatibility.md for more details.
-  'On January 1, 2023, MMCV will release v2.0.0, in which it will remove '
-2023-01-20 16:21:54,830 - mmcv - INFO - initialize FasterRCNN with init_cfg {'type': 'Pretrained', 'checkpoint': '/opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth'}
-2023-01-20 16:21:54,831 - mmcv - INFO - load model from: /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth
-2023-01-20 16:21:54,831 - mmcv - INFO - load checkpoint from local path: /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth
-2023-01-20 16:21:54,938 - mmcv - INFO - initialize BaseReID with init_cfg {'type': 'Pretrained', 'checkpoint': '/opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth'}
-2023-01-20 16:21:54,939 - mmcv - INFO - load model from: /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth
-2023-01-20 16:21:54,939 - mmcv - INFO - load checkpoint from local path: /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth
-2023-01-20 16:21:54,988 - mmcv - WARNING - The model and loaded state dict do not match exactly
-
-size mismatch for head.classifier.weight: copying a param with shape torch.Size([378, 128]) from checkpoint, the shape in current model is torch.Size([380, 128]).
-size mismatch for head.classifier.bias: copying a param with shape torch.Size([378]) from checkpoint, the shape in current model is torch.Size([380]).
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.conv1.weight - torch.Size([64, 3, 7, 7]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.layer1.0.conv1.weight - torch.Size([64, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.layer1.0.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,003 - mmcv - INFO - 
-detector.backbone.layer1.0.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.downsample.0.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.downsample.1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.0.downsample.1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.conv1.weight - torch.Size([64, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,004 - mmcv - INFO - 
-detector.backbone.layer1.1.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.1.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.1.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.conv1.weight - torch.Size([64, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer1.2.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer2.0.conv1.weight - torch.Size([128, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer2.0.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer2.0.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,005 - mmcv - INFO - 
-detector.backbone.layer2.0.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.downsample.0.weight - torch.Size([512, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.downsample.1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.0.downsample.1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,006 - mmcv - INFO - 
-detector.backbone.layer2.1.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.1.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.2.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,007 - mmcv - INFO - 
-detector.backbone.layer2.3.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer2.3.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer2.3.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer2.3.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.conv1.weight - torch.Size([256, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.downsample.0.weight - torch.Size([1024, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.downsample.1.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,008 - mmcv - INFO - 
-detector.backbone.layer3.0.downsample.1.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.1.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,009 - mmcv - INFO - 
-detector.backbone.layer3.2.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.2.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.2.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.3.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.4.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.4.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.4.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.4.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,010 - mmcv - INFO - 
-detector.backbone.layer3.4.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.4.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.4.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.4.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.4.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer3.5.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer4.0.conv1.weight - torch.Size([512, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,011 - mmcv - INFO - 
-detector.backbone.layer4.0.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.downsample.0.weight - torch.Size([2048, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.downsample.1.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.0.downsample.1.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.conv1.weight - torch.Size([512, 2048, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,012 - mmcv - INFO - 
-detector.backbone.layer4.1.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.1.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.1.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.1.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.conv1.weight - torch.Size([512, 2048, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.backbone.layer4.2.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.neck.lateral_convs.0.conv.weight - torch.Size([256, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.neck.lateral_convs.0.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.neck.lateral_convs.1.conv.weight - torch.Size([256, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,013 - mmcv - INFO - 
-detector.neck.lateral_convs.1.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.lateral_convs.2.conv.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.lateral_convs.2.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.lateral_convs.3.conv.weight - torch.Size([256, 2048, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.lateral_convs.3.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.0.conv.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.0.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.1.conv.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.1.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.2.conv.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.2.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.3.conv.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.neck.fpn_convs.3.conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.rpn_head.rpn_conv.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.rpn_head.rpn_conv.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,014 - mmcv - INFO - 
-detector.rpn_head.rpn_cls.weight - torch.Size([3, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.rpn_head.rpn_cls.bias - torch.Size([3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.rpn_head.rpn_reg.weight - torch.Size([12, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.rpn_head.rpn_reg.bias - torch.Size([12]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.fc_cls.weight - torch.Size([2, 1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.fc_cls.bias - torch.Size([2]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.fc_reg.weight - torch.Size([4, 1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.fc_reg.bias - torch.Size([4]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.shared_fcs.0.weight - torch.Size([1024, 12544]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.shared_fcs.0.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.shared_fcs.1.weight - torch.Size([1024, 1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-detector.roi_head.bbox_head.shared_fcs.1.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/faster-rcnn_r50_fpn_fp16_4e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-reid.backbone.conv1.weight - torch.Size([64, 3, 7, 7]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-reid.backbone.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-reid.backbone.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,015 - mmcv - INFO - 
-reid.backbone.layer1.0.conv1.weight - torch.Size([64, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.downsample.0.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.downsample.1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.0.downsample.1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.1.conv1.weight - torch.Size([64, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.1.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.1.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.1.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,016 - mmcv - INFO - 
-reid.backbone.layer1.1.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.1.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.1.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.1.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.1.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.conv1.weight - torch.Size([64, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn1.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn1.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.conv2.weight - torch.Size([64, 64, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn2.weight - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn2.bias - torch.Size([64]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.conv3.weight - torch.Size([256, 64, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn3.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer1.2.bn3.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer2.0.conv1.weight - torch.Size([128, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer2.0.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,017 - mmcv - INFO - 
-reid.backbone.layer2.0.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.downsample.0.weight - torch.Size([512, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.downsample.1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.0.downsample.1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,018 - mmcv - INFO - 
-reid.backbone.layer2.1.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.1.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.1.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.2.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.3.conv1.weight - torch.Size([128, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.3.bn1.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.3.bn1.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.3.conv2.weight - torch.Size([128, 128, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,019 - mmcv - INFO - 
-reid.backbone.layer2.3.bn2.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer2.3.bn2.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer2.3.conv3.weight - torch.Size([512, 128, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer2.3.bn3.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer2.3.bn3.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.conv1.weight - torch.Size([256, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.downsample.0.weight - torch.Size([1024, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.downsample.1.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,020 - mmcv - INFO - 
-reid.backbone.layer3.0.downsample.1.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.1.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,021 - mmcv - INFO - 
-reid.backbone.layer3.2.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.2.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.2.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.2.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.3.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.4.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.4.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.4.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,022 - mmcv - INFO - 
-reid.backbone.layer3.4.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.4.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.4.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.4.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.4.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.4.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.conv1.weight - torch.Size([256, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn1.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn1.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.conv2.weight - torch.Size([256, 256, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn2.weight - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn2.bias - torch.Size([256]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.conv3.weight - torch.Size([1024, 256, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn3.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer3.5.bn3.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer4.0.conv1.weight - torch.Size([512, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,023 - mmcv - INFO - 
-reid.backbone.layer4.0.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.downsample.0.weight - torch.Size([2048, 1024, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.downsample.1.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.0.downsample.1.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.conv1.weight - torch.Size([512, 2048, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,024 - mmcv - INFO - 
-reid.backbone.layer4.1.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.1.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.1.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.1.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.conv1.weight - torch.Size([512, 2048, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn1.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn1.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.conv2.weight - torch.Size([512, 512, 3, 3]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn2.weight - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn2.bias - torch.Size([512]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.conv3.weight - torch.Size([2048, 512, 1, 1]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn3.weight - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.backbone.layer4.2.bn3.bias - torch.Size([2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.head.fcs.0.fc.weight - torch.Size([1024, 2048]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.head.fcs.0.fc.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,025 - mmcv - INFO - 
-reid.head.fcs.0.bn.weight - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.fcs.0.bn.bias - torch.Size([1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.fc_out.weight - torch.Size([128, 1024]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.fc_out.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.bn.weight - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.bn.bias - torch.Size([128]): 
-PretrainedInit: load from /opt/ml/pretrained_weight__mmtracking/reid_r50_fp16_8x32_6e.pth 
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.classifier.weight - torch.Size([380, 128]): 
-The value is the same before and after calling `init_weights` of Tracktor  
- 
-2023-01-20 16:21:55,026 - mmcv - INFO - 
-reid.head.classifier.bias - torch.Size([380]): 
-The value is the same before and after calling `init_weights` of Tracktor  
- 
-Warning: The model doesn't have classes
-🐬
-['000001.jpg', '000002.jpg', '000003.jpg', '000004.jpg', '000005.jpg', '000006.jpg', '000007.jpg', '000008.jpg', '000009.jpg', '000010.jpg', '000011.jpg', '000012.jpg', '000013.jpg', '000014.jpg', '000015.jpg', '000016.jpg', '000017.jpg', '000018.jpg', '000019.jpg', '000020.jpg', '000021.jpg', '000022.jpg', '000023.jpg', '000024.jpg', '000025.jpg', '000026.jpg', '000027.jpg', '000028.jpg', '000029.jpg', '000030.jpg', '000031.jpg', '000032.jpg', '000033.jpg', '000034.jpg', '000035.jpg', '000036.jpg', '000037.jpg', '000038.jpg', '000039.jpg', '000040.jpg', '000041.jpg', '000042.jpg', '000043.jpg', '000044.jpg', '000045.jpg', '000046.jpg', '000047.jpg', '000048.jpg', '000049.jpg', '000050.jpg', '000051.jpg', '000052.jpg', '000053.jpg', '000054.jpg', '000055.jpg', '000056.jpg', '000057.jpg', '000058.jpg', '000059.jpg', '000060.jpg', '000061.jpg', '000062.jpg', '000063.jpg', '000064.jpg', '000065.jpg', '000066.jpg', '000067.jpg', '000068.jpg', '000069.jpg', '000070.jpg', '000071.jpg', '000072.jpg', '000073.jpg', '000074.jpg', '000075.jpg', '000076.jpg', '000077.jpg', '000078.jpg', '000079.jpg', '000080.jpg', '000081.jpg', '000082.jpg', '000083.jpg', '000084.jpg', '000085.jpg', '000086.jpg', '000087.jpg', '000088.jpg', '000089.jpg', '000090.jpg', '000091.jpg', '000092.jpg', '000093.jpg', '000094.jpg', '000095.jpg', '000096.jpg', '000097.jpg', '000098.jpg', '000099.jpg', '000100.jpg', '000101.jpg', '000102.jpg', '000103.jpg', '000104.jpg', '000105.jpg', '000106.jpg', '000107.jpg', '000108.jpg', '000109.jpg', '000110.jpg', '000111.jpg', '000112.jpg', '000113.jpg', '000114.jpg', '000115.jpg', '000116.jpg', '000117.jpg', '000118.jpg', '000119.jpg', '000120.jpg']
-[                                                  ] 0/120, elapsed: 0s, ETA:→ num of miss det box appear 1 so that we append empty row in csv
-[                                 ] 1/120, 2.8 task/s, elapsed: 0s, ETA:    42s[                                 ] 2/120, 2.3 task/s, elapsed: 1s, ETA:    51s[                                 ] 3/120, 2.3 task/s, elapsed: 1s, ETA:    50s→ num of miss det box appear 1 so that we append empty row in csv
-[>                                ] 4/120, 2.3 task/s, elapsed: 2s, ETA:    50s→ num of miss det box appear 1 so that we append empty row in csv
-[>                                ] 5/120, 2.3 task/s, elapsed: 2s, ETA:    50s→ num of miss det box appear 1 so that we append empty row in csv
-[>                                ] 6/120, 2.3 task/s, elapsed: 3s, ETA:    49s[>                                ] 7/120, 2.4 task/s, elapsed: 3s, ETA:    48s[>>                               ] 8/120, 2.4 task/s, elapsed: 3s, ETA:    47s[>>                               ] 9/120, 2.4 task/s, elapsed: 4s, ETA:    47s→ num of miss det box appear 1 so that we append empty row in csv
-[>>                              ] 10/120, 2.4 task/s, elapsed: 4s, ETA:    47s→ num of miss det box appear 1 so that we append empty row in csv
-[>>                              ] 11/120, 2.0 task/s, elapsed: 5s, ETA:    53s[>>>                             ] 12/120, 2.1 task/s, elapsed: 6s, ETA:    53s[>>>                             ] 13/120, 2.1 task/s, elapsed: 6s, ETA:    52s[>>>                             ] 14/120, 2.1 task/s, elapsed: 7s, ETA:    51s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>                            ] 15/120, 2.1 task/s, elapsed: 7s, ETA:    50s[>>>>                            ] 16/120, 2.1 task/s, elapsed: 8s, ETA:    49s[>>>>                            ] 17/120, 2.1 task/s, elapsed: 8s, ETA:    48s[>>>>                            ] 18/120, 2.1 task/s, elapsed: 8s, ETA:    48s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>                           ] 19/120, 2.1 task/s, elapsed: 9s, ETA:    47s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>                           ] 20/120, 2.1 task/s, elapsed: 9s, ETA:    47s[>>>>>                          ] 21/120, 2.1 task/s, elapsed: 10s, ETA:    47s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>                          ] 22/120, 2.1 task/s, elapsed: 10s, ETA:    46s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>                          ] 23/120, 2.1 task/s, elapsed: 11s, ETA:    46s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>                         ] 24/120, 2.1 task/s, elapsed: 12s, ETA:    46s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>                         ] 25/120, 2.1 task/s, elapsed: 12s, ETA:    46s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>                         ] 26/120, 2.1 task/s, elapsed: 12s, ETA:    45s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>                         ] 27/120, 2.1 task/s, elapsed: 13s, ETA:    45s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>                        ] 28/120, 2.1 task/s, elapsed: 14s, ETA:    45s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>                        ] 29/120, 2.1 task/s, elapsed: 14s, ETA:    44s[>>>>>>>                        ] 30/120, 2.1 task/s, elapsed: 15s, ETA:    44s[>>>>>>>>                       ] 31/120, 2.1 task/s, elapsed: 15s, ETA:    43s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>                       ] 32/120, 2.1 task/s, elapsed: 16s, ETA:    43s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>                       ] 33/120, 2.1 task/s, elapsed: 16s, ETA:    42s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>                       ] 34/120, 2.1 task/s, elapsed: 17s, ETA:    42s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>                      ] 35/120, 2.0 task/s, elapsed: 17s, ETA:    42s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>                      ] 36/120, 2.0 task/s, elapsed: 18s, ETA:    41s[>>>>>>>>>                      ] 37/120, 2.0 task/s, elapsed: 18s, ETA:    41s[>>>>>>>>>                      ] 38/120, 2.0 task/s, elapsed: 19s, ETA:    40s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>                     ] 39/120, 2.0 task/s, elapsed: 19s, ETA:    40s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>                     ] 40/120, 2.0 task/s, elapsed: 20s, ETA:    40s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>                     ] 41/120, 2.0 task/s, elapsed: 20s, ETA:    39s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>                     ] 42/120, 2.0 task/s, elapsed: 21s, ETA:    39s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>                    ] 43/120, 1.8 task/s, elapsed: 24s, ETA:    43s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>                    ] 44/120, 1.8 task/s, elapsed: 24s, ETA:    42s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>                    ] 45/120, 1.8 task/s, elapsed: 25s, ETA:    42s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>                    ] 46/120, 1.8 task/s, elapsed: 26s, ETA:    41s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>                   ] 47/120, 1.8 task/s, elapsed: 26s, ETA:    41s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>                   ] 48/120, 1.8 task/s, elapsed: 27s, ETA:    40s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>                   ] 49/120, 1.8 task/s, elapsed: 27s, ETA:    40s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>                   ] 50/120, 1.8 task/s, elapsed: 28s, ETA:    39s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>                  ] 51/120, 1.8 task/s, elapsed: 28s, ETA:    38s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>                  ] 52/120, 1.8 task/s, elapsed: 29s, ETA:    38s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>                  ] 53/120, 1.8 task/s, elapsed: 30s, ETA:    37s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>                  ] 54/120, 1.8 task/s, elapsed: 30s, ETA:    37s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>                 ] 55/120, 1.8 task/s, elapsed: 31s, ETA:    36s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>                 ] 56/120, 1.8 task/s, elapsed: 31s, ETA:    36s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>                 ] 57/120, 1.8 task/s, elapsed: 32s, ETA:    35s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>                 ] 58/120, 1.8 task/s, elapsed: 32s, ETA:    35s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>                ] 59/120, 1.8 task/s, elapsed: 33s, ETA:    34s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>                ] 60/120, 1.8 task/s, elapsed: 34s, ETA:    34s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>                ] 61/120, 1.8 task/s, elapsed: 34s, ETA:    33s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>               ] 62/120, 1.8 task/s, elapsed: 35s, ETA:    32s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>               ] 63/120, 1.8 task/s, elapsed: 35s, ETA:    32s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>               ] 64/120, 1.8 task/s, elapsed: 36s, ETA:    31s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>               ] 65/120, 1.7 task/s, elapsed: 39s, ETA:    33s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>              ] 66/120, 1.6 task/s, elapsed: 41s, ETA:    34s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>              ] 67/120, 1.6 task/s, elapsed: 42s, ETA:    33s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>              ] 68/120, 1.6 task/s, elapsed: 43s, ETA:    33s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>              ] 69/120, 1.6 task/s, elapsed: 43s, ETA:    32s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>             ] 70/120, 1.6 task/s, elapsed: 44s, ETA:    31s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>             ] 71/120, 1.6 task/s, elapsed: 44s, ETA:    30s→ num of miss det box appear 8 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>             ] 72/120, 1.6 task/s, elapsed: 45s, ETA:    30s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>             ] 73/120, 1.6 task/s, elapsed: 45s, ETA:    29s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>            ] 74/120, 1.6 task/s, elapsed: 46s, ETA:    29s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>            ] 75/120, 1.6 task/s, elapsed: 46s, ETA:    28s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>            ] 76/120, 1.6 task/s, elapsed: 47s, ETA:    27s→ num of miss det box appear 7 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>            ] 77/120, 1.6 task/s, elapsed: 48s, ETA:    27s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>           ] 78/120, 1.6 task/s, elapsed: 48s, ETA:    26s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>           ] 79/120, 1.6 task/s, elapsed: 49s, ETA:    25s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>           ] 80/120, 1.6 task/s, elapsed: 50s, ETA:    25s
-🤕 81 프레임의 6번째의 det bbox는 너무 작아 사용하지 않습니다 HEIGHT:1928, WIDTH:0
-→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>           ] 81/120, 1.6 task/s, elapsed: 50s, ETA:    24s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>          ] 82/120, 1.6 task/s, elapsed: 51s, ETA:    24s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>          ] 83/120, 1.6 task/s, elapsed: 52s, ETA:    23s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>          ] 84/120, 1.6 task/s, elapsed: 52s, ETA:    22s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>          ] 85/120, 1.6 task/s, elapsed: 53s, ETA:    22s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>         ] 86/120, 1.6 task/s, elapsed: 54s, ETA:    21s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>         ] 87/120, 1.6 task/s, elapsed: 54s, ETA:    21s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>         ] 88/120, 1.6 task/s, elapsed: 55s, ETA:    20s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>         ] 89/120, 1.6 task/s, elapsed: 56s, ETA:    19s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>        ] 90/120, 1.6 task/s, elapsed: 56s, ETA:    19s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>        ] 91/120, 1.6 task/s, elapsed: 57s, ETA:    18s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>        ] 92/120, 1.6 task/s, elapsed: 57s, ETA:    17s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>       ] 93/120, 1.6 task/s, elapsed: 58s, ETA:    17s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>       ] 94/120, 1.6 task/s, elapsed: 58s, ETA:    16s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>       ] 95/120, 1.6 task/s, elapsed: 59s, ETA:    16s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>       ] 96/120, 1.6 task/s, elapsed: 60s, ETA:    15s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 97/120, 1.6 task/s, elapsed: 60s, ETA:    14s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 98/120, 1.6 task/s, elapsed: 61s, ETA:    14s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 99/120, 1.6 task/s, elapsed: 61s, ETA:    13s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 100/120, 1.6 task/s, elapsed: 62s, ETA:    12s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 101/120, 1.6 task/s, elapsed: 62s, ETA:    12s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 102/120, 1.6 task/s, elapsed: 62s, ETA:    11s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 103/120, 1.6 task/s, elapsed: 63s, ETA:    10s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 104/120, 1.6 task/s, elapsed: 63s, ETA:    10s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 105/120, 1.6 task/s, elapsed: 64s, ETA:     9s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 106/120, 1.6 task/s, elapsed: 64s, ETA:     9s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 107/120, 1.6 task/s, elapsed: 65s, ETA:     8s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 108/120, 1.6 task/s, elapsed: 65s, ETA:     7s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 109/120, 1.7 task/s, elapsed: 66s, ETA:     7s→ num of miss det box appear 1 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 110/120, 1.7 task/s, elapsed: 67s, ETA:     6s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 111/120, 1.6 task/s, elapsed: 67s, ETA:     5s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 112/120, 1.6 task/s, elapsed: 68s, ETA:     5s→ num of miss det box appear 2 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 113/120, 1.6 task/s, elapsed: 69s, ETA:     4s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 114/120, 1.6 task/s, elapsed: 69s, ETA:     4s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 115/120, 1.6 task/s, elapsed: 70s, ETA:     3s→ num of miss det box appear 4 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 116/120, 1.6 task/s, elapsed: 70s, ETA:     2s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 117/120, 1.6 task/s, elapsed: 71s, ETA:     2s→ num of miss det box appear 6 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 118/120, 1.6 task/s, elapsed: 72s, ETA:     1s→ num of miss det box appear 5 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 119/120, 1.6 task/s, elapsed: 73s, ETA:     1s→ num of miss det box appear 3 so that we append empty row in csv
-[>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>] 120/120, 1.6 task/s, elapsed: 73s, ETA:     0s→🐬 num of unmatching bbox frame: 102 Frame
-
-making the output video 📺 at /opt/ml/output_mmtracking/module_test3 with a FPS of 24
-out_path:/tmp/tmp6sif9s2u
-osp.join(args.output,'tracking_video.mp4'):/opt/ml/output_mmtracking/module_test3/tracking_video.mp4
-[                                                  ] 0/120, elapsed: 0s, ETA:[                                 ] 1/120, 9.5 task/s, elapsed: 0s, ETA:    13s[                                 ] 2/120, 9.0 task/s, elapsed: 0s, ETA:    13s[                                 ] 3/120, 9.0 task/s, elapsed: 0s, ETA:    13s[>                                ] 4/120, 9.0 task/s, elapsed: 0s, ETA:    13s[>                                ] 5/120, 9.1 task/s, elapsed: 1s, ETA:    13s[>                                ] 6/120, 9.2 task/s, elapsed: 1s, ETA:    12s[>                                ] 7/120, 9.3 task/s, elapsed: 1s, ETA:    12s[>>                               ] 8/120, 9.4 task/s, elapsed: 1s, ETA:    12s[>>                               ] 9/120, 9.4 task/s, elapsed: 1s, ETA:    12s[>>                              ] 10/120, 9.4 task/s, elapsed: 1s, ETA:    12s[>>                              ] 11/120, 9.5 task/s, elapsed: 1s, ETA:    12s[>>>                             ] 12/120, 9.5 task/s, elapsed: 1s, ETA:    11s[>>>                             ] 13/120, 9.5 task/s, elapsed: 1s, ETA:    11s[>>>                             ] 14/120, 9.5 task/s, elapsed: 1s, ETA:    11s[>>>>                            ] 15/120, 9.5 task/s, elapsed: 2s, ETA:    11s[>>>>                            ] 16/120, 9.5 task/s, elapsed: 2s, ETA:    11s[>>>>                            ] 17/120, 9.6 task/s, elapsed: 2s, ETA:    11s[>>>>                            ] 18/120, 9.6 task/s, elapsed: 2s, ETA:    11s[>>>>>                           ] 19/120, 9.6 task/s, elapsed: 2s, ETA:    11s[>>>>>                           ] 20/120, 9.6 task/s, elapsed: 2s, ETA:    10s[>>>>>                           ] 21/120, 9.6 task/s, elapsed: 2s, ETA:    10s[>>>>>                           ] 22/120, 9.6 task/s, elapsed: 2s, ETA:    10s[>>>>>>                          ] 23/120, 9.6 task/s, elapsed: 2s, ETA:    10s[>>>>>>                          ] 24/120, 9.6 task/s, elapsed: 3s, ETA:    10s[>>>>>>                          ] 25/120, 9.6 task/s, elapsed: 3s, ETA:    10s[>>>>>>                          ] 26/120, 9.6 task/s, elapsed: 3s, ETA:    10s[>>>>>>>                         ] 27/120, 9.5 task/s, elapsed: 3s, ETA:    10s[>>>>>>>                         ] 28/120, 9.5 task/s, elapsed: 3s, ETA:    10s[>>>>>>>                         ] 29/120, 9.5 task/s, elapsed: 3s, ETA:    10s[>>>>>>>>                        ] 30/120, 9.5 task/s, elapsed: 3s, ETA:     9s[>>>>>>>>                        ] 31/120, 9.5 task/s, elapsed: 3s, ETA:     9s[>>>>>>>>                        ] 32/120, 9.5 task/s, elapsed: 3s, ETA:     9s[>>>>>>>>                        ] 33/120, 9.5 task/s, elapsed: 3s, ETA:     9s[>>>>>>>>>                       ] 34/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>                       ] 35/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>                       ] 36/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>                       ] 37/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>>                      ] 38/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>>                      ] 39/120, 9.5 task/s, elapsed: 4s, ETA:     9s[>>>>>>>>>>                      ] 40/120, 9.5 task/s, elapsed: 4s, ETA:     8s[>>>>>>>>>>                      ] 41/120, 9.5 task/s, elapsed: 4s, ETA:     8s[>>>>>>>>>>>                     ] 42/120, 9.5 task/s, elapsed: 4s, ETA:     8s[>>>>>>>>>>>                     ] 43/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>                     ] 44/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>>                    ] 45/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>>                    ] 46/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>>                    ] 47/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>>                    ] 48/120, 9.5 task/s, elapsed: 5s, ETA:     8s[>>>>>>>>>>>>>                   ] 49/120, 9.5 task/s, elapsed: 5s, ETA:     7s[>>>>>>>>>>>>>                   ] 50/120, 9.5 task/s, elapsed: 5s, ETA:     7s[>>>>>>>>>>>>>                   ] 51/120, 9.5 task/s, elapsed: 5s, ETA:     7s[>>>>>>>>>>>>>                   ] 52/120, 9.5 task/s, elapsed: 5s, ETA:     7s[>>>>>>>>>>>>>>                  ] 53/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>                  ] 54/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>                  ] 55/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>                  ] 56/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>>                 ] 57/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>>                 ] 58/120, 9.5 task/s, elapsed: 6s, ETA:     7s[>>>>>>>>>>>>>>>                 ] 59/120, 9.5 task/s, elapsed: 6s, ETA:     6s[>>>>>>>>>>>>>>>>                ] 60/120, 9.5 task/s, elapsed: 6s, ETA:     6s[>>>>>>>>>>>>>>>>                ] 61/120, 9.5 task/s, elapsed: 6s, ETA:     6s[>>>>>>>>>>>>>>>>                ] 62/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>                ] 63/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>>               ] 64/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>>               ] 65/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>>               ] 66/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>>               ] 67/120, 9.5 task/s, elapsed: 7s, ETA:     6s[>>>>>>>>>>>>>>>>>>              ] 68/120, 9.5 task/s, elapsed: 7s, ETA:     5s[>>>>>>>>>>>>>>>>>>              ] 69/120, 9.5 task/s, elapsed: 7s, ETA:     5s[>>>>>>>>>>>>>>>>>>              ] 70/120, 9.5 task/s, elapsed: 7s, ETA:     5s[>>>>>>>>>>>>>>>>>>              ] 71/120, 9.5 task/s, elapsed: 7s, ETA:     5s[>>>>>>>>>>>>>>>>>>>             ] 72/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>             ] 73/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>             ] 74/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>>            ] 75/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>>            ] 76/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>>            ] 77/120, 9.5 task/s, elapsed: 8s, ETA:     5s[>>>>>>>>>>>>>>>>>>>>            ] 78/120, 9.5 task/s, elapsed: 8s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>           ] 79/120, 9.5 task/s, elapsed: 8s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>           ] 80/120, 9.5 task/s, elapsed: 8s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>           ] 81/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>           ] 82/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>>          ] 83/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>>          ] 84/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>>          ] 85/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>>          ] 86/120, 9.5 task/s, elapsed: 9s, ETA:     4s[>>>>>>>>>>>>>>>>>>>>>>>         ] 87/120, 9.5 task/s, elapsed: 9s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>         ] 88/120, 9.5 task/s, elapsed: 9s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>         ] 89/120, 9.5 task/s, elapsed: 9s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>        ] 90/120, 9.5 task/s, elapsed: 9s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>        ] 91/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>        ] 92/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>       ] 93/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>       ] 94/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>       ] 95/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>       ] 96/120, 9.5 task/s, elapsed: 10s, ETA:     3s[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 97/120, 9.5 task/s, elapsed: 10s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 98/120, 9.5 task/s, elapsed: 10s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>      ] 99/120, 9.5 task/s, elapsed: 10s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 100/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 101/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 102/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>     ] 103/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 104/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 105/120, 9.5 task/s, elapsed: 11s, ETA:     2s[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 106/120, 9.5 task/s, elapsed: 11s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>    ] 107/120, 9.5 task/s, elapsed: 11s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 108/120, 9.5 task/s, elapsed: 11s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 109/120, 9.5 task/s, elapsed: 11s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 110/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>   ] 111/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 112/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 113/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 114/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ] 115/120, 9.5 task/s, elapsed: 12s, ETA:     1s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 116/120, 9.5 task/s, elapsed: 12s, ETA:     0s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 117/120, 9.5 task/s, elapsed: 12s, ETA:     0s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 118/120, 9.5 task/s, elapsed: 12s, ETA:     0s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ] 119/120, 9.5 task/s, elapsed: 13s, ETA:     0s[>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>] 120/120, 9.5 task/s, elapsed: 13s, ETA:     0s/opt/conda/envs/open-mmlab/lib/python3.7/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
-  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
-
-dir이 이미 존재하므로 overwriting을 위해서 삭제합니다
-

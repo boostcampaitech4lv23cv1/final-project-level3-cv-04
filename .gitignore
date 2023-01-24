@@ -2,12 +2,32 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,python
 
-# personal
+# personal ignore
+
+# for pretrain tracking weights
 pretrained_weight__mmtracking/*
+
+# for data
 data/*
+
+# for tracking analysis
 test*
+
+# for tracking analysis
 mmtracking/utils/gen_videos
+
+# for face pretrain weight
 face_embedding/model
+
+# for hidden log
+*.out
+
+# for test prototype
+*.ipynb
+
+# for test prototype
+*.sh
+
 
 ### Linux ###
 *~
