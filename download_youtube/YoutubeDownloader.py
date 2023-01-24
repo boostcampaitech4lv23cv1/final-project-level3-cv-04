@@ -59,8 +59,8 @@ def download_and_capture(youtube_url, download_dir_path):
     img_capture_dir_path = osp.join(download_dir_path, meta_info["filename"].split(".")[0])
     os.makedirs(img_capture_dir_path, exist_ok=True)
 
-    os.system("chmod u+x FILE ./ffmpeg") # 
-    os.system("./ffmpeg " + 
+    os.system("chmod u+x ./ffmpeg-torchkpop") # 
+    os.system("./ffmpeg-torchkpop " + 
     f"-i {file_path} " +
             "-ss 00:00:0 -t 60 " + # if you want slice videos input -t <sec> command
                 f"-r {str(meta_info['fps'])} " +
