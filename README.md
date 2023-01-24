@@ -1,5 +1,14 @@
 # final-project-level3-cv-04
 
+ffmpeg UPDATE  
+```
+sudo add-apt-repository ppa:savoury1/ffmpeg5
+sudo add-apt-repository ppa:savoury1/ffmpeg4
+sudo apt update
+sudo apt full-upgrade
+```
+
+
 ENVIROMENT SETTING  
 ```
 conda create -n torchkpop python=3.7
