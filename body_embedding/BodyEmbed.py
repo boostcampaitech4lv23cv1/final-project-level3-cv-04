@@ -88,7 +88,7 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
         pretrained=True,
         use_gpu=True
     )
-    load_weights = '../pretrain_weight/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
+    load_weights = './pretrain_weight/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
     load_pretrained_weights(model, load_weights)
     model.training = False
     
@@ -201,7 +201,7 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
         use_gpu=True
     )
 
-    load_weights = '../pretrain_weight/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
+    load_weights = './pretrain_weight/osnet_ain_ms_d_c.pth.tar' # ✅ meta_info 를 이용해주세요
     load_pretrained_weights(model, load_weights)
     model.training = False
     
