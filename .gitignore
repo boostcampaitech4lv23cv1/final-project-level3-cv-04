@@ -11,7 +11,7 @@ pretrained_weight__mmtracking/*
 data/*
 
 # for tracking analysis
-test*
+/test*
 
 # for tracking analysis
 mmtracking/utils/gen_videos

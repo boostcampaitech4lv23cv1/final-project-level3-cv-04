@@ -278,6 +278,7 @@ def tracking(meta_info,
     if output != None:
         img_dir_path = osp.join(output,"tracked_imgs")
         if ANALYSIS: # if ANALYSIS is True, make tracking video
+            print()
             print(f'making the output video 📺 at {output} with a FPS of {fps}')
             print(f"out_path:{out_path}")
             print(f"osp.join(args.output,'tracking_video.mp4'):{osp.join(output,'tracking_video.mp4')}")

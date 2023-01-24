@@ -26,15 +26,15 @@ def main(YOUTUBE_LINK):
     meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH)
     
     # tracking
-    clipped_df1, raw_df1 = tracking(meta_info, output='./test_ENV', ANALYSIS=False) # output is save dir
+    clipped_df1, raw_df1 = tracking(meta_info, output='./test_ENV', ANALYSIS=True) # output is save dir
 
     # postprocessing
     df1 = postprocessing(raw_df1, meta_info, sec=5)
-    df2.to_csv("./df1_postprocessed.csv")
+    df1.to_csv("./test_ENV/df1_postprocessed.csv")
 
     # sampling for extract body, face feature
     df2 = sampler.sampler(df1, seconds_per_frame=5)
-    df2.to_csv("./df2_sampled.csv")
+    df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # load saved face feature vector
     with open("./face_embedding/anchor_face_embedding.json", "r", encoding="utf-8") as f:
@@ -42,7 +42,7 @@ def main(YOUTUBE_LINK):
 
     # query face similarity
     df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding)
-    df2.to_csv("./df2_out_of_face_embedding.csv")
+    df2.to_csv("./test_ENV/df2_out_of_face_embedding.csv")
 
     # make body representation
     body_anchors = generate_body_anchor(df1, df2, group_name="aespa", meta_info=meta_info)

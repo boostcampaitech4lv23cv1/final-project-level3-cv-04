@@ -62,7 +62,7 @@ def download_and_capture(youtube_url, download_dir_path):
     os.system("chmod u+x FILE ./ffmpeg") # 
     os.system("./ffmpeg " + 
     f"-i {file_path} " +
-            "-ss 00:00:0 -t 120 " + # if you want slice videos input -t <sec> command
+            "-ss 00:00:0 -t 60 " + # if you want slice videos input -t <sec> command
                 f"-r {str(meta_info['fps'])} " +
                     "-f image2 " + img_capture_dir_path + "/%d.jpg")
 
