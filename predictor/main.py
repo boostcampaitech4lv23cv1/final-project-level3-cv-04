@@ -30,4 +30,7 @@ def predictor(
 
         prediction = (face_series + body_series).idxmax()
         pred[track] = prediction
+        
+    pred[-1] = "NO_FACE_DETECTED"
+    
     return pred

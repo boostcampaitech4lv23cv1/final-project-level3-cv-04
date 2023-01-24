@@ -12,6 +12,7 @@ pretrained_weight/*
 
 # for data
 data/*
+_data/
 
 # for results
 result/*
@@ -223,3 +224,5 @@ poetry.toml
 .ruff_cache/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,python
+
+.vscode
