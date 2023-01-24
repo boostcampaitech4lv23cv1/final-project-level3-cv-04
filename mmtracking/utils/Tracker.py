@@ -19,7 +19,7 @@ import numpy as np
 # ABS_WEIGHT_PATH = "/opt/ml/final-project-level3-cv-04/pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 # ABS_CONFIG_PATH = "/opt/ml/final-project-level3-cv-04/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
-WEIGHT_PTH = "./pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
+WEIGHT_PTH = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
 
