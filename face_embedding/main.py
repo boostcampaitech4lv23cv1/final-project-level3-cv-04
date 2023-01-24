@@ -148,13 +148,13 @@ with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
 
 onnxruntime.set_default_logger_severity(3)
 
-# root_dir = "/opt/ml/torchkpop/face_embedding/"
-root_dir = "./face_embedding"
+# root_dir = "./face_embedding"
+root_dir = "./pretrained_weight"
 
-detector = SCRFD(os.path.join(root_dir, "model/det_10g.onnx"))
+detector = SCRFD(os.path.join(root_dir, "det_10g.onnx"))
 detector.prepare(0)
 
-model_path = os.path.join(root_dir, "model", "w600k_r50.onnx")
+model_path = os.path.join(root_dir, "w600k_r50.onnx")
 
 rec = ArcFaceONNX(model_path)
 rec.prepare(0)

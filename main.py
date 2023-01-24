@@ -37,7 +37,7 @@ def main(YOUTUBE_LINK):
     df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # load saved face feature vector
-    with open("./face_embedding/anchor_face_embedding.json", "r", encoding="utf-8") as f:
+    with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
         anchor_face_embedding = json.load(f)
 
     # query face similarity
