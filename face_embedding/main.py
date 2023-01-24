@@ -73,7 +73,10 @@ def compute_face_confidence(
 
 
 def face_embedding_extractor(
-    df1: pd.DataFrame, df2: pd.DataFrame, anchor_face_embedding: dict
+    df1: pd.DataFrame,
+    df2: pd.DataFrame,
+    anchor_face_embedding: dict,
+    meta_info: dict,
 ) -> pd.DataFrame:
 
     df2[
@@ -100,7 +103,7 @@ def face_embedding_extractor(
     #     lambda x: os.path.join("/opt/ml/data/frame_1080p", x)
     # )
     df2["filename"] = df2["filename"].map(
-        lambda x: os.path.join(meta_json["image_root"], x)
+        lambda x: os.path.join(meta_info["image_root"], x)
     )
 
     df2["face_embedding"] = df2.apply(compute_face_feature, axis=1)
@@ -138,12 +141,12 @@ def face_embedding_extractor(
 
 # if __name__ == "__main__":
 
-for meta_json in os.listdir("./data/"):
-    if os.path.splitext(meta_json)[-1] == ".json":
-        break
+# for meta_json in os.listdir("./data/"):
+#     if os.path.splitext(meta_json)[-1] == ".json":
+#         break
 
-with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
-    meta_json = json.load(f)
+# with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
+#     meta_json = json.load(f)
 
 
 onnxruntime.set_default_logger_severity(3)

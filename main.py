@@ -10,6 +10,7 @@ from mmtracking.utils.Tracker import tracking
 from mmtracking.utils.Postprocesser import postprocessing # 형훈
 import sampler                              # 영동
 import face_embedding                       # 영동
+import predictor                            # 영동
 
 
 from body_embedding.BodyEmbed import body_embedding_extractor # 상헌
@@ -33,7 +34,7 @@ def main(YOUTUBE_LINK):
     df1.to_csv("./test_ENV/df1_postprocessed.csv")
 
     # sampling for extract body, face feature
-    df2 = sampler.sampler(df1, seconds_per_frame=5)
+    df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
     df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # load saved face feature vector
@@ -41,21 +42,17 @@ def main(YOUTUBE_LINK):
         anchor_face_embedding = json.load(f)
 
     # query face similarity
-    df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding)
+    df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
     df2.to_csv("./test_ENV/df2_out_of_face_embedding.csv")
 
     # make body representation
     body_anchors = generate_body_anchor(df1, df2, group_name="aespa", meta_info=meta_info)
     df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
     
+    # predictor
+    pred = predictor.predictor(df2, 1, 1)
+    print(pred)
 
-    # df2 = body_embedding_extractor(df1,
-    #                               df2,
-    #                               body_anchors,
-    #                               meta_info)
-    
-    # pred = predictor(df2)
-    # # pred = {1: 'karina', 2: 'winter . . . . . .}
     
     
     # result_video = video_generator(df1, pred, meta_info)
