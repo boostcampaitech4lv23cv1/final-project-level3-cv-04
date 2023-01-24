@@ -13,6 +13,9 @@ pretrained_weight/*
 # for data
 data/*
 
+# for results
+result/*
+
 # for tracking analysis
 /test*
 

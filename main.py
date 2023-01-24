@@ -17,7 +17,7 @@ from body_embedding.BodyEmbed import body_embedding_extractor # 상헌
 from body_embedding.BodyEmbed import generate_body_anchor # 상헌
 import json
 import pandas as pd
-
+from video_generator.MakingVideo import video_generator
 
 
 def main(YOUTUBE_LINK):
@@ -52,10 +52,11 @@ def main(YOUTUBE_LINK):
     # predictor
     pred = predictor.predictor(df2, 1, 1)
     print(pred)
-
     
-    
-    # result_video = video_generator(df1, pred, meta_info)
+    # del df2
+    # del clipped_df1
+    # del raw_df1
+    video_generator(df1, meta_info["image_root"], member='aespa_ningning', pred=pred, full_video = True)
     
     return None
 

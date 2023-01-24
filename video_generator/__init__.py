@@ -1,1 +1,1 @@
-from video_generator.main import video_generator
+from video_generator.MakingVideo import video_generator
