@@ -19,6 +19,9 @@ mmtracking/utils/gen_videos
 # for face pretrain weight
 face_embedding/model
 
+# for body embeeding weight
+body_embedding/pretrain/*
+
 # for hidden log
 *.out
 
