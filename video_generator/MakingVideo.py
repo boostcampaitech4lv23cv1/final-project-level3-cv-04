@@ -51,6 +51,7 @@ def video_generator(df1,image_path,member,pred,full_video=True):
     video_path = './result/video/'   # 비디오 저장할 폴더
     frame = 24  # 비디오 프레임
     os.makedirs(newfolder,exist_ok=True)
+    os.makedirs(video_path,exist_ok=True)
     ######################################################   
     prev_px = 0
     prev_mx = 0
@@ -76,7 +77,7 @@ def video_generator(df1,image_path,member,pred,full_video=True):
                 x_max = int(row.track_body_xmax)
                 y_max = int(row.track_body_ymax)
                 y_min = int(row.track_body_ymin)
-                print('bbox좌표 : ',x_min,',',x_max,',',y_min,',',y_max)
+                # print('bbox좌표 : ',x_min,',',x_max,',',y_min,',',y_max)
                 
                 # retinaface로 얼굴 좌표 구하기
                 temp_img = cv2.imread(img_path)
