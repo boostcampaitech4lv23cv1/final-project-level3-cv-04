@@ -73,7 +73,7 @@ def make_anchor(body_img_list, model):
     for img in body_img_list:
         batch = transform_te(img).unsqueeze(0)
         batches.append(batch)
-    concat = torch.concat(batches, dim=0) # [10, 3, 800, 400]
+    concat = torch.cat(batches, dim=0) # [10, 3, 800, 400]
     concat_pred = model(concat) # [10, 512]
     pred_mean = torch.mean(concat_pred, dim=0) # [512]
     
