@@ -73,9 +73,13 @@ def make_anchor(body_img_list, model):
     for img in body_img_list:
         batch = transform_te(img).unsqueeze(0)
         batches.append(batch)
+    del body_img_list
     concat = torch.cat(batches, dim=0) # [10, 3, 800, 400]
+    del batches
     concat_pred = model(concat) # [10, 512]
+    del concat
     pred_mean = torch.mean(concat_pred, dim=0) # [512]
+    del concat_pred
     
     return pred_mean
 
@@ -101,6 +105,7 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
             face_confidence_list.append(eval(df2['face_confidence'].loc[i]))
         
         face_confidence_series = pd.Series(face_confidence_list)
+        del face_confidence_list
         df2['face_confidence'] = face_confidence_series
     
     # face_pred_confi 컬럼 추가 - pred한 인물에 대한 confi
@@ -119,11 +124,16 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
     df2_ningning = df2[df2['face_pred'] == 'aespa_ningning']
     df2_giselle = df2[df2['face_pred'] == 'aespa_giselle']
     
+    
     # df2_member confi_score 순으로 정렬
     df2_karina_sorted = df2_karina.sort_values(by='face_pred_confi', ascending=False)
+    del df2_karina
     df2_winter_sorted = df2_winter.sort_values(by='face_pred_confi', ascending=False)
+    del df2_winter
     df2_ningning_sorted = df2_ningning.sort_values(by='face_pred_confi', ascending=False)
+    del df2_ningning
     df2_giselle_sorted = df2_giselle.sort_values(by='face_pred_confi', ascending=False)
+    del df2_giselle
     
     
     # print("karina 대표 이미지 10장 뽑는 중...")
@@ -136,9 +146,13 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
     body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
     
     anchor_karina = make_anchor(body_img_list_karina, model)
+    del body_img_list_karina
     anchor_winter = make_anchor(body_img_list_winter, model)
+    del body_img_list_winter
     anchor_ningning = make_anchor(body_img_list_ningning, model)
+    del body_img_list_ningning
     anchor_giselle = make_anchor(body_img_list_giselle, model)
+    del body_img_list_giselle
     
     anchors = {
         'aespa_karina' : anchor_karina, 
@@ -210,7 +224,7 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
     body_img_list = make_body_img_list(df1, df2, meta_info) # ⛔️ <- 이거 메모리에 적재하다가 문제될 수 있겠다
     
     my_dataset = MyDataset(body_img_list, transform_te)
-    my_dataloader = DataLoader(my_dataset, batch_size=32)
+    my_dataloader = DataLoader(my_dataset, batch_size=16)
     
     body_embedding = []
     body_confidence = []
@@ -224,7 +238,7 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
         # pred = torch.concat([pred, batch_pred], dim=0) if pred is not None else batch_pred
     
     
-        for i in range(len(batch_pred)):
+        for i in range(len(batch_pred)): # batch_size 만큼
             # display(body_img_list[i])
             # print(concat_pred[i].detach().numpy())
             body_embedding.append(batch_pred[i].detach().numpy())
