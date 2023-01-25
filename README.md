@@ -26,7 +26,6 @@ cd mmtracking
 pip install -r requirements/build.txt
 pip install -v -e .
 cd ..
-pip install insightface
 pip install pytube
 pip install onnxruntime
 pip install ffmpeg-python
