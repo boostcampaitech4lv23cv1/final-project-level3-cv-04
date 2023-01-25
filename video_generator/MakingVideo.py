@@ -25,7 +25,7 @@ def img_padding(img,px,mx,py,my,w,h):   #top, bottom, left, right
         
     return img,px,mx,py,my
 
-def video_generator(df1,image_path,member,pred,full_video=True):
+def video_generator(df1,meta_info,image_path,member,pred,full_video=True):
     '''
     input
         df1 : filename,bbox,track_id
@@ -47,9 +47,9 @@ def video_generator(df1,image_path,member,pred,full_video=True):
     video_size_h = 720  # 최종 video 크기 (세로)
     #얼굴을 화면 어디에 둘지 비율 조정(세로만 조정 가능, 숫자가 낮을 수록 얼굴 위로 올라감)
     face_loc = 3
-    newfolder = './result/img/'  # 사진 저장할 폴더
-    video_path = './result/video/'   # 비디오 저장할 폴더
-    frame = 24  # 비디오 프레임
+    newfolder = './result/' + meta_info["image_root"].split('/')[-1] + '/img/'  # 사진 저장할 폴더
+    video_path = './result/' + meta_info["image_root"].split('/')[-1] + '/video/'   # 비디오 저장할 폴더
+    frame = meta_info["fps"]  # 비디오 프레임
     os.makedirs(newfolder,exist_ok=True)
     os.makedirs(video_path,exist_ok=True)
     ######################################################   
@@ -61,7 +61,8 @@ def video_generator(df1,image_path,member,pred,full_video=True):
     df1['track_id'].fillna(-1, inplace=True)
     df1['track_id'] = df1['track_id'].map(lambda x: int(x))
     
-    img_list = glob(image_path+'/*.jpg')
+    #이미지 주소
+    img_list = glob(meta_info["image_root"]+'/*.jpg')
     img_list = natsort.natsorted(img_list)
     
     print('video_generator실행중')
