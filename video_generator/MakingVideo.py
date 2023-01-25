@@ -65,10 +65,10 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     img_list = glob(meta_info["image_root"]+'/*.jpg')
     img_list = natsort.natsorted(img_list)
     
-    print('video_generator실행중')
+    # print('video_generator실행중')
     
     for idx,img_path in enumerate(img_list, start=1):
-        print(img_path)
+        # print(img_path)
         filename_df = df1[df1['filename']== img_path.split('/')[-1]]    #파일명이 같은 애들끼리 df하나 만들어주고
         count = 0
         for row in filename_df.itertuples():
