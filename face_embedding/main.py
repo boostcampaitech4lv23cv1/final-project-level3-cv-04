@@ -11,11 +11,11 @@ from arcface_onnx import ArcFaceONNX
 
 def detect_face(image: np.ndarray) -> np.ndarray:
     # image = cv2.imread(image)
-    bboxes, _ = detector.autodetect(image, max_num=1)
+    bboxes, keypoints = detector.autodetect(image, max_num=1)
     if bboxes.shape[0] == 0:
-        return -1.0, "Face not found in Image"
+        return (-1.0, -1.0)
     else:
-        return bboxes
+        return (bboxes, keypoints)
 
 
 def simple_softmax(confidence: dict) -> dict:
