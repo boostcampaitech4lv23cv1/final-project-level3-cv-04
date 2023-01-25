@@ -136,14 +136,23 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
     del df2_giselle
     
     
-    # print("karina 대표 이미지 10장 뽑는 중...")
-    body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=6)
-    # print("winter 대표 이미지 10장 뽑는 중...")
-    body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=6)
-    # print("ningning 대표 이미지 10장 뽑는 중...")
-    body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=6)
-    # print("giselle 대표 이미지 10장 뽑는 중...")
-    body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
+    
+    try: # karina 대표 이미지 12장으로 뽑는 중...
+        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=12)
+    except: # karina 대표 이미지 6장으로 뽑는 중...
+        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=6)
+    try: # winter 대표 이미지 12장 뽑는 중...
+        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=12)
+    except: # winter 대표 이미지 6장 뽑는 중...
+        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=6)
+    try:
+        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=12)
+    except:
+        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=6)
+    try:
+        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=12)
+    except:
+        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
     
     anchor_karina = make_anchor(body_img_list_karina, model)
     del body_img_list_karina
