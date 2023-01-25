@@ -29,7 +29,7 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     '''
     input
         df1 : filename,bbox,track_id
-        img_list : image들의 path
+        meta_info : imagepath, image width, height 정보
         member(str형) : user가 원하는 member
         pred : predictor 거쳐서 나온 prediction -> 구조: pred = {'track_id' : 'aespa_karina'}
         full_video(boolean) ->  True  : ex) 카리나 없는 부분은 전체화면으로
