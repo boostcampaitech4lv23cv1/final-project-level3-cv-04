@@ -25,7 +25,7 @@ def img_padding(img,px,mx,py,my,w,h):   #top, bottom, left, right
         
     return img,px,mx,py,my
 
-def video_generator(df1,meta_info,image_path,member,pred,full_video=True):
+def video_generator(df1,meta_info,member,pred,full_video=True):
     '''
     input
         df1 : filename,bbox,track_id

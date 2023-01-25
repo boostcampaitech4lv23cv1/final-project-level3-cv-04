@@ -56,7 +56,7 @@ def main(YOUTUBE_LINK):
     # del df2
     # del clipped_df1
     # del raw_df1
-    video_generator(df1, meta_info["image_root"], member='aespa_ningning', pred=pred, full_video = True)
+    video_generator(df1,meta_info, meta_info, member='aespa_ningning', pred=pred, full_video = True)
     
     return None
 
