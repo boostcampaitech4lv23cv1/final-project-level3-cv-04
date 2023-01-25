@@ -37,4 +37,6 @@ pip install yacs
 pip install torchmetrics
 pip install monai
 pip install gdown
+pip install insightface
+pip install natsort
 ```
