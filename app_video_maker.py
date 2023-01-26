@@ -53,9 +53,10 @@ def main(YOUTUBE_LINK):
     
     # predictor
     pred = predictor.predictor(df2, 1, 1)
-    with open("./test_full/pred.pickle", "wb") as pickle:
-        pickle.dump(pred,
-                    pickle) 
+    with open("./test_full/pred.json", "w") as json_file:
+        json.dump(pred,
+                  json_file, 
+                  indent=4) 
 
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)

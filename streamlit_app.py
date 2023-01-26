@@ -2,15 +2,18 @@
 import streamlit as st
 import re
 
-
+# for on_click
 def session_change_to_timeline(url:str):
     print("pushed button [TIMELINE]")
     st.session_state.page = 1
     st.session_state.url = url
 
-def session_change_to_video(info:dict):
+# for on_click
+def session_change_to_video(names:list):
     print("pushed button [VIDEO]")
     st.session_state.page = 2
+    st.session_state.names = names
+
 
 # main page
 def main_page():
@@ -39,20 +42,15 @@ def timeline_page():
     # 
     # st.session_state.url
     # 
-    if st.button("MAKE PERSONAL VIDEO"):
-        info_to_video_page = {}
-        session_change_to_video(info_to_video_page)
+    info = {"names":["karina", "winter", "ningning"]}
+    if st.button("MAKE PERSONAL VIDEO", on_click=session_change_to_video, kwargs=info):
+        pass
 
+# video page
 def video_page():
     st.title("Individual Video 🎵")
-
-
-# setting
-page_names_to_funcs = {
-    "main_page": main_page,
-    "timeline_page": timeline_page,
-    "video_page": video_page,
-}
+    st.text(st.session_state.names)
+    st.text("If you want make another video, press F5 🔁")
 
 # init session_state
 if "page" not in st.session_state:
