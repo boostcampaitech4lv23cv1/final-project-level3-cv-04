@@ -22,7 +22,7 @@ import pandas as pd
 from video_generator.MakingVideo import video_generator
 
 
-def main(YOUTUBE_LINK):
+def app_timeline_maker(YOUTUBE_LINK):
     DOWNLOAD_PATH = './data' 
 
     # mp4 download and frame capture
@@ -53,26 +53,17 @@ def main(YOUTUBE_LINK):
     
     # predictor
     pred = predictor.predictor(df2, 1, 1)
-    with open("./test_full/pred.json", "w") as json_file:
-        json.dump(pred,
-                  json_file, 
-                  indent=4) 
+    with open("./test_full/pred.pickle", "wb") as pred_pickle_file:
+        pickle.dump(pred, pred_pickle_file)
 
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
 
     df1_name_tagged.to_csv("./test_full/df1_name_tagged.csv")
-    with open("./test_full/e2e_timeline.json", "w") as json_file:
-        json.dump(timeline_info,
-                  json_file, 
-                  indent=4) 
+    with open("./test_full/e2e_timeline.pickle", "w") as df1_pickel_file:
+        pickle.dump(df1_name_tagged, df1_pickel_file)
     
-    return None
+    return df1_name_tagged, timeline_info
 
 
-    
 
-if __name__ == "__main__":
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
-    result = main(YOUTUBE_LINK)
