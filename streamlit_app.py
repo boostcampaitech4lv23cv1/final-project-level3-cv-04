@@ -1,36 +1,36 @@
+# Contents of ~/my_app/streamlit_app.py
 import streamlit as st
-import time
-import numpy as np
-import re
-import streamlit as st
+
+
+def move_entry_page():
+    st.session_state.page = 1
+
+def main_page():
+    st.markdown("# Main page 🎈")
+    st.sidebar.markdown("# Main page 🎈")
+    st.button(label="move page2", on_click=page_change)
+
+def timeline_page():
+    st.markdown("# Page 2 ❄️")
+    st.sidebar.markdown("# Page 2 ❄️")
+
+def video_page():
+    st.markdown("# Page 3 🎉")
+    st.sidebar.markdown("# Page 3 🎉")
+
+page_names_to_funcs = {
+    "main_page": main_page,
+    "timeline_page": timeline_page,
+    "video_page": video_page,
+}
+
+if "page" not in st.session_state:
+    st.session_state.page = 0
 
 st.set_page_config(initial_sidebar_state="collapsed")
-
-
-
-def entry_page():
-    st.title("Torch-kpop")
-    st.title("AI makes personal videos for you 😍")
-    url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=0lXwMdnpoFQ")
-        
-    if st.button("INPUT"):
-
-        # check youtube regex reference from https://stackoverflow.com/questions/19377262/regex-for-youtube-url
-        if re.match("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", url):
-            
-            # if matching youtube url, show input video
-            video = st.video(url)
-
-            # show button moe_running_btnng
-            if st.button("MAKE VIDEO"):
-                pass
-            
-        else:
-            st.write("This is not a valid youtube url")
-
-entry_page()
-
-
-    
-
-
+if st.session_state.page == 0:
+    main_page()
+elif st.session_state.page == 1:
+    page2()
+elif st.session_state.page == 2:
+    page3()
