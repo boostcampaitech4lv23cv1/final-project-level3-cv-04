@@ -66,11 +66,6 @@ def main(YOUTUBE_LINK):
         json.dump(timeline_info,
                   json_file, 
                   indent=4) 
-
-    # del df2
-    # del clipped_df1
-    # del raw_df1
-    # video_generator(df1, meta_info, member='aespa_ningning', pred=pred, full_video = True)
     
     return None
 
