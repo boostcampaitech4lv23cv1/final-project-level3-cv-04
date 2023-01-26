@@ -68,7 +68,7 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     print('video_generator실행중')
     
     for idx,img_path in enumerate(img_list, start=1):
-        print(img_path)
+        # print(img_path)
         filename_df = df1[df1['filename']== img_path.split('/')[-1]]    #파일명이 같은 애들끼리 df하나 만들어주고
         count = 0
         for row in filename_df.itertuples():
@@ -158,8 +158,13 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     print('video 생성중...')
     img_list = glob(newfolder+"*.jpg")
     img_list = natsort.natsorted(img_list)
-    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'mp4v'),frame,(video_size_w,video_size_h))
+    
+    # 🙏🏻 fourcc = cv2.VideoWriter_fourcc(*'MP4V') -> cv2.VideoWriter_fourcc(*'H264')
+    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'H264'),frame,(video_size_w,video_size_h))
     for path in img_list:
         img = cv2.imread(path)
         out.write(img)
     out.release()
+    
+    video_full_path = video_path+member+'_output.mp4'
+    return video_full_path # 🙏🏻 video_full_path return
