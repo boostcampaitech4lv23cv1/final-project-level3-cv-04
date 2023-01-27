@@ -6,13 +6,32 @@ import numpy as np
 pd.options.mode.chained_assignment = None
 
 
-def equal_distance_frame(array: np.array, num_sample: int) -> np.array:
+def equal_distance_frame(
+    array: np.array, num_sample: int, _df1: pd.DataFrame, meta_info: dict
+) -> np.array:
     equidistant_df1_index = np.linspace(
         np.min(array), np.max(array), num=num_sample, endpoint=False
     )[1:]
     closest_df1_index = []
     for df1_index in equidistant_df1_index:
-        closest_df1_index.append(array[np.absolute(array - df1_index).argmin()])
+
+        limit_counter = meta_info["fps"] // 2
+
+        for min_index in array[np.argsort(np.absolute(array - df1_index))]:
+
+            if (_df1.loc[min_index].isfront != True) or (
+                _df1.loc[min_index].num_overlap_bboxes != 0
+            ):
+                limit_counter -= 1
+                if limit_counter == 0:
+                    closest_df1_index.append(
+                        array[np.absolute(array - df1_index).argmin()]
+                    )
+                    break
+            else:
+                closest_df1_index.append(min_index)
+                break
+
     return np.array(closest_df1_index)
 
 
@@ -23,8 +42,7 @@ def sampler(
     seconds_per_frame: int = -1,
 ) -> pd.DataFrame:
 
-    # _df1 = pd.read_csv(df1, sep=",", index_col=0)
-    _df1 = df1[["frame", "track_id"]]
+    _df1 = df1[["frame", "track_id", "num_overlap_bboxes", "isfront"]]
     _df1["track_id"].fillna(-1, inplace=True)
     _df1["track_id"] = _df1["track_id"].map(lambda x: int(x))
     _df1.sort_values(["track_id", "frame"], inplace=True)
@@ -52,25 +70,17 @@ def sampler(
     for i, track in enumerate(track_ids):
         df1_index_array = _df1[_df1["track_id"] == track].index
         if num_sample != -1:
-            closest_df1_index = equal_distance_frame(df1_index_array, num_sample + 1)
+            closest_df1_index = equal_distance_frame(
+                df1_index_array, num_sample + 1, _df1, meta_info
+            )
         else:
             closest_df1_index = equal_distance_frame(
-                df1_index_array, frame_per_track[i] + 1
+                df1_index_array, frame_per_track[i] + 1, _df1, meta_info
             )
 
-        # print(closest_df1_index)
         for idx in closest_df1_index:
             df2["df1_index"][counter] = idx
             counter += 1
         # df2[df2["track_id"] == track]['df1_index'] = closest_df1_index
 
-    # df2.to_csv("/opt/ml/torchkpop/df2.csv", sep=",")
     return df2
-
-
-# for meta_json in os.listdir("./data/"):
-#     if os.path.splitext(meta_json)[-1] == ".json":
-#         break
-
-# with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
-#     meta_json = json.load(f)
