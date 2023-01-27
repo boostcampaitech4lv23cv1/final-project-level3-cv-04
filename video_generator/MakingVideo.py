@@ -85,10 +85,10 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                 temp_img = temp_img[y_min:y_max, x_min:x_max]
                          
                 ### face embedding에서 얼굴이 있는 경우와 없는 경우로 나눠야 함
-                face_embedding_result = face_embedding.detect_face(temp_img)
+                face_embedding_result = face_embedding.detect_face(temp_img)[0]
                 del temp_img    #temp_img 메모리 할당 해제
                 
-                if len(face_embedding_result) == 2:   # 얼굴이 없는 경우
+                if face_embedding_result[0][0] == -1.0 and face_embedding_result[0][1] == -1.0:   # 얼굴이 없는 경우
                     ## prev 좌표가 0,0인 경우 -> 전체화면
                     if prev_px == 0 and prev_py == 0:
                         count -= 1
@@ -108,14 +108,14 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                 
                     face_w = face_x_max - face_x_min    # 얼굴 가로 길이
                     face_h = face_y_max - face_y_min    # 얼굴 세로 길이
-                    px = int(center_x + (face_h/2) * (crop_img_w/2)) # x plus 방향 (오른쪽)
-                    mx = int(center_x - (face_h/2) * (crop_img_w/2)) # x minus 방향 (왼쪽)
-                    py = int(center_y + (face_h/2) * (crop_img_h - face_loc))  # y plus 방향 (아래)
-                    my = int(center_y - (face_h/2) * (face_loc))  # y minus 방향 (위)
-                    prev_px = px
-                    prev_mx = mx
-                    prev_py = py
-                    prev_my = my
+                    px = int(center_x + video_size_w/2)
+                    mx = int(center_x - video_size_w/2)
+                    py = int(center_y + video_size_h/2)
+                    my = int(center_y - video_size_h/2)
+                    # px = int(center_x + (face_h/2) * (crop_img_w/2)) # x plus 방향 (오른쪽)
+                    # mx = int(center_x - (face_h/2) * (crop_img_w/2)) # x minus 방향 (왼쪽)
+                    # py = int(center_y + (face_h/2) * (crop_img_h - face_loc))  # y plus 방향 (아래)
+                    # my = int(center_y - (face_h/2) * (face_loc))  # y minus 방향 (위)
                     
                 img = cv2.imread(img_path)  #이미지 불러와서 얼굴 좌표 구함
                 h, w, _ = img.shape # 이미지 크기 받기
@@ -129,11 +129,12 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                 
                 # 이미지 resize
                 #interpolation : 기법 다른거로 바꿔서 품질, 속도 조절 가능
-                resize_img = cv2.resize(cropped_img,(video_size_w,video_size_h),interpolation=cv2.INTER_CUBIC)
+                # resize_img = cv2.resize(cropped_img,(video_size_w,video_size_h),interpolation=cv2.INTER_CUBIC)
                 del cropped_img # cropped_img 메모리 할당 해제
                 # 이미지 저장
-                cv2.imwrite(newfolder+str(idx)+'.jpg', resize_img)
-                del resize_img  #resize_img 메모리 할당 해제
+                # cv2.imwrite(newfolder+str(idx)+'.jpg', resize_img)
+                cv2.imwrite(newfolder+str(idx)+'.jpg', cropped_img)
+                # del resize_img  #resize_img 메모리 할당 해제
 
                 break
         del filename_df # 데이터 프레임 메모리 할당 해제 
