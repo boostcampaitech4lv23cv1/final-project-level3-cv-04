@@ -79,13 +79,31 @@ def timeline_page():
 def video_page():
     st.title("show all members Video 🎵")
 
+    # print(st.session_state.df1_name_tagged_GT)
+    # print(st.session_state.pred)
+
     with st.spinner('please wait...'):
         members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
     
+    print(members_video_paths)
+
     for member_video_path in members_video_paths:
         video_file_per_member = open(member_video_path, 'rb')
         video_bytes_per_member = video_file_per_member.read()
         st.video(video_bytes_per_member)
+
+    """
+    File "/opt/conda/envs/torchkpop/lib/python3.7/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 565, in _run_script
+    exec(code, module.__dict__)
+File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 104, in <module>
+    video_page()
+File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 83, in video_page
+    members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
+File "/opt/ml/final-project-level3-cv-04/app_video_maker.py", line 5, in app_video_maker
+    import cv2
+File "/opt/ml/final-project-level3-cv-04/video_generator/MakingVideo.py", line 91, in video_generator
+    if face_embedding_result[0][0] == -1.0 and face_embedding_result[0][1] == -1.0:   # 얼굴이 없는 경우
+    """
         
     st.text("!🎉 End 🎉!")
     

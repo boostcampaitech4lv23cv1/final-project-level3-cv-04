@@ -55,9 +55,9 @@ def app_timeline_maker(YOUTUBE_LINK):
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
 
-    df1_name_tagged.to_csv("./test_full/df1_name_tagged.csv")
+    df1_name_tagged.to_csv("./streamlit_output/df1_name_tagged.csv")
 
-    with open("./streamlit_output/e2e_timeline.pickle", "wb") as df1_pickel_file:
+    with open("./streamlit_output/timeline.pickle", "wb") as df1_pickel_file:
         pickle.dump(df1_name_tagged, df1_pickel_file)
     
     return df1_name_tagged, timeline_info, meta_info, pred
