@@ -13,6 +13,8 @@ pretrained_weight/*
 # for data
 data/*
 _data/
+app_data/
+streamlit_output/
 
 # for results
 result/*

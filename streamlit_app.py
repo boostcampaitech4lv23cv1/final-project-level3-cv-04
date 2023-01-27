@@ -1,4 +1,3 @@
-# Contents of ~/my_app/streamlit_app.py
 import streamlit as st
 import re
 import pandas as pd
@@ -6,17 +5,15 @@ import numpy as np
 import plotly.express as px
 import json
 
-# from app_timeline_maker import app_timeline_maker # ✅ 이거 써야함
-# from app_video_maker import app_video_maker # ✅ 이거 써야함
+from app_timeline_maker import app_timeline_maker
+from app_video_maker import app_video_maker
 
 # for on_click
 def session_change_to_timeline():
-    # print("pushed button [TIMELINE]")
     st.session_state.page = 1
 
 # for on_click
 def session_change_to_video():
-    # print("pushed button [VIDEO]")
     st.session_state.page = 2
 
 # main page
@@ -38,6 +35,7 @@ def main_page():
         else:
             st.write("Input is not youtube URL, check URL")        
 
+# make timeline
 def get_timeline_fig(timeline):
     karina_timeline = list(set(timeline['aespa_karina']))
     winter_timeline = list(set(timeline['aespa_winter']))
@@ -58,43 +56,31 @@ def get_timeline_fig(timeline):
 
 # timeline page
 def timeline_page():
+
     # show text
     st.title("Timeline 🎥")
     
     # get timeline by inference
-    # df1_name_tagged, timeline_info, meta_info, pred = app_timeline_maker(st.session_state.url) # ✅ 이거 써야함
-    ############## 🛠 임시방편 ##############
-    with open("timeline_GT.json", "r") as timeline_json: # 
-        timeline = json.load(timeline_json)
-    df1_name_tagged_GT = pd.read_csv('/opt/ml/torchkpop/df1_name_tagged_GT.csv')
-    ############## 🛠 임시방편 ##############
+    with st.spinner('please wait...'):
+        df1_name_tagged, timeline, meta_info, pred = app_timeline_maker(st.session_state.url)
 
-    # show timeline 🔻
+    # timeline
     timeline_fig = get_timeline_fig(timeline)
     st.plotly_chart(timeline_fig, use_container_width=False)
     
-    # st.session_state.df1_name_tagged_GT = df1_name_tagged_GT # ✅ 이거 써야함
-    # st.session_state.meta_info = meta_info # ✅ 이거 써야함
-    # st.session_stae.pred = pred # ✅ 이거 써야함
+    st.session_state.df1_name_tagged_GT = df1_name_tagged
+    st.session_state.meta_info = meta_info
+    st.session_state.pred = pred
     
     if st.button("MAKE PERSONAL VIDEO", on_click=session_change_to_video):
         pass
 
 # video page
 def video_page():
-    # st.title("Individual Video 🎵")
     st.title("show all members Video 🎵")
-    
-    # members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, meta_info, pred) # ✅ 이거 써야함
-    # members_video_paths = [video_path_karina, video_path_winter, video_path_ningning, video_path_giselle]
-    
-    ############## 🛠 임시방편 ##############
-    video_path_karina = '/opt/ml/torchkpop/result/video/aespa_karina_output_1min.mp4'
-    video_path_winter = '/opt/ml/torchkpop/result/video/aespa_winter_output_1min.mp4'
-    video_path_ningning = '/opt/ml/torchkpop/result/video/aespa_winter_output_1min.mp4'
-    video_path_giselle = '/opt/ml/torchkpop/result/video/aespa_winter_output_1min.mp4'
-    members_video_paths = [video_path_karina, video_path_winter, video_path_ningning, video_path_giselle]
-    ############## 🛠 임시방편 ##############
+
+    with st.spinner('please wait...'):
+        members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
     
     for member_video_path in members_video_paths:
         video_file_per_member = open(member_video_path, 'rb')
@@ -106,7 +92,6 @@ def video_page():
 # init session_state
 if "page" not in st.session_state:
     st.session_state.page = 0
-    # print("not assinged")
 
 # print cli current page number
 if st.session_state.page == 0:

@@ -7,15 +7,15 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), "face_embedding"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "body_embedding"))
 
-import download_youtube.YoutubeDownloader as ytdownload   #형훈
+import download_youtube.YoutubeDownloader as ytdownload
 from mmtracking.utils.Tracker import tracking
-from mmtracking.utils.Postprocesser import postprocessing # 형훈
+from mmtracking.utils.Postprocesser import postprocessing
 from timeline.TimeLineMaker import make_timeline
-import sampler                              # 영동
-import face_embedding                       # 영동
-import predictor                            # 영동
-from body_embedding.BodyEmbed import body_embedding_extractor # 상헌
-from body_embedding.BodyEmbed import generate_body_anchor # 상헌
+import sampler
+import face_embedding
+import predictor
+from body_embedding.BodyEmbed import body_embedding_extractor
+from body_embedding.BodyEmbed import generate_body_anchor
 
 
 def app_timeline_maker(YOUTUBE_LINK):
@@ -56,7 +56,8 @@ def app_timeline_maker(YOUTUBE_LINK):
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
 
     df1_name_tagged.to_csv("./test_full/df1_name_tagged.csv")
-    with open("./streamlit_output/e2e_timeline.pickle", "w") as df1_pickel_file:
+
+    with open("./streamlit_output/e2e_timeline.pickle", "wb") as df1_pickel_file:
         pickle.dump(df1_name_tagged, df1_pickel_file)
     
     return df1_name_tagged, timeline_info, meta_info, pred
