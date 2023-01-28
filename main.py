@@ -33,13 +33,16 @@ def main(YOUTUBE_LINK):
     df1 = postprocessing(raw_df1, meta_info, sec=5)
     df1.to_csv("./test_ENV/df1_postprocessed.csv")
 
-    # sampling for extract body, face feature
-    df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
-    df2.to_csv("./test_ENV/df2_sampled.csv")
-
     # load saved face feature vector
     with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
         anchor_face_embedding = json.load(f)
+        
+    df1 = face_embedding.face_embedding_extractor_all(df1, anchor_face_embedding, meta_info)
+    df1.to_csv("./test_ENV/df1_face.csv")
+
+    # sampling for extract body, face feature
+    df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
+    df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # query face similarity
     df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
@@ -50,7 +53,7 @@ def main(YOUTUBE_LINK):
     df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
     
     # predictor
-    pred = predictor.predictor(df2, 1, 1)
+    pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=False)
     print(pred)
     
     # del df2
