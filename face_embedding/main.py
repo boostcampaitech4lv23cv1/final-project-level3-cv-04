@@ -183,6 +183,11 @@ def compute_face_feature_all(row) -> np.ndarray:
 
         else:
             bboxes = np.delete(bboxes, 4, axis=1)
+            for i in range(len(bboxes)):
+                bboxes[i][0] = int(bboxes[i][0] + xmin)
+                bboxes[i][1] = int(bboxes[i][1] + ymin)
+                bboxes[i][2] = int(bboxes[i][2] + xmin)
+                bboxes[i][3] = int(bboxes[i][3] + ymin)
             face_feature = np.array([rec.get(image, kps) for kps in kpss])
             return (bboxes, face_feature)
 
@@ -232,8 +237,12 @@ def face_embedding_extractor_all(
         .map(simple_softmax_all)
     )
 
+    # df1["face_pred"] = df1["face_confidence"].map(
+    #     lambda x: [max(y, key=y.get) if type(y) != str else "FLAG" for y in x]
+    # )
+
     df1["face_pred"] = df1["face_confidence"].map(
-        lambda x: [max(y, key=y.get) if type(y) != str else "FLAG" for y in x]
+        lambda x: [max(y, key=y.get) for y in x] if type(x) != str else "FLAG"
     )
 
     df1.drop(["full_filename"], axis=1, inplace=True)
