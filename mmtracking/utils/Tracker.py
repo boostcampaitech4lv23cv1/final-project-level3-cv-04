@@ -19,15 +19,22 @@ import numpy as np
 # ABS_WEIGHT_PATH = "/opt/ml/final-project-level3-cv-04/pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 # ABS_CONFIG_PATH = "/opt/ml/final-project-level3-cv-04/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
+# 🛑 config and weight path assign this code
+
 WEIGHT_PTH = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
+WEIGHT_PTH_ABS = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
+OCSORT_FACE_DET_CONFIG_PATH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_ht21-private-half.py"
+OCSORT_FACE_DET_ABS_WEIGHT_PATH = "./mmtracking/work_dirs/ocsort_yolox_x_crowdhuman_ht21-private-half/latest.pth" # 50epochs
+
+DEEPSORT_FACE_DET_CONFIG_PATH = "./mmtracking/configs/mot/deepsort/deepsort_yolox_x_crowdhuman_ht21-private-half.py"
 
 ## 클립을 하기위해서 만든 툴
 def clip(num, min_value, max_value):
    return max(min(num, max_value), min_value)
 
-
+# 🛑 config and weight path assign this func
 def tracking(meta_info, 
              output, 
              config=CONFIG_PTH,
@@ -96,7 +103,8 @@ def tracking(meta_info,
     fps = int(meta_info["fps"])
 
     # build the model from a config file and a checkpoint file
-    model = init_model(config, WEIGHT_PTH, device=device)
+    # 🛑 config and weight path assign this code
+    model = init_model(config, WEIGHT_PTH_ABS, device=device)
 
     unmatching_cnt = 0 # unmatching counter
     prog_bar = mmcv.ProgressBar(len(imgs))
@@ -315,7 +323,6 @@ def get_args_parser():
     parser.add_argument('--output_path', type=str, default='./test', help='output video file (mp4 format) or folder')
     parser.add_argument('--config', type=str, default='/opt/ml/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py')
     parser.add_argument('--score_thr', type=float, default=0.0, help='The threshold of score to filter bboxes.')
-    parser.add_argument('--fps', type=int, default=24, help='FPS of the output video')
     return parser
 
 
@@ -329,4 +336,4 @@ if __name__ == '__main__':
     with open(args.meta_path) as f:
         meta_info = json.load(f)
 
-    tracking(meta_info, args.output_path, config=args.config, score_thr = args.score_thr)
+    tracking(meta_info, args.output_path, config=args.config, score_thr = args.score_thr, ANALYSIS=True)

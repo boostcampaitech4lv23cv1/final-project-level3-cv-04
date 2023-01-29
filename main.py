@@ -27,36 +27,39 @@ def main(YOUTUBE_LINK):
     meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH)
     
     # tracking
-    clipped_df1, raw_df1 = tracking(meta_info, output='./test_ENV', ANALYSIS=False) # output is save dir
+    clipped_df1, raw_df1 = tracking(meta_info, output='./test', ANALYSIS=True) # output is save dir
 
     # postprocessing
+    # raw_df1 = pd.read_csv("/opt/ml/final-project-level3-cv-04/test_threshold_07/df1_raw.csv", index_col=0)
+    # with open("/opt/ml/final-project-level3-cv-04/data/20230127_2242.json") as f:
+        # meta_info = json.load(f)
     df1 = postprocessing(raw_df1, meta_info, sec=5)
-    df1.to_csv("./test_ENV/df1_postprocessed.csv")
+    df1.to_csv("./test_threshold_07/df1_postprocessed.csv")
 
     # sampling for extract body, face feature
-    df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
-    df2.to_csv("./test_ENV/df2_sampled.csv")
+    # df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
+    # df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # load saved face feature vector
-    with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
-        anchor_face_embedding = json.load(f)
+    # with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
+        # anchor_face_embedding = json.load(f)
 
     # query face similarity
-    df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
-    df2.to_csv("./test_ENV/df2_out_of_face_embedding.csv")
+    # df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
+    # df2.to_csv("./test_ENV/df2_out_of_face_embedding.csv")
 
     # make body representation
-    body_anchors = generate_body_anchor(df1, df2, group_name="aespa", meta_info=meta_info)
-    df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
+    # body_anchors = generate_body_anchor(df1, df2, group_name="aespa", meta_info=meta_info)
+    # df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
     
     # predictor
-    pred = predictor.predictor(df2, 1, 1)
-    print(pred)
+    # pred = predictor.predictor(df2, 1, 1)
+    # print(pred)
     
     # del df2
     # del clipped_df1
     # del raw_df1
-    video_generator(df1, meta_info, member='aespa_ningning', pred=pred, full_video = True)
+    # video_generator(df1, meta_info, member='aespa_ningning', pred=pred, full_video = True)
     
     return None
 

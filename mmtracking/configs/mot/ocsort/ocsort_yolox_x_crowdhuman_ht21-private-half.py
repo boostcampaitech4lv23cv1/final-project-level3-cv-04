@@ -1,9 +1,9 @@
 _base_ = [
     '../../_base_/models/yolox_x_8x8.py',
-    '../../_base_/datasets/mot_challenge.py', '../../_base_/default_runtime.py'
+    '../../_base_/datasets/ht21_challenge.py', '../../_base_/default_runtime.py'
 ]
 
-img_scale = (896, 1600)
+img_scale = (1080, 1440) # asepa img_scale = (1080, 1440), dset=(1080, 1920)
 samples_per_gpu = 4
 
 model = dict(
@@ -13,12 +13,11 @@ model = dict(
         random_size_range=(18, 32),
         bbox_head=dict(num_classes=1),
         test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.7)),
-        # delete for prevent confuse
-        # init_cfg=dict(
-        #     type='Pretrained',
-        #     checkpoint=  # noqa: E251
-        #     'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_x_8x8_300e_coco/yolox_x_8x8_300e_coco_20211126_140254-1ef88d67.pth'  # noqa: E501
-        # )
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint=  # noqa: E251
+            'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_x_8x8_300e_coco/yolox_x_8x8_300e_coco_20211126_140254-1ef88d67.pth'  # noqa: E501
+        ) # load pretrain yolo
         ),
     motion=dict(type='KalmanFilter'),
     tracker=dict(
@@ -50,7 +49,8 @@ train_pipeline = [
         pad_val=114.0,
         bbox_clip_border=False),
     dict(type='YOLOXHSVRandomAug'),
-    dict(type='RandomFlip', flip_ratio=0.5),
+    # dict(type='RandomCrop', crop_size = (108, 144)),
+    dict(type='RandomFlip', flip_ratio=0.5), # ❓ why annotation RandomFlip error?
     dict(
         type='Resize',
         img_scale=img_scale,
@@ -84,6 +84,7 @@ test_pipeline = [
             dict(type='VideoCollect', keys=['img'])
         ])
 ]
+
 data = dict(
     samples_per_gpu=samples_per_gpu,
     workers_per_gpu=4,
@@ -94,13 +95,10 @@ data = dict(
         dataset=dict(
             type='CocoDataset',
             ann_file=[
-                'data/MOT17/annotations/half-train_cocoformat.json',
-                'data/crowdhuman/annotations/crowdhuman_train.json',
-                'data/crowdhuman/annotations/crowdhuman_val.json'
+                '/opt/ml/final-project-level3-cv-04/mmtracking/data/HT21/annotations/half-train_cocoformat.json',
             ],
             img_prefix=[
-                'data/MOT17/train', 'data/crowdhuman/train',
-                'data/crowdhuman/val'
+                '/opt/ml/final-project-level3-cv-04/mmtracking/data/HT21/train', 
             ],
             classes=('pedestrian', ),
             pipeline=[
@@ -119,19 +117,16 @@ data = dict(
 # optimizer
 # default 8 gpu
 optimizer = dict(
-    type='SGD',
-    lr=0.001 / 8 * samples_per_gpu,
-    momentum=0.9,
-    weight_decay=5e-4,
-    nesterov=True,
+    type='AdamW',
+    lr=1e-4,
     paramwise_cfg=dict(norm_decay_mult=0.0, bias_decay_mult=0.0))
 optimizer_config = dict(grad_clip=None)
 
 # some hyper parameters
-total_epochs = 80
-num_last_epochs = 10
+total_epochs = 100
+num_last_epochs = 1
 resume_from = None
-interval = 5
+interval = 50
 
 # learning policy
 lr_config = dict(
@@ -161,7 +156,7 @@ custom_hooks = [
         priority=49)
 ]
 
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(metric=['bbox', 'track'], interval=1)
 search_metrics = ['MOTA', 'IDF1', 'FN', 'FP', 'IDs', 'MT', 'ML']
 

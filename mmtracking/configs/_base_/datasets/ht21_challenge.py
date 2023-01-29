@@ -7,7 +7,7 @@ train_pipeline = [
     dict(type='SeqLoadAnnotations', with_bbox=True, with_track=True),
     dict(
         type='SeqResize',
-        img_scale=(1088, 1088),
+        img_scale=(1080, 1088),
         share_params=True,
         ratio_range=(0.8, 1.2),
         keep_ratio=True,
@@ -34,7 +34,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1088, 1088),
+        img_scale=(1080, 1088),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -45,7 +45,8 @@ test_pipeline = [
             dict(type='VideoCollect', keys=['img'])
         ])
 ]
-data_root = 'data/MOT17/'
+
+data_root = '/opt/ml/final-project-level3-cv-04/mmtracking/data/HT21/'
 data = dict(
     samples_per_gpu=2,
     workers_per_gpu=2,

@@ -56,9 +56,10 @@ def gen_csv_to_video(df:pd.DataFrame, imgs_path:str, output_path:str):
     return output_path
 
 if __name__ == "__main__":
-    CSV_PATH = "/opt/ml/final-project-level3-cv-04/test_RGB/under5sec.csv"
-    FULL_IMG_PATH = "/opt/ml/final-project-level3-cv-04/data/20230122_1446"
+    CSV_PATH = "/opt/ml/final-project-level3-cv-04/test_threshold_07/df1_postprocessed.csv"
+    FULL_IMG_PATH = "/opt/ml/final-project-level3-cv-04/data/20230127_2242"
+    GEN_VIDEO_PATH = "../../test_threshold_07/gen_videos"
 
     df = pd.read_csv(CSV_PATH, index_col=0)
-    path = gen_csv_to_video(df, FULL_IMG_PATH, output_path="../../test_RGB/gen_videos") # 🙅‍♂️ modify path
+    path = gen_csv_to_video(df, FULL_IMG_PATH, output_path = GEN_VIDEO_PATH) # 🙅‍♂️ modify path
     print(f"{path}에 비디오가 생성되었습니다")
