@@ -114,10 +114,14 @@ def assign_new_id(starting_frame: int,
     return df
 
 
-def divide_ids_by_IOU(df, IOU_THRESHOLD = 0.6):
+def divide_ids_by_IOU(df: pd.DataFrame,
+                      IOU_THRESHOLD: float = 0.6,
+                      FRESH_NOASSIGN_FRAMES_THRESHOLD: int = 24):
+
     maxframenum = df['frame'].values[-1]
     next_track_id = max(df['track_id'].values) + 1
     to_divide_ids = set()
+    fresh_divided = dict()
 
     for i in tqdm(range(1, maxframenum+1)):
         now_df = df[df['frame']==i].reset_index(drop=True)
@@ -134,7 +138,12 @@ def divide_ids_by_IOU(df, IOU_THRESHOLD = 0.6):
         to_remove = set()
         for d_id in to_divide_ids:
             if d_id not in now_overlapped_ids:
+                # 방금 전에 divide 됐으면 넘김
+                if d_id in fresh_divided:
+                    to_remove.add(d_id)
+                    continue
                 df = assign_new_id(i, df, d_id, next_track_id)
+                fresh_divided[next_track_id] = FRESH_NOASSIGN_FRAMES_THRESHOLD
                 next_track_id += 1
                 to_remove.add(d_id)
         for del_id in to_remove:
@@ -143,11 +152,25 @@ def divide_ids_by_IOU(df, IOU_THRESHOLD = 0.6):
         for d_id in now_overlapped_ids:
             if d_id not in to_divide_ids:
                 to_divide_ids.add(d_id)
+        
+        # fresh div 업데이트
+        to_remove_in_fresh_divided = set()
+        
+        for k, v in fresh_divided.items():
+            fresh_divided[k] = v - 1
+            if v - 1 <= 0:
+                to_remove_in_fresh_divided.add(k)
+        for d_id in to_remove_in_fresh_divided:
+            del fresh_divided[d_id]
+                
     
     return df
 
 
 def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=1):
+    # clip the dataframe
+    df = clip(df, meta_info)
+    
     # divide ids by IOU
     df = divide_ids_by_IOU(df)
     
@@ -157,8 +180,6 @@ def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=1):
     # add overlap column, 
     df = count_overlap(df)
 
-    # clip the dataframe
-    df = clip(df, meta_info)
     return df
 
 
@@ -167,4 +188,4 @@ if __name__ == "__main__":
     with open("/opt/ml/final-project-level3-cv-04/data/20230127_2242.json") as f:
         meta_info = json.load(f)
     raw_df1 = pd.read_csv(RAW_DF1_PATH, index_col=0)
-    postprocessed_df1 = postprocessing(raw_df1, meta_info, sec=5)
+    postprocessed_df1 = postprocessing(raw_df1, meta_info, sec=1)
