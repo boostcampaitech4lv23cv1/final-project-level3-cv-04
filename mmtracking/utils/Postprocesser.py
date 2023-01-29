@@ -115,7 +115,7 @@ def assign_new_id(starting_frame: int,
 
 
 def divide_ids_by_IOU(df: pd.DataFrame,
-                      IOU_THRESHOLD: float = 0.6,
+                      IOU_THRESHOLD: float = 0.65,
                       FRESH_NOASSIGN_FRAMES_THRESHOLD: int = 24):
 
     maxframenum = df['frame'].values[-1]
@@ -172,7 +172,7 @@ def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=1):
     df = clip(df, meta_info)
     
     # divide ids by IOU
-    df = divide_ids_by_IOU(df)
+    df = divide_ids_by_IOU(df, IOU_THRESHOLD=0.65, FRESH_NOASSIGN_FRAMES_THRESHOLD=meta_info['fps'])
     
     # del short length ids, threshold 3sec
     df = delete_short_id(df, meta_info['fps'], sec)
