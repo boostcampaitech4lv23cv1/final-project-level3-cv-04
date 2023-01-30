@@ -17,7 +17,7 @@ norm_mean = [0.485, 0.456, 0.406] # imagenet mean
 norm_std = [0.229, 0.224, 0.225] # imagenet std
 normalize = Normalize(mean=norm_mean, std=norm_std)
 transform_te = Compose([
-        Resize((800, 400)), # (800,400) -> l2_norm : 300~700 정도, (160, 80) -> l2_norm : 5e-12~7e-12 정도
+        Resize((300, 150)), # (800,400) -> l2_norm : 300~700 정도, (160, 80) -> l2_norm : 5e-12~7e-12 정도
         ToTensor(),
         # normalize,
     ])
@@ -41,9 +41,6 @@ def make_body_img_list(df1, df2_member_sorted, meta_info=None, img_num=None):
         
         img_path = os.path.join(meta_info["image_root"], filename) # ✅ meta_info를 이용하세요
         img = Image.open(img_path).convert('RGB')
-        
-        width = img.size[0]
-        height = img.size[1]
 
         # 이미지 자르기 crop함수 이용 ex. crop(left,up, rigth, down)
         body_img=img.crop((x_min, y_min, x_max, y_max))
@@ -69,7 +66,7 @@ def make_anchor(body_img_list, model):
     
     return pred_mean
 
-def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
+def generate_body_anchor(df1, df2, save_dir, group_name='aespa', meta_info=None):
     # model load
     model = torchreid.models.build_model( # 이거 나중에 문제될듯 지금은 나의 bpbreid 가상환경의 파이썬 실행 환경변수가 opt/ml/torchreid로 잘 되어 있어서 잘 되는 듯
         name="osnet_ain_x1_0",
@@ -122,6 +119,10 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
     del df2_giselle
     
     
+    # anchor_save_dir 만들기
+    anchor_save_dir = os.path.join(save_dir, 'anchor_images')
+    if not os.path.exists(anchor_save_dir):
+         os.makedirs(anchor_save_dir)
     
     try: # karina 대표 이미지 12장으로 뽑는 중...
         body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=9)
@@ -139,6 +140,32 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
         body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=9)
     except:
         body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
+        
+    ### body anchor에 쓰인 이미지 저장
+    # 이미지 저장 경로 생성
+    karina_anchor_dir = os.path.join(anchor_save_dir, 'karina_anchor')
+    winter_anchor_dir = os.path.join(anchor_save_dir, 'winter_anchor')
+    ningning_anchor_dir = os.path.join(anchor_save_dir, 'ningning_anchor')
+    giselle_anchor_dir = os.path.join(anchor_save_dir, 'giselle_anchor')
+    if not os.path.exists(karina_anchor_dir) or not os.path.exists(winter_anchor_dir) or not os.path.exists(ningning_anchor_dir) or not os.path.exists(giselle_anchor_dir):
+        os.makedirs(karina_anchor_dir)
+        os.makedirs(winter_anchor_dir)
+        os.makedirs(ningning_anchor_dir)
+        os.makedirs(giselle_anchor_dir)
+    # 이미지 저장
+    for i, img in enumerate(body_img_list_karina):
+        save_path = os.path.join(karina_anchor_dir, f'karina_anchor_{i+1}.jpg')
+        img.save(save_path, "JPEG")
+    for i, img in enumerate(body_img_list_winter):
+        save_path = os.path.join(winter_anchor_dir, f'winter_anchor_{i+1}.jpg')
+        img.save(save_path, "JPEG")
+    for i, img in enumerate(body_img_list_ningning):
+        save_path = os.path.join(ningning_anchor_dir, f'ningning_anchor_{i+1}.jpg')
+        img.save(save_path, "JPEG")
+    for i, img in enumerate(body_img_list_giselle):
+        save_path = os.path.join(giselle_anchor_dir, f'giselle_anchor_{i+1}.jpg')
+        img.save(save_path, "JPEG")
+    ###
     
     anchor_karina = make_anchor(body_img_list_karina, model)
     del body_img_list_karina
@@ -196,11 +223,6 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
         2. body_img -> [model] -> body_embedding
         3. df2 에 저장
     '''
-    transform_te = Compose([
-        Resize((800, 400)), # (800,400) -> l2_norm : 300~700 정도, (160, 80) -> l2_norm : 5e-12~7e-12 정도
-        ToTensor(),
-        # normalize,
-    ])
     # model load
     model = torchreid.models.build_model( # 이거 나중에 문제될듯 지금은 나의 bpbreid 가상환경의 파이썬 실행 환경변수가 opt/ml/torchreid로 잘 되어 있어서 잘 되는 듯
         name="osnet_ain_x1_0",
