@@ -64,7 +64,7 @@ def main(YOUTUBE_LINK):
     pred = predictor.predictor(df2, 1, 1)
     with open(os.path.join(save_dir, 'csv/pred.pickle'),'wb') as pred_pickle:
         pickle.dump(pred, pred_pickle)
-    
+
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
 
