@@ -46,13 +46,13 @@ def compute_face_feature(row) -> np.ndarray:
 
     bboxes, kpss = detector.autodetect(image, max_num=1)
     if bboxes.shape[0] == 0:
-        return np.zeros(512)
+        return np.zeros(512), "FLAG"
 
     kps = kpss[0]
     face_feature = rec.get(image, kps)
     # face_feature = np.reshape(face_feature, (1, -1))
 
-    return face_feature
+    return face_feature, round(bboxes[0][-1], 4)
 
 
 def compute_face_confidence(
@@ -102,7 +102,10 @@ def face_embedding_extractor(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
 
-    df2["face_embedding"] = df2.apply(compute_face_feature, axis=1)
+    df2["face_embedding-face_det_confidence"] = df2.progress_apply(compute_face_feature, axis=1)
+    df2["face_embedding"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[0])
+    df2["face_det_confidence"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[1])
+    df2.drop(["face_embedding-face_det_confidence"], axis=1, inplace=True)
 
     df2.drop(
         [
@@ -164,7 +167,7 @@ def compute_face_feature_all(row) -> np.ndarray:
     image = cv2.imread(row["full_filename"])
 
     if np.isnan(row["track_body_xmin"]):
-        return ("FLAG", "FLAG")
+        return ("FLAG", "FLAG", "FLAG")
 
     else:
         xmin = int(row["track_body_xmin"])
@@ -179,17 +182,17 @@ def compute_face_feature_all(row) -> np.ndarray:
 
         bboxes, kpss = detector.autodetect(image, max_num=5, metric="center_high")
         if bboxes.shape[0] == 0:
-            return ("FLAG", "FLAG")
+            return ("FLAG", "FLAG", "FLAG")
 
         else:
-            bboxes = np.delete(bboxes, 4, axis=1)
+            # bboxes = np.delete(bboxes, 4, axis=1)
             for i in range(len(bboxes)):
                 bboxes[i][0] = int(bboxes[i][0] + xmin)
                 bboxes[i][1] = int(bboxes[i][1] + ymin)
                 bboxes[i][2] = int(bboxes[i][2] + xmin)
                 bboxes[i][3] = int(bboxes[i][3] + ymin)
             face_feature = np.array([rec.get(image, kps) for kps in kpss])
-            return (bboxes, face_feature)
+            return (bboxes, face_feature, kpss)
 
 
 def compute_face_confidence_all(
@@ -224,12 +227,11 @@ def face_embedding_extractor_all(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
 
-    df1["face_bbox-face_embedding"] = df1.progress_apply(
-        compute_face_feature_all, axis=1
-    )
-    df1["face_bbox"] = df1["face_bbox-face_embedding"].map(lambda x: x[0])
-    df1["face_embedding"] = df1["face_bbox-face_embedding"].map(lambda x: x[1])
-    df1.drop(["face_bbox-face_embedding"], axis=1, inplace=True)
+    df1["face_bbox-face_embedding-face_keypoint"] = df1.progress_apply(compute_face_feature_all, axis=1)
+    df1["face_bbox"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[0])
+    df1["face_embedding"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[1])
+    df1["face_keypoint"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[2])
+    df1.drop(["face_bbox-face_embedding-face_keypoint"], axis=1, inplace=True)
 
     df1["face_confidence"] = (
         df1["face_embedding"]
