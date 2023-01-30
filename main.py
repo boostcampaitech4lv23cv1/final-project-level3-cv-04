@@ -34,7 +34,7 @@ def main(YOUTUBE_LINK):
     # with open("/opt/ml/final-project-level3-cv-04/data/20230127_2242.json") as f:
         # meta_info = json.load(f)
     df1 = postprocessing(raw_df1, meta_info, sec=5)
-    df1.to_csv("./test_threshold_07/df1_postprocessed.csv")
+    df1.to_csv("./test/df1_postprocessed.csv")
 
     # sampling for extract body, face feature
     # df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)

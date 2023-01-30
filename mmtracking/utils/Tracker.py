@@ -22,13 +22,16 @@ import numpy as np
 # 🛑 config and weight path assign this code
 
 WEIGHT_PTH = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
-WEIGHT_PTH_ABS = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
 
-OCSORT_FACE_DET_CONFIG_PATH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_ht21-private-half.py"
-OCSORT_FACE_DET_ABS_WEIGHT_PATH = "./mmtracking/work_dirs/ocsort_yolox_x_crowdhuman_ht21-private-half/latest.pth" # 50epochs
+OCSORT_HT21_CONFIG_PATH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_ht21-private-half.py"
+OCSORT_HT21_WEIGHT_PATH = "./mmtracking/work_dirs/ocsort_yolox_x_crowdhuman_ht21-private-half/latest.pth"
 
-DEEPSORT_FACE_DET_CONFIG_PATH = "./mmtracking/configs/mot/deepsort/deepsort_yolox_x_crowdhuman_ht21-private-half.py"
+OCSORT_WIDER_FACE_CONFIG_PATH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_widerface_custom.py" # in this config load pretrain yolox
+OCSORT_WIDER_FACE_WEIGHT_PATH = None
+
+DEEPSORT_WIDER_FACE_CONFIG_PATH = "./mmtracking/configs/mot/deepsort/deepsort_yolox_x_widerface_custom.py"
+DEEPSORT_WIDER_FACE_WEIGHT_PATH = None
 
 ## 클립을 하기위해서 만든 툴
 def clip(num, min_value, max_value):
@@ -37,7 +40,7 @@ def clip(num, min_value, max_value):
 # 🛑 config and weight path assign this func
 def tracking(meta_info, 
              output, 
-             config=CONFIG_PTH,
+             config=OCSORT_WIDER_FACE_CONFIG_PATH,
              score_thr=0.,
              ANALYSIS=False): # mata_info:dict, output:str
     
@@ -74,6 +77,7 @@ def tracking(meta_info,
                     'track_conf':[]}
     
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    cpu_device = 'cpu'
 
     # load images
     if osp.isdir(meta_info['image_root']):
@@ -104,7 +108,7 @@ def tracking(meta_info,
 
     # build the model from a config file and a checkpoint file
     # 🛑 config and weight path assign this code
-    model = init_model(config, WEIGHT_PTH_ABS, device=device)
+    model = init_model(config, None, device=device)
 
     unmatching_cnt = 0 # unmatching counter
     prog_bar = mmcv.ProgressBar(len(imgs))
