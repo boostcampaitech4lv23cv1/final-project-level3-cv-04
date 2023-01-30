@@ -16,11 +16,11 @@ import numpy as np
 # tag of ananlysis, if ANLYSIS=True save clip image and tracking video
 
 # ignore this is just for testing
-# ABS_WEIGHT_PATH = "/opt/ml/final-project-level3-cv-04/pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
-# ABS_CONFIG_PATH = "/opt/ml/final-project-level3-cv-04/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
-
 WEIGHT_PTH = "./pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth"
 CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py"
+
+# WIDERFACE_CONFIG_PTH = "./mmtracking/configs/mot/ocsort/ocsort_yolox_x_dancetrack-custom.py"
+# WIDERFACE_TRAIN_PTH = "./pretrained_weight/ocsort_yolox_x_widerface.pth"
 
 
 ## 클립을 하기위해서 만든 툴
@@ -34,7 +34,7 @@ def tracking(meta_info,
              score_thr=0.,
              ANALYSIS=False): # mata_info:dict, output:str
     
-    # 원본 그대로의 자료 출력을 위해
+    # for return raw data 
     raw_data = {
                 'frame':[], 
                 'filename':[], 
@@ -50,7 +50,7 @@ def tracking(meta_info,
                 'track_body_ymax':[],
                 'track_conf':[]}
     
-    # 클립된 자료 출력을 위해
+    # for return clip data
     clipped_data = {
                     'frame':[], 
                     'filename':[], 
@@ -86,9 +86,9 @@ def tracking(meta_info,
     
     # making dirs for pred result
     os.makedirs(out_path, exist_ok=True)
-    os.makedirs(osp.join(output, "crop_imgs", "det", "per_frame"), exist_ok=True) # 크롭 이미지를 저장하기 위한 디렉토리 생성
-    os.makedirs(osp.join(output, "crop_imgs", "track", "per_frame"), exist_ok=True) # 크롭 이미지를 저장하기 위한 디렉토리 생성
-    os.makedirs(osp.join(output, "crop_imgs", "track", "per_id"), exist_ok=True) # 크롭 이미지를 저장하기 위한 디렉토리 생성
+    os.makedirs(osp.join(output, "crop_imgs", "det", "per_frame"), exist_ok=True) # make dir for anlysis
+    os.makedirs(osp.join(output, "crop_imgs", "track", "per_frame"), exist_ok=True) # make dir for anlysis
+    os.makedirs(osp.join(output, "crop_imgs", "track", "per_id"), exist_ok=True) # make dir for anlysis
     det_img_save_path = osp.join(output, "crop_imgs", "det", "per_frame")
     track_img_save_path_per_frame = osp.join(output, "crop_imgs", "track", "per_frame")
     track_img_save_path_per_id = osp.join(output, "crop_imgs", "track", "per_id")
@@ -104,7 +104,7 @@ def tracking(meta_info,
         frame_idx = i+1 # frame_idx
         if isinstance(img, str): # img is loaded by path,
             img_path = osp.join(meta_info['image_root'], img) # filename to path
-            img = cv2.imread(img_path) # read img for get clip size
+            # img = cv2.imread(img_path) # read img for get clip size
             # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # convert BGR2RGB
         input_img_height = img.shape[0] # for clip
         input_img_width = img.shape[1] # for clip
@@ -185,12 +185,10 @@ def tracking(meta_info,
                 clipped_data["det_body_ymin"].append(None)
                 clipped_data["det_body_xmax"].append(None)
                 clipped_data["det_body_ymax"].append(None)
-
-
         
         for tracked_info in result["track_bboxes"][0]:
             trk_id = tracked_info[0] # for mkdirs
-            # print(trk_id)
+
             raw_data["track_id"].append(trk_id)
             clipped_data["track_id"].append(trk_id)
 
@@ -244,8 +242,8 @@ def tracking(meta_info,
                 clipped_data["track_body_ymax"].append(None)
 
         n_missbox = frame_max_row - result["track_bboxes"][0].shape[0] # num of unmatching box each iter
+
         if n_missbox != 0:
-            # print(f"→ num of miss det box appear {n_missbox} so that we append empty row in csv")
             for i in range(n_missbox):
                 raw_data["track_id"].append(None)
                 clipped_data["track_id"].append(None)
@@ -272,9 +270,6 @@ def tracking(meta_info,
             backend="cv2") # default plt or cv2
         prog_bar.update()
     
-    # print(f"→🐬 num of unmatching bbox frame: {str(unmatching_cnt)} Frame")
-
-
     if output != None:
         img_dir_path = osp.join(output,"tracked_imgs")
         if ANALYSIS: # if ANALYSIS is True, make tracking video
@@ -315,7 +310,6 @@ def get_args_parser():
     parser.add_argument('--output_path', type=str, default='./test', help='output video file (mp4 format) or folder')
     parser.add_argument('--config', type=str, default='/opt/ml/mmtracking/configs/mot/ocsort/ocsort_yolox_x_crowdhuman_mot17-private-half-custom.py')
     parser.add_argument('--score_thr', type=float, default=0.0, help='The threshold of score to filter bboxes.')
-    parser.add_argument('--fps', type=int, default=24, help='FPS of the output video')
     return parser
 
 

@@ -6,6 +6,7 @@
 mmdetection
 mmtracking/work_dirs
 mmtracking/*.txt
+mmtracking/data/*
 
 # sangheon
 visualization/sampled_bbox_img
