@@ -135,10 +135,10 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                 # 이미지 resize
                 #interpolation : 기법 다른거로 바꿔서 품질, 속도 조절 가능
                 # resize_img = cv2.resize(cropped_img,(video_size_w,video_size_h),interpolation=cv2.INTER_CUBIC)
-                del cropped_img # cropped_img 메모리 할당 해제
                 # 이미지 저장
                 # cv2.imwrite(newfolder+str(idx)+'.jpg', resize_img)
                 cv2.imwrite(newfolder+str(idx)+'.jpg', cropped_img)
+                del cropped_img # cropped_img 메모리 할당 해제
                 # del resize_img  #resize_img 메모리 할당 해제
 
                 break

@@ -297,10 +297,10 @@ def tracking(meta_info,
         out_dir.cleanup() # delete default mmtracking dir
 
     raw_df1 = pd.DataFrame(raw_data) # raw_df
-    raw_df1.to_csv(osp.join(output,'df1_raw.csv'))
+    raw_df1.to_csv(osp.join(output,'csv/df1_raw.csv'))
 
     clipped_df1 = pd.DataFrame(clipped_data) # clipped_df
-    clipped_df1.to_csv(osp.join(output,'df1_clipped_no_postprecessing.csv')) # modify file name
+    clipped_df1.to_csv(osp.join(output,'csv/df1_clipped_no_postprecessing.csv')) # modify file name
     
     # if no analysis delete crop_img dirs
     if not ANALYSIS:

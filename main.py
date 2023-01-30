@@ -20,13 +20,20 @@ from body_embedding.BodyEmbed import generate_body_anchor # 상헌
 import json
 import pandas as pd
 from video_generator.MakingVideo import video_generator
-
+from visualization.sampling_visualization import visualize_sample
+import pickle
 
 def main(YOUTUBE_LINK):
     DOWNLOAD_PATH = './data' 
 
     # mp4 download and frame capture
     meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, DOWNLOAD_PATH)
+    
+    video_name = meta_info['filename']
+    exp_name = os.path.splitext(video_name)[0]
+    save_dir = os.path.join('./result', exp_name)
+    os.makedirs(save_dir)
+    os.makedirs(os.path.join(save_dir, 'csv'))
     
     # tracking
     clipped_df1, raw_df1 = tracking(meta_info, output=save_dir, ANALYSIS=False) # output is save dir
@@ -48,8 +55,12 @@ def main(YOUTUBE_LINK):
     df2.to_csv(os.path.join(save_dir, "csv/df2_out_of_face_embedding.csv"))
 
     # make body representation
-    body_anchors = generate_body_anchor(df1, df2, group_name="aespa", meta_info=meta_info)
+    body_anchors = generate_body_anchor(df1, df2, save_dir, group_name="aespa", meta_info=meta_info)
     df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
+    df2.to_csv(os.path.join(save_dir, "csv/df2_out_of_body_embedding.csv"))
+    
+    # sampling df2 visualization
+    visualize_sample(df1, df2, save_dir, meta_info=meta_info,)
     
     # predictor
     pred = predictor.predictor(df2, 1, 1)

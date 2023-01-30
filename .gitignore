@@ -7,6 +7,10 @@ mmdetection
 mmtracking/work_dirs
 mmtracking/*.txt
 
+# sangheon
+visualization/sampled_bbox_img
+improve_body/*
+
 # for pretrain tracking weights
 pretrained_weight__mmtracking/*
 
