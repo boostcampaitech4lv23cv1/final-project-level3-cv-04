@@ -8,7 +8,6 @@ import onnxruntime
 from scrfd import SCRFD
 from arcface_onnx import ArcFaceONNX
 
-
 def detect_face(image: np.ndarray) -> np.ndarray:
     # image = cv2.imread(image)
     bboxes, keypoints = detector.autodetect(image, max_num=1)
@@ -16,7 +15,6 @@ def detect_face(image: np.ndarray) -> np.ndarray:
         return ([[-1.0,-1.0,-1.0,-1.0,-1.0]], [[-1.0,-1.0,-1.0,-1.0,-1.0]])
     else:
         return (bboxes, keypoints)
-
 
 def simple_softmax(confidence: dict) -> dict:
     confidence = {key: pow(math.e, value) for key, value in confidence.items()}

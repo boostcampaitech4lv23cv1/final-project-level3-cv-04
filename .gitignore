@@ -3,6 +3,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,python
 
 # personal ignore
+mmdetection
+mmtracking/work_dirs
+mmtracking/*.txt
 
 # for pretrain tracking weights
 pretrained_weight__mmtracking/*
@@ -13,7 +16,9 @@ pretrained_weight/*
 # for data
 data/*
 _data/
-streamlit_output/*
+app_data/
+streamlit_output/
+
 
 # for results
 result/*

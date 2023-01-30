@@ -116,6 +116,7 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                     # mx = int(center_x - (face_h/2) * (crop_img_w/2)) # x minus 방향 (왼쪽)
                     # py = int(center_y + (face_h/2) * (crop_img_h - face_loc))  # y plus 방향 (아래)
                     # my = int(center_y - (face_h/2) * (face_loc))  # y minus 방향 (위)
+
                     prev_px = px
                     prev_mx = mx
                     prev_py = py
@@ -163,8 +164,13 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     print('video 생성중...')
     img_list = glob(newfolder+"*.jpg")
     img_list = natsort.natsorted(img_list)
-    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'mp4v'),frame,(video_size_w,video_size_h))
+    
+    # 🙏🏻 fourcc = cv2.VideoWriter_fourcc(*'MP4V') -> cv2.VideoWriter_fourcc(*'H264')
+    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'H264'),frame,(video_size_w,video_size_h))
     for path in img_list:
         img = cv2.imread(path)
         out.write(img)
     out.release()
+    
+    video_full_path = video_path+member+'_output.mp4'
+    return video_full_path # 🙏🏻 video_full_path return

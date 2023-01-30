@@ -13,6 +13,13 @@ model = dict(
         random_size_range=(18, 32),
         bbox_head=dict(num_classes=1),
         test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.7)),
+
+        # delete for prevent confuse
+        # init_cfg=dict(
+        #     type='Pretrained',
+        #     checkpoint=  # noqa: E251
+        #     'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_x_8x8_300e_coco/yolox_x_8x8_300e_coco_20211126_140254-1ef88d67.pth'  # noqa: E501
+        # )
         ),
     motion=dict(type='KalmanFilter'),
     tracker=dict(
