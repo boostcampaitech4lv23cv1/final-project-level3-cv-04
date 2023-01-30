@@ -427,10 +427,11 @@ class OSNet(nn.Module):
             return x
         v = self.global_avgpool(x)
         v = v.view(v.size(0), -1)
-        if self.fc is not None:
-            v = self.fc(v)
         if not self.training:
             return v
+        if self.fc is not None:
+            v = self.fc(v)
+        raise Exception("classifier에 접근하려고 할 때 생기는 에러입니다. 우리는 feature vector만 가져오면 되기 때문에 필요없어요!")
         y = self.classifier(v)
         if self.loss == 'softmax':
             return y
