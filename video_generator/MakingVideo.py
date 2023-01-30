@@ -65,7 +65,7 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
     img_list = glob(meta_info["image_root"]+'/*.jpg')
     img_list = natsort.natsorted(img_list)
     
-    print('video_generator실행중')
+    # print('video_generator실행중')
     
     for idx,img_path in enumerate(img_list, start=1):
         # print(img_path)
@@ -105,7 +105,7 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                     face_x_min,face_y_min,face_x_max,face_y_max = face_x_min+x_min,face_y_min+y_min,face_x_max+x_min,face_y_max+y_min#얼굴좌표         
                     center_x = (face_x_max + face_x_min) / 2   #얼굴 중심 x좌표
                     center_y = (face_y_max + face_y_max) / 2   #얼굴 중심 y좌표
-                
+
                     face_w = face_x_max - face_x_min    # 얼굴 가로 길이
                     face_h = face_y_max - face_y_min    # 얼굴 세로 길이
                     px = int(center_x + video_size_w/2)
@@ -116,6 +116,11 @@ def video_generator(df1,meta_info,member,pred,full_video=True):
                     # mx = int(center_x - (face_h/2) * (crop_img_w/2)) # x minus 방향 (왼쪽)
                     # py = int(center_y + (face_h/2) * (crop_img_h - face_loc))  # y plus 방향 (아래)
                     # my = int(center_y - (face_h/2) * (face_loc))  # y minus 방향 (위)
+
+                    prev_px = px
+                    prev_mx = mx
+                    prev_py = py
+                    prev_my = my
                     
                 img = cv2.imread(img_path)  #이미지 불러와서 얼굴 좌표 구함
                 h, w, _ = img.shape # 이미지 크기 받기

@@ -19,6 +19,7 @@ _data/
 app_data/
 streamlit_output/
 
+
 # for results
 result/*
 

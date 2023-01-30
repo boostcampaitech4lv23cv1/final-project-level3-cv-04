@@ -31,12 +31,6 @@ def make_body_img_list(df1, df2_member_sorted, meta_info=None, img_num=None):
     for i in range(img_num):
         # body_img 가져오기
         df1_idx = df2_member_sorted.iloc[i]['df1_index']
-        
-        # x_min_rate = df1.loc[df1_idx]['track_body_xmin'] if df1.loc[df1_idx]['track_body_xmin'] >= 0 else np.float64(0)
-        # y_min_rate = df1.loc[df1_idx]['track_body_ymin'] if df1.loc[df1_idx]['track_body_ymin'] >= 0 else np.float64(0)
-        # x_max_rate = df1.loc[df1_idx]['track_body_xmax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
-        # y_max_rate = df1.loc[df1_idx]['track_body_ymax'] if df1.loc[df1_idx]['track_body_xmin'] <= 1 else np.float64(1)
-
 
         x_min = df1.loc[df1_idx]['track_body_xmin'] # if df1.loc[df1_idx]['track_body_xmin'] >= 0 else np.float64(0)
         y_min = df1.loc[df1_idx]['track_body_ymin'] # if df1.loc[df1_idx]['track_body_ymin'] >= 0 else np.float64(0)
@@ -51,14 +45,6 @@ def make_body_img_list(df1, df2_member_sorted, meta_info=None, img_num=None):
         width = img.size[0]
         height = img.size[1]
 
-
-
-        
-        # x_min = width * x_min_rate
-        # y_min = height * y_min_rate
-        # x_max = width * x_max_rate
-        # y_max = height * y_max_rate
-        
         # 이미지 자르기 crop함수 이용 ex. crop(left,up, rigth, down)
         body_img=img.crop((x_min, y_min, x_max, y_max))
         # display(body_img)
@@ -136,14 +122,23 @@ def generate_body_anchor(df1, df2, group_name='aespa', meta_info=None):
     del df2_giselle
     
     
-    # print("karina 대표 이미지 10장 뽑는 중...")
-    body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=6)
-    # print("winter 대표 이미지 10장 뽑는 중...")
-    body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=6)
-    # print("ningning 대표 이미지 10장 뽑는 중...")
-    body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=6)
-    # print("giselle 대표 이미지 10장 뽑는 중...")
-    body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
+    
+    try: # karina 대표 이미지 12장으로 뽑는 중...
+        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=9)
+    except: # karina 대표 이미지 6장으로 뽑는 중...
+        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=6)
+    try: # winter 대표 이미지 12장 뽑는 중...
+        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=9)
+    except: # winter 대표 이미지 6장 뽑는 중...
+        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=6)
+    try:
+        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=9)
+    except:
+        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=6)
+    try:
+        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=9)
+    except:
+        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
     
     anchor_karina = make_anchor(body_img_list_karina, model)
     del body_img_list_karina

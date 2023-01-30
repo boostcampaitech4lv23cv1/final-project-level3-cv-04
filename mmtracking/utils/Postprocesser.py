@@ -62,10 +62,10 @@ def count_overlap(df:pd.DataFrame)->pd.DataFrame:
                 iou_of_frame.append(iou_)
 
             iou_of_frame = np.array(iou_of_frame)
-            sum_of_iou = np.sum(iou_of_frame, axis=0) # sum of intercept iou
+            sum_of_iou = np.nansum(iou_of_frame, axis=0) # sum of intercept iou, ⭐nansum
             
             n_people_idx = np.where(iou_of_frame>0, True, False) 
-            n_people = np.sum(n_people_idx, axis=0) # number of overlap people
+            n_people = np.nansum(n_people_idx, axis=0) # number of overlap people ⭐nansum
 
             if n_people > 0: # if overlap people exist     
                 n_people_idx = n_people_idx.flatten() # flatten
@@ -97,8 +97,8 @@ def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=5):
     return df
 
 if __name__ == "__main__":
-    RAW_DF1_PATH = "/opt/ml/final-project-level3-cv-04/test_RGB/df1_raw.csv"
-    with open("/opt/ml/final-project-level3-cv-04/data/20230122_1446.json") as f:
+    RAW_DF1_PATH = "/opt/ml/final-project-level3-cv-04/test_threshold_05/df1_raw.csv"
+    with open("/opt/ml/final-project-level3-cv-04/data/20230127_2242.json") as f:
         meta_info = json.load(f)
     raw_df1 = pd.read_csv(RAW_DF1_PATH, index_col=0)
     postprocessed_df1 = postprocessing(raw_df1, meta_info, sec=5)

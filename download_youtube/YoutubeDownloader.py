@@ -25,15 +25,18 @@ def save_meta_info(dict_type_info, file_path):
     print(f"meta-info saved in [{dir_path}], file name is {file_name}")
     return None
 
+def download_audio(yt:YouTube,  output_path: str, filename:str) -> None:
+    for stream in yt.streams.filter(only_audio=True).order_by("abr").desc():
+        if "mp4a" in stream.audio_codec:
+            stream.download(output_path = output_path, filename = f"{filename.split('.')[0]}_audio.mp4")
 
 def download_and_capture(youtube_url, download_dir_path):
     print(f"download: {youtube_url}")
     os.makedirs(download_dir_path, exist_ok=True) # make dir if not exist
-    
-    ## download mp4 by pytube
     yt = YouTube(youtube_url)
-    meta_info = {}
     stream = yt.streams.filter(type="video", file_extension="mp4").order_by("resolution").desc()[0]
+    # make meta data
+    meta_info = {}
     meta_info["filename"] = get_current_day_time()+".mp4"
     meta_info["title"] = stream.title
     meta_info["description"] = yt.description
@@ -44,12 +47,18 @@ def download_and_capture(youtube_url, download_dir_path):
     meta_info["resolution"] = stream.resolution
     meta_info["length"] = yt.length
     meta_info["image_root"] = osp.join(download_dir_path, meta_info["filename"].split(".")[0])
-    stream.download(output_path = download_dir_path, filename=meta_info["filename"])
-    file_path = osp.join(download_dir_path, meta_info["filename"])
+    meta_info["audio_root"] = osp.join(download_dir_path, f"{meta_info['filename'].split('.')[0]}_audio.mp4")
+
+    ## download video by pytube
+    stream.download(output_path = download_dir_path, filename=meta_info["filename"]) # download video
+    ## download audio by pytube, audio is mp4 extension
+    download_audio(yt, download_dir_path, meta_info["filename"]) # download audio
 
     ## [width, height] checked by ffmpeg-python
+    file_path = osp.join(download_dir_path, meta_info["filename"])
     probe = ffmpeg.probe(file_path)
     video = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+    ## add resolution info to meta
     meta_info["width"] = int(video['width'])
     meta_info["height"] = int(video['height'])
     save_meta_info(meta_info, osp.abspath(file_path)) # call meta info
@@ -62,7 +71,7 @@ def download_and_capture(youtube_url, download_dir_path):
     # os.system("chmod u+x ./ffmpeg-torchkpop") # 
     os.system("ffmpeg " + 
     f"-i {file_path} " +
-            "-ss 00:00:0 -t 60 " + # if you want slice videos input -t <sec> command
+            "-ss 00:00:0 " + # if you want slice videos input -t <sec> command -t 60 
                 f"-r {str(meta_info['fps'])} " +
                     "-f image2 " + img_capture_dir_path + "/%d.jpg")
 
