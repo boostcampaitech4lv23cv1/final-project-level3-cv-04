@@ -43,7 +43,6 @@ def main(YOUTUBE_LINK):
     # sampling for extract body, face feature
     df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
     df2.to_csv(os.path.join(save_dir, "csv/df2_sampled.csv"))
-    
 
     # load saved face feature vector
     with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
@@ -65,6 +64,15 @@ def main(YOUTUBE_LINK):
     pred = predictor.predictor(df2, 1, 1)
     with open(os.path.join(save_dir, 'csv/pred.pickle'),'wb') as pred_pickle:
         pickle.dump(pred, pred_pickle)
+    
+    # timeline maker
+    df1_name_tagged, timeline_info = make_timeline(df1, pred)
+
+    df1_name_tagged.to_csv("./test_full/df1_name_tagged.csv")
+    with open("./test_full/e2e_timeline.json", "w") as json_file:
+        json.dump(timeline_info,
+                  json_file, 
+                  indent=4) 
     
     video_generator(df1, meta_info, member='aespa_winter', pred=pred, full_video = True)
     
