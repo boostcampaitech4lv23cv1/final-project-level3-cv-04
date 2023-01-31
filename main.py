@@ -40,15 +40,24 @@ def main(YOUTUBE_LINK):
 
     # postprocessing
     df1 = postprocessing(raw_df1, meta_info, sec=5)
+
     df1.to_csv(os.path.join(save_dir, "csv/df1_postprocessed.csv"))
     
     # sampling for extract body, face feature
     df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
     df2.to_csv(os.path.join(save_dir, "csv/df2_sampled.csv"))
 
+
     # load saved face feature vector
     with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
         anchor_face_embedding = json.load(f)
+        
+    df1 = face_embedding.face_embedding_extractor_all(df1, anchor_face_embedding, meta_info)
+    df1.to_csv("./test_ENV/df1_face.csv")
+
+    # sampling for extract body, face feature
+    df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
+    df2.to_csv("./test_ENV/df2_sampled.csv")
 
     # query face similarity
     df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
@@ -63,6 +72,7 @@ def main(YOUTUBE_LINK):
     visualize_sample(df1, df2, save_dir, meta_info=meta_info,)
     
     # predictor
+
     pred = predictor.predictor(df2, 1, 1)
     with open(os.path.join(save_dir, 'csv/pred.pickle'),'wb') as pred_pickle:
         pickle.dump(pred, pred_pickle)
@@ -75,6 +85,7 @@ def main(YOUTUBE_LINK):
         json.dump(timeline_info,
                   json_file, 
                   indent=4) 
+
     
     video_generator(df1, meta_info, member='aespa_winter', pred=pred, full_video = True)
     

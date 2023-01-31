@@ -5,44 +5,85 @@ from itertools import chain
 from collections import Counter
 
 
+def body_or_face(row, face_coefficient, body_coefficient, threshold_1, threshold_2):
+
+    if type(row["face_det_confidence"]) == str:
+        return Counter()
+
+    face_det_conf = float(row["face_det_confidence"])
+
+    if face_det_conf < threshold_1:
+        return Counter(
+            {k: v * face_coefficient * 0 for k, v in row["face_confidence"].items()}
+        ) + Counter(
+            {k: v * body_coefficient * 1 for k, v in row["face_confidence"].items()}
+        )
+    elif threshold_1 <= face_det_conf <= threshold_2:
+        return Counter(
+            {k: v * face_coefficient * 0.5 for k, v in row["face_confidence"].items()}
+        ) + Counter(
+            {k: v * body_coefficient * 0.5 for k, v in row["face_confidence"].items()}
+        )
+    else:
+        return Counter(
+            {k: v * face_coefficient * 1 for k, v in row["face_confidence"].items()}
+        ) + Counter(
+            {k: v * body_coefficient * 0 for k, v in row["face_confidence"].items()}
+        )
+
+
 def predictor(
     df1: pd.DataFrame,
     df2: pd.DataFrame,
-    face_coefficient: float,
-    body_coefficient: float,
-    no_duplicate=False,
+    face_coefficient: float = 1,
+    body_coefficient: float = 1,
+    threshold_1: float = 0.6,
+    threshold_2: float = 0.8,
+    no_duplicate: bool = False,
 ) -> dict:
-    
+
     if no_duplicate == False:
         pred = {}
         for track in df2["track_id"].unique():
-            face_score = (
-                df2.loc[df2["track_id"] == track]["face_confidence"]
-                .map(lambda x: Counter(x))
+            # face_score = (
+            #     df2.loc[df2["track_id"] == track]["face_confidence"]
+            #     .map(lambda x: Counter(x))
+            #     .sum()
+            # )
+            # body_score = (
+            #     df2.loc[df2["track_id"] == track]["body_confidence"]
+            #     .map(lambda x: Counter(x))
+            #     .sum()
+            # )
+            # face_series = pd.Series(face_score, dtype=float).map(
+            #     lambda x: face_coefficient * x
+            # )
+            # body_series = pd.Series(body_score, dtype=float).map(
+            #     lambda x: body_coefficient * x
+            # )
+
+            # face_series = pd.to_numeric(face_series)
+            # body_series = pd.to_numeric(body_series)
+
+            # prediction = (face_series + body_series).idxmax()
+            # pred[track] = prediction
+
+            score = (
+                df2.loc[df2["track_id"] == track]
+                .apply(
+                    lambda x: body_or_face(
+                        x, face_coefficient, body_coefficient, threshold_1, threshold_2
+                    ),
+                    axis=1,
+                )
                 .sum()
             )
-            body_score = (
-                df2.loc[df2["track_id"] == track]["body_confidence"]
-                .map(lambda x: Counter(x))
-                .sum()
-            )
-            face_series = pd.Series(face_score, dtype=float).map(
-                lambda x: face_coefficient * x
-            )
-            body_series = pd.Series(body_score, dtype=float).map(
-                lambda x: body_coefficient * x
-            )
-
-            face_series = pd.to_numeric(face_series)
-            body_series = pd.to_numeric(body_series)
-
-            prediction = (face_series + body_series).idxmax()
+            prediction = pd.to_numeric(pd.Series(score, dtype=float)).idxmax()
             pred[track] = prediction
 
         pred[-1] = "NO_FACE_DETECTED"
-
         return pred
-    
+
     elif no_duplicate == True:
         _df1 = df1[["frame", "track_id"]]
         _df1.dropna(axis=0, inplace=True)
@@ -69,36 +110,50 @@ def predictor(
             coincident[track] = set(
                 chain.from_iterable([x for x in unique_sets if track in x])
             )
-            # coincident[track].discard(track)
+            # # coincident[track].discard(track)
 
-            face_score = (
-                df2.loc[df2["track_id"] == track]["face_confidence"]
-                .map(lambda x: Counter(x))
+            # face_score = (
+            #     df2.loc[df2["track_id"] == track]["face_confidence"]
+            #     .map(lambda x: Counter(x))
+            #     .sum()
+            # )
+
+            # body_score = (
+            #     df2.loc[df2["track_id"] == track]["body_confidence"]
+            #     .map(lambda x: Counter(x))
+            #     .sum()
+            # )
+
+            # face_series = pd.Series(face_score, dtype=float).map(
+            #     lambda x: round(
+            #         face_coefficient * x / len(df2.loc[df2["track_id"] == track]), 4
+            #     )
+            # )
+
+            # body_series = pd.Series(body_score, dtype=float).map(
+            #     lambda x: round(
+            #         body_coefficient * x / len(df2.loc[df2["track_id"] == track]), 4
+            #     )
+            # )
+
+            # pred_df["member"].loc[pred_df["track_id"] == track] = face_series.index
+            # pred_df["confidence"].loc[pred_df["track_id"] == track] = (
+            #     face_series.values + body_series.values
+            # )
+            score = (
+                df2.loc[df2["track_id"] == track]
+                .apply(
+                    lambda x: body_or_face(
+                        x, face_coefficient, body_coefficient, threshold_1, threshold_2
+                    ),
+                    axis=1,
+                )
                 .sum()
             )
+            series = pd.Series(score, dtype=float)
 
-            body_score = (
-                df2.loc[df2["track_id"] == track]["body_confidence"]
-                .map(lambda x: Counter(x))
-                .sum()
-            )
-
-            face_series = pd.Series(face_score, dtype=float).map(
-                lambda x: round(
-                    face_coefficient * x / len(df2.loc[df2["track_id"] == track]), 4
-                )
-            )
-
-            body_series = pd.Series(body_score, dtype=float).map(
-                lambda x: round(
-                    body_coefficient * x / len(df2.loc[df2["track_id"] == track]), 4
-                )
-            )
-
-            pred_df["member"].loc[pred_df["track_id"] == track] = face_series.index
-            pred_df["confidence"].loc[pred_df["track_id"] == track] = (
-                face_series.values + body_series.values
-            )
+            pred_df["member"].loc[pred_df["track_id"] == track] = series.index
+            pred_df["confidence"].loc[pred_df["track_id"] == track] = series.values
 
         pred_df_og = pred_df.copy()
 
@@ -123,7 +178,7 @@ def predictor(
                 "confidence"
             ].idxmax()
             pred[missing_track_id] = pred_df_og["member"].loc[temp_index]
-        
+
         pred[-1] = "NO_FACE_DETECTED"
-        
+
         return pred

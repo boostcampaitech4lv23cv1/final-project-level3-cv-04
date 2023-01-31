@@ -28,6 +28,7 @@ pip install -v -e .
 cd ..
 pip install pytube
 pip install onnxruntime
+pip install onnxruntime_gpu
 pip install ffmpeg-python
 pip install neptune-client
 pip install wandb
