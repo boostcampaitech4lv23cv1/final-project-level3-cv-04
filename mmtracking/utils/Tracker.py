@@ -104,11 +104,11 @@ def tracking(meta_info,
         frame_idx = i+1 # frame_idx
         if isinstance(img, str): # img is loaded by path,
             img_path = osp.join(meta_info['image_root'], img) # filename to path
-            # img = cv2.imread(img_path) # read img for get clip size
-            # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # convert BGR2RGB
+            img = cv2.imread(img_path) # read img for get clip size
+        
         input_img_height = img.shape[0] # for clip
         input_img_width = img.shape[1] # for clip
-        result = inference_mot(model, img_path, frame_id=i) # inference one img
+        result = inference_mot(model, img, frame_id=i) # inference one img
 
         frame_max_row = max(result["det_bboxes"][0].shape[0], result["track_bboxes"][0].shape[0]) # number of bboxes is basis
 

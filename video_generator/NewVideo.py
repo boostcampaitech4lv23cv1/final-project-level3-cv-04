@@ -177,7 +177,7 @@ def video_generator(df1,meta_info,member,pred):
     print('video 생성중...')
     img_list = glob(newfolder+"*.jpg")
     img_list = natsort.natsorted(img_list)
-    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'H264'),frame,(video_size_w,video_size_h))
+    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'mp4v'),frame,(video_size_w,video_size_h))
     for path in img_list:
         img = cv2.imread(path)
         out.write(img)

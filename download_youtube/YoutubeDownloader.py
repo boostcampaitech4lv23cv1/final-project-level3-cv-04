@@ -35,9 +35,9 @@ def download_and_capture(youtube_url, download_dir_path):
     os.makedirs(download_dir_path, exist_ok=True) # make dir if not exist
     yt = YouTube(youtube_url)
     stream = yt.streams.filter(type="video", file_extension="mp4").order_by("resolution").desc()[0]
-    # make meta data
+    # make meta data, (ex) save dir is 0lXwMdnpoFQ, if you want currenttile file name use --> get_current_day_time()
     meta_info = {}
-    meta_info["filename"] = get_current_day_time()+".mp4"
+    meta_info["filename"] = youtube_url.split('=')[-1]+".mp4"
     meta_info["title"] = stream.title
     meta_info["description"] = yt.description
     meta_info["vcodec"] = stream.video_codec
@@ -71,7 +71,7 @@ def download_and_capture(youtube_url, download_dir_path):
     # os.system("chmod u+x ./ffmpeg-torchkpop") # 
     os.system("ffmpeg " + 
     f"-i {file_path} " +
-            "-ss 00:00:0 " + # if you want slice videos input -t <sec> command -t 60 
+            "-ss 00:00:0 -t 60 " + # if you want slice videos input -t <sec> command -t 60 
                 f"-r {str(meta_info['fps'])} " +
                     "-f image2 " + img_capture_dir_path + "/%d.jpg")
 
