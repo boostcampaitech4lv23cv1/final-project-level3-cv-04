@@ -7,16 +7,17 @@ import numpy as np
 import onnxruntime
 from scrfd import SCRFD
 from arcface_onnx import ArcFaceONNX
+from tqdm import tqdm
 
+tqdm.pandas()
 
 def detect_face(image: np.ndarray) -> np.ndarray:
     # image = cv2.imread(image)
     bboxes, keypoints = detector.autodetect(image, max_num=1)
     if bboxes.shape[0] == 0:
-        return ([[-1.0,-1.0,-1.0,-1.0,-1.0]], [[-1.0,-1.0,-1.0,-1.0,-1.0]])
+        return ([[-1.0, -1.0, -1.0, -1.0, -1.0]], [[-1.0, -1.0, -1.0, -1.0, -1.0]])
     else:
         return (bboxes, keypoints)
-
 
 def simple_softmax(confidence: dict) -> dict:
     confidence = {key: pow(math.e, value) for key, value in confidence.items()}
@@ -31,13 +32,6 @@ def compute_face_feature(row) -> np.ndarray:
 
     image = cv2.imread(row["filename"])
 
-    ## normalized scaling
-    # H, W, _ = image.shape
-    # xmin = int(abs(row["track_body_xmin"]) * W)
-    # xmax = int(abs(row["track_body_xmax"]) * W)
-    # ymin = int(abs(row["track_body_ymin"]) * H)
-    # ymax = int(abs(row["track_body_ymax"]) * H)
-
     xmin = int(row["track_body_xmin"])
     xmax = int(row["track_body_xmax"])
     ymin = int(row["track_body_ymin"])
@@ -50,13 +44,13 @@ def compute_face_feature(row) -> np.ndarray:
 
     bboxes, kpss = detector.autodetect(image, max_num=1)
     if bboxes.shape[0] == 0:
-        return np.zeros(512)
+        return np.zeros(512), "FLAG"
 
     kps = kpss[0]
     face_feature = rec.get(image, kps)
     # face_feature = np.reshape(face_feature, (1, -1))
 
-    return face_feature
+    return face_feature, round(bboxes[0][-1], 4)
 
 
 def compute_face_confidence(
@@ -106,7 +100,10 @@ def face_embedding_extractor(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
 
-    df2["face_embedding"] = df2.apply(compute_face_feature, axis=1)
+    df2["face_embedding-face_det_confidence"] = df2.progress_apply(compute_face_feature, axis=1)
+    df2["face_embedding"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[0])
+    df2["face_det_confidence"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[1])
+    df2.drop(["face_embedding-face_det_confidence"], axis=1, inplace=True)
 
     df2.drop(
         [
@@ -137,6 +134,124 @@ def face_embedding_extractor(
 
     # df2.to_csv("/opt/ml/torchkpop/df2.csv", sep=",")
     return df2
+
+
+########################################################################################
+########################################################################################
+
+
+def simple_softmax_all(confidence: dict) -> dict:
+
+    if type(confidence) == str:
+        return "FLAG"
+
+    else:
+        confidence_all = []
+        for i in range(len(confidence)):
+            confidence[i] = {
+                key: pow(math.e, value) for key, value in confidence[i].items()
+            }
+            denominator = sum(confidence[i].values())
+            confidence[i] = {
+                key: round(value / denominator, 4)
+                for key, value in confidence[i].items()
+            }
+            confidence_all.append(confidence[i])
+        return np.array(confidence_all)
+
+
+def compute_face_feature_all(row) -> np.ndarray:
+
+    image = cv2.imread(row["full_filename"])
+
+    if np.isnan(row["track_body_xmin"]):
+        return ("FLAG", "FLAG", "FLAG")
+
+    else:
+        xmin = int(row["track_body_xmin"])
+        xmax = int(row["track_body_xmax"])
+        ymin = int(row["track_body_ymin"])
+        ymax = int(row["track_body_ymax"])
+
+        image = image[
+            ymin:ymax,
+            xmin:xmax,
+        ]
+
+        bboxes, kpss = detector.autodetect(image, max_num=5, metric="center_high")
+        if bboxes.shape[0] == 0:
+            return ("FLAG", "FLAG", "FLAG")
+
+        else:
+            # bboxes = np.delete(bboxes, 4, axis=1)
+            for i in range(len(bboxes)):
+                bboxes[i][0] = int(bboxes[i][0] + xmin)
+                bboxes[i][1] = int(bboxes[i][1] + ymin)
+                bboxes[i][2] = int(bboxes[i][2] + xmin)
+                bboxes[i][3] = int(bboxes[i][3] + ymin)
+            face_feature = np.array([rec.get(image, kps) for kps in kpss])
+            return (bboxes, face_feature, kpss)
+
+
+def compute_face_confidence_all(
+    query_feature: np.ndarray, anchor_face_embedding: dict
+) -> dict:
+
+    if type(query_feature) == str:
+        return "FLAG"
+
+    else:
+        face_feature = query_feature
+        face_confidence = np.array(
+            [
+                {
+                    key: round(rec.compute_sim(np.array(value), single_face_feature), 4)
+                    for key, value in anchor_face_embedding.items()
+                }
+                for single_face_feature in face_feature
+            ]
+        )
+
+        return face_confidence
+
+
+def face_embedding_extractor_all(
+    df1: pd.DataFrame,
+    anchor_face_embedding: dict,
+    meta_info: dict,
+) -> pd.DataFrame:
+
+    df1["full_filename"] = df1["filename"].map(
+        lambda x: os.path.join(meta_info["image_root"], x)
+    )
+
+    df1["face_bbox-face_embedding-face_keypoint"] = df1.progress_apply(compute_face_feature_all, axis=1)
+    df1["face_bbox"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[0])
+    df1["face_embedding"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[1])
+    df1["face_keypoint"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[2])
+    df1.drop(["face_bbox-face_embedding-face_keypoint"], axis=1, inplace=True)
+
+    df1["face_confidence"] = (
+        df1["face_embedding"]
+        .map(lambda x: compute_face_confidence_all(x, anchor_face_embedding))
+        .map(simple_softmax_all)
+    )
+
+    # df1["face_pred"] = df1["face_confidence"].map(
+    #     lambda x: [max(y, key=y.get) if type(y) != str else "FLAG" for y in x]
+    # )
+
+    df1["face_pred"] = df1["face_confidence"].map(
+        lambda x: [max(y, key=y.get) for y in x] if type(x) != str else "FLAG"
+    )
+
+    df1.drop(["full_filename"], axis=1, inplace=True)
+
+    return df1
+
+
+########################################################################################
+########################################################################################
 
 
 # if __name__ == "__main__":
