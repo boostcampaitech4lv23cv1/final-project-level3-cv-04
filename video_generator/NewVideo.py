@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 from matplotlib import pyplot as plt 
 from glob import glob
 import cv2
@@ -9,7 +10,7 @@ import natsort
 import numpy as np
 from itertools import chain
 
-def crop_img(idx, px,mx,py,my,path,newfolder):
+def crop_img(idx, px,mx,py,my,path,make_video_img_dir):
     img = cv2.imread(path + '{0:06d}.jpg'.format(idx))
     h, w, _ = img.shape # 이미지 크기 받기
     # 사진 padding
@@ -19,15 +20,15 @@ def crop_img(idx, px,mx,py,my,path,newfolder):
     cropped_img = img[my:py, mx:px]
     
     # 이미지 저장
-    cv2.imwrite(newfolder+str(idx)+'.jpg', cropped_img)
+    cv2.imwrite(make_video_img_dir+str(idx)+'.jpg', cropped_img)
     return
 
-def full_img(idx,video_size_w,video_size_h,path,newfolder):
+def full_img(idx,video_size_w,video_size_h,path,make_video_img_dir):
     # 이미지 불러오고 resize
     img = cv2.imread(path + '{0:06d}.jpg'.format(idx))
     resize_img = cv2.resize(img,(video_size_w,video_size_h))
     # 이미지 저장
-    cv2.imwrite(newfolder+str(idx)+'.jpg',resize_img)
+    cv2.imwrite(make_video_img_dir+str(idx)+'.jpg',resize_img)
     return
 
 def img_padding(img,px,mx,py,my,w,h):   #top, bottom, left, right
@@ -61,7 +62,7 @@ def video_df(df1,pred,member):
     return video_df
 
 
-def video_generator(df1,meta_info,member,pred):
+def video_generator(df1,meta_info,member,pred, save_dir):
     '''
     input
         df1 : filename,bbox,track_id
@@ -79,11 +80,13 @@ def video_generator(df1,meta_info,member,pred):
     ######################################################
     video_size_w = 1280 # 최종 video 크기 (가로)
     video_size_h = 720  # 최종 video 크기 (세로)
-    newfolder =  './result/' + meta_info["image_root"].split('/')[-1] + '/img/'  # 사진 저장할 폴더
-    video_path = './result/' + meta_info["image_root"].split('/')[-1] + '/video/'   # 비디오 저장할 폴더
+    # make_video_img_dir =  './result/' + meta_info["image_root"].split('/')[-1] + '/img/'  # 사진 저장할 폴더
+    # video_path = './result/' + meta_info["image_root"].split('/')[-1] + '/video/'   # 비디오 저장할 폴더
+    make_video_img_dir = osp.join(save_dir, f'make_video_img_{member}') + '/'
+    save_video_dir = osp.join(save_dir, f'make_video_video_{member}') + '/'
     frame = meta_info["fps"]  # 비디오 프레임
-    os.makedirs(newfolder,exist_ok=True)
-    os.makedirs(video_path,exist_ok=True)
+    os.makedirs(make_video_img_dir,exist_ok=True)
+    os.makedirs(save_video_dir,exist_ok=True)
     ######################################################
     
     
@@ -123,19 +126,19 @@ def video_generator(df1,meta_info,member,pred):
                     prev_py = py
                     prev_my = my
                                        
-                    crop_img(idx,px,mx,py,my,path,newfolder)
+                    crop_img(idx,px,mx,py,my,path,make_video_img_dir)
                     idx += 1
                     
                 else:   #filename같은데 karina 없으면 -> 이전 좌표 사용
                     if prev_px == 0 and prev_py == 0:
-                        full_img(idx,video_size_w,video_size_h,path,newfolder)
+                        full_img(idx,video_size_w,video_size_h,path,make_video_img_dir)
                         idx += 1
                     else:
                         px = prev_px
                         mx = prev_mx
                         py = prev_py
                         my = prev_my
-                        crop_img(idx,px,mx,py,my,path,newfolder)
+                        crop_img(idx,px,mx,py,my,path,make_video_img_dir)
                         idx += 1
                     
             else:   #해당 이미지가 face_df에 없으면->여기서 카리나 없는 이미지 작업하고 idx도 늘려줘서 두번 작업안하게
@@ -154,35 +157,34 @@ def video_generator(df1,meta_info,member,pred):
                 #fcount 결과 가지고 full image or crop image 적용
                 if fcount > (frame):  ### 1초보다 오래 full image 잡혀야 되면 줌인 줌아웃 효과
                     for _ in range(fcount):
-                        full_img(idx,video_size_w,video_size_h,path,newfolder)
+                        full_img(idx,video_size_w,video_size_h,path,make_video_img_dir)
                         idx += 1
                 else:   # 1초보다 짧게 full image 잡혀야 되면 기존에 True에서 잡았던 bbox의 중심 좌표를 계속해서 이용
                     # prev 좌표가 0,0인 경우 -> 전체화면
                     if prev_px == 0 and prev_py == 0:
                         for _ in range(fcount):
-                            full_img(idx,video_size_w,video_size_h,path,newfolder)
+                            full_img(idx,video_size_w,video_size_h,path,make_video_img_dir)
                             idx += 1
                     #prev 좌표가 0,0이 아닌 경우 -> 이전 좌표로 crop        
                     else:
-                        print('fcount : ',fcount)
+                        # print('fcount : ',fcount)
                         for _ in range(fcount):
                             # 이전 center_x, center_y좌표 불러와서 crop
                             px = prev_px
                             mx = prev_mx
                             py = prev_py
                             my = prev_my
-                            crop_img(idx,px,mx,py,my,path,newfolder)
+                            crop_img(idx,px,mx,py,my,path,make_video_img_dir)
                             idx += 1
     
     print('video 생성중...')
-    img_list = glob(newfolder+"*.jpg")
+    img_list = glob(make_video_img_dir+"*.jpg")
     img_list = natsort.natsorted(img_list)
-    out = cv2.VideoWriter(video_path+member+'_output.mp4',cv2.VideoWriter_fourcc(*'mp4v'),frame,(video_size_w,video_size_h))
+    video_path = osp.join(save_video_dir, f'{member}_output.mp4')
+    out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), frame, (video_size_w,video_size_h))
     for path in img_list:
         img = cv2.imread(path)
         out.write(img)
     out.release()
     
-    video_path = video_path+member+'_output.mp4'
-        
     return video_path
