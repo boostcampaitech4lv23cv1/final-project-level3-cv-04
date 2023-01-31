@@ -3,7 +3,7 @@ _base_ = [
     '../../_base_/datasets/mot_challenge.py', '../../_base_/default_runtime.py'
 ]
 
-img_scale = (896, 1600)
+img_scale = (600, 800)
 samples_per_gpu = 4
 
 model = dict(
