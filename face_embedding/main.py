@@ -222,6 +222,7 @@ def compute_face_confidence_all(
 
 def face_embedding_extractor_all(
     df1: pd.DataFrame,
+    df2: pd.DataFrame,
     anchor_face_embedding: dict,
     meta_info: dict,
 ) -> pd.DataFrame:
@@ -245,6 +246,9 @@ def face_embedding_extractor_all(
     # df1["face_pred"] = df1["face_confidence"].map(
     #     lambda x: [max(y, key=y.get) if type(y) != str else "FLAG" for y in x]
     # )
+    
+    used_in_df2 = df2['df1_index'].unique()
+    df1['face_embedding'].loc[np.isin(df1.index, used_in_df2, invert=True)] = "FLAG"
 
     df1["face_pred"] = df1["face_confidence"].map(
         lambda x: [max(y, key=y.get) for y in x] if type(x) != str else "FLAG"
