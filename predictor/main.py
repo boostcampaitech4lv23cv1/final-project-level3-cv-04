@@ -78,8 +78,11 @@ def predictor(
                 )
                 .sum()
             )
-            prediction = pd.to_numeric(pd.Series(score, dtype=float)).idxmax()
-            pred[track] = prediction
+            if len(score) == 0:
+                pred[track] = "NO_FACE_DETECTED"
+            else:
+                prediction = pd.to_numeric(pd.Series(score, dtype=float)).idxmax()
+                pred[track] = prediction
 
         pred[-1] = "NO_FACE_DETECTED"
         return pred
@@ -101,11 +104,12 @@ def predictor(
                 "track_id": np.repeat(
                     df2["track_id"].unique(), repeats=len(df2["face_pred"].unique())
                 ),
-                "member": -1,
-                "confidence": -1,
+                "member": 0,
+                "confidence": 0,
             }
         )
 
+        pred = {}
         for track in df2["track_id"].unique():
             coincident[track] = set(
                 chain.from_iterable([x for x in unique_sets if track in x])
@@ -150,15 +154,21 @@ def predictor(
                 )
                 .sum()
             )
-            series = pd.Series(score, dtype=float)
 
-            pred_df["member"].loc[pred_df["track_id"] == track] = series.index
-            pred_df["confidence"].loc[pred_df["track_id"] == track] = series.values
+            if len(score) == 0:
+                # pred_df["member"].loc[pred_df["track_id"] == track] = series.index
+                # pred_df["confidence"].loc[pred_df["track_id"] == track] = series.values
+                pred[track] = "NO_FACE_DETECTED"
+                
+            else:
+                series = pd.Series(score, dtype=float)
+
+                pred_df["member"].loc[pred_df["track_id"] == track] = series.index
+                pred_df["confidence"].loc[pred_df["track_id"] == track] = series.values
+
 
         pred_df_og = pred_df.copy()
 
-        pred = {}
-        counter = 0
 
         while pred_df["confidence"].sum() != 0:
             member, track_id = pred_df[["member", "track_id"]].loc[
