@@ -9,7 +9,7 @@ import natsort
 import numpy as np
 from itertools import chain
 
-def crop_img(idx, px,mx,py,my,path,newfolder):
+def crop_img(idx, px,mx,py,my,path,newfolder,video_size_w,video_size_h):
     img = cv2.imread(path + '{0:06d}.jpg'.format(idx))
     h, w, _ = img.shape # 이미지 크기 받기
     # 사진 padding
@@ -17,7 +17,7 @@ def crop_img(idx, px,mx,py,my,path,newfolder):
         img,px,mx,py,my = img_padding(img,px,mx,py,my,w,h)
     
     cropped_img = img[my:py, mx:px]
-    
+    resize_img = cv2.resize(cropped_img,(video_size_w,video_size_h))
     # 이미지 저장
     cv2.imwrite(newfolder+str(idx)+'.jpg', cropped_img)
     return
@@ -60,6 +60,32 @@ def video_df(df1,pred,member):
     
     return video_df
 
+def interpolation(start,end,frame):
+    '''
+    start : (s_xmin,s_ymin,s_xmax,s_ymax)
+    end : (e_xmin,e_ymin,e_xmax,e_ymax)
+    '''
+    
+    s_xmin,s_ymin,s_xmax,s_ymax = start
+    e_xmin,e_ymin,e_xmax,e_ymax = end
+    
+    #평균 이동 거리
+    av_xmin = (e_xmin - s_xmin)/frame
+    av_ymin = (e_ymin - s_ymin)/frame
+    av_xmax = (e_xmax - s_xmax)/frame
+    av_ymax = (e_ymax - s_ymax)/frame
+    
+    coordinates = []
+    for _ in range(frame-1):    #frame이 0인 경우 없는지 확인해볼 것
+        s_xmin = int(s_xmin+av_xmin)
+        s_ymin = int(s_ymin+av_ymin)
+        s_xmax = int(s_xmax+av_xmax)
+        s_ymax = int(s_ymax+av_ymax)
+        coordinates.append([s_xmin,s_ymin,s_xmax,s_ymax])
+    coordinates.append([e_xmin,e_ymin,e_xmax,e_ymax])
+        
+    return coordinates
+
 
 def video_generator(df1,meta_info,member,pred):
     '''
@@ -89,63 +115,64 @@ def video_generator(df1,meta_info,member,pred):
     
     print('video_generator실행중')
     face_df = video_df(df1,pred,member)
-    prev_px = 0  
-    prev_mx = 0
-    prev_py = 0
-    prev_my = 0
+    prev_px,prev_mx,prev_py,prev_my = 0,0,0,0
+    end_px,end_mx,end_py,end_my= 0,0,0,0
     
     #이미지 주소
     path = meta_info["image_root"]+'/'
     img_list = glob(meta_info["image_root"]+'/*.jpg')
     img_list = natsort.natsorted(img_list)
-
-    ###'aespa_karina' -> member 변수로 받아오게 수정
     img_len = int(((img_list[-1].split('/'))[-1].split('.'))[0])
+    
     idx = 1
+    
     while True:
         if idx > img_len:   # img 범위 벗어나면 while문 탈출
             break
         else:   #img 범위 내
-            if '{0:06d}.jpg'.format(idx) in face_df['filename'].unique():    #해당 이미지가 face_df에 있으면
-                if ('{0:06d}.jpg'.format(idx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)]['face_pred'].values)):
-                    _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
-                    face_bbox = list(_series['face_bbox'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
-                    center_x = (face_bbox[0]+face_bbox[2])/2    
-                    center_y = (face_bbox[1]+face_bbox[3])/2
-                    px = int(center_x + video_size_w/2)
-                    mx = int(center_x - video_size_w/2)
-                    py = int(center_y + video_size_h/2)
-                    my = int(center_y - video_size_h/2)
+            if ('{0:06d}.jpg'.format(idx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)]['face_pred'].values)):
+                _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
+                face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
+                print(face_keypoints)
+                eye = face_keypoints[0] + face_keypoints[1]
+                center_x = (float(eye[0]))/2    
+                center_y = (float(eye[1]))/2
+                px = int(center_x + video_size_w/2)
+                mx = int(center_x - video_size_w/2)
+                py = int(center_y + video_size_h/2)
+                my = int(center_y - video_size_h/2)
 
-                    #좌표 저장
-                    prev_px = px    
-                    prev_mx = mx
-                    prev_py = py
-                    prev_my = my
-                                       
-                    crop_img(idx,px,mx,py,my,path,newfolder)
-                    idx += 1
-                    
-                else:   #filename같은데 karina 없으면 -> 이전 좌표 사용
-                    if prev_px == 0 and prev_py == 0:
-                        full_img(idx,video_size_w,video_size_h,path,newfolder)
-                        idx += 1
-                    else:
-                        px = prev_px
-                        mx = prev_mx
-                        py = prev_py
-                        my = prev_my
-                        crop_img(idx,px,mx,py,my,path,newfolder)
-                        idx += 1
-                    
+                #좌표 저장
+                prev_px = px    
+                prev_mx = mx
+                prev_py = py
+                prev_my = my
+                
+                crop_img(idx,px,mx,py,my,path,newfolder,video_size_w,video_size_h)
+                idx += 1
+            #############################################################################################                 
             else:   #해당 이미지가 face_df에 없으면->여기서 카리나 없는 이미지 작업하고 idx도 늘려줘서 두번 작업안하게
-                fidx = idx+1
-                fcount = 1
+                fidx = idx
+                fcount = 0
                 #몇 frame동안 카리나 없는지 확인 -> fcount에 저장
                 while True:
-                    if fidx > img_len:    #총 이미지 수 보다 커지면 while문 탈출
+                    if fidx >= img_len:    #총 이미지 수 보다 커지면 while문 탈출
                         break
-                    elif '{0:06d}.jpg'.format(fidx) in face_df['filename'].unique(): # 카리나 있으면
+                    elif ('{0:06d}.jpg'.format(fidx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)]['face_pred'].values)): # 사진도있고 사진에 카리나도 있으면
+                        _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)].iloc[0]
+                        face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
+                        eye = face_keypoints[0] + face_keypoints[1]
+                        center_x = (float(eye[0]))/2    
+                        center_y = (float(eye[1]))/2
+                        px = int(center_x + video_size_w/2)
+                        mx = int(center_x - video_size_w/2)
+                        py = int(center_y + video_size_h/2)
+                        my = int(center_y - video_size_h/2)
+                        #좌표 저장
+                        end_px = px    
+                        end_mx = mx
+                        end_py = py
+                        end_my = my
                         break
                     else:   # 카리나 없으면
                         fcount += 1
@@ -164,14 +191,13 @@ def video_generator(df1,meta_info,member,pred):
                             idx += 1
                     #prev 좌표가 0,0이 아닌 경우 -> 이전 좌표로 crop        
                     else:
-                        print('fcount : ',fcount)
-                        for _ in range(fcount):
+                        start = (prev_mx,prev_my,prev_px,prev_py)
+                        end = (end_mx,end_my,end_px,end_py)
+                        coordinates = interpolation(start,end,fcount+1)
+                        for c in coordinates:
+                            mx,my,px,py = c[0],c[1],c[2],c[3]
                             # 이전 center_x, center_y좌표 불러와서 crop
-                            px = prev_px
-                            mx = prev_mx
-                            py = prev_py
-                            my = prev_my
-                            crop_img(idx,px,mx,py,my,path,newfolder)
+                            crop_img(idx,px,mx,py,my,path,newfolder,video_size_w,video_size_h)
                             idx += 1
     
     print('video 생성중...')
