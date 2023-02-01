@@ -11,7 +11,7 @@ import numpy as np
 from itertools import chain
 
 
-def crop_img(idx, px,mx,py,my,path,newfolder,video_size_w,video_size_h):
+def crop_img(idx, px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h):
 
     img = cv2.imread(path + '{0:06d}.jpg'.format(idx))
     h, w, _ = img.shape # 이미지 크기 받기
@@ -22,7 +22,7 @@ def crop_img(idx, px,mx,py,my,path,newfolder,video_size_w,video_size_h):
     cropped_img = img[my:py, mx:px]
     resize_img = cv2.resize(cropped_img,(video_size_w,video_size_h))
     # 이미지 저장
-    cv2.imwrite(make_video_img_dir+str(idx)+'.jpg', cropped_img)
+    cv2.imwrite(make_video_img_dir+str(idx)+'.jpg', resize_img)
     return
 
 def full_img(idx,video_size_w,video_size_h,path,make_video_img_dir):
@@ -154,7 +154,7 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                 prev_py = py
                 prev_my = my
                 
-                crop_img(idx,px,mx,py,my,path,newfolder,video_size_w,video_size_h)
+                crop_img(idx,px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h)
                 idx += 1
 
             else:   #해당 이미지가 face_df에 없으면->여기서 카리나 없는 이미지 작업하고 idx도 늘려줘서 두번 작업안하게
@@ -204,7 +204,7 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                         for c in coordinates:
                             mx,my,px,py = c[0],c[1],c[2],c[3]
                             # 이전 center_x, center_y좌표 불러와서 crop
-                            crop_img(idx,px,mx,py,my,path,newfolder,video_size_w,video_size_h)
+                            crop_img(idx,px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h)
 
                             idx += 1
     
