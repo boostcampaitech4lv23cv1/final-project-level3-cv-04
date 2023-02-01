@@ -189,7 +189,12 @@ def compute_face_feature_all(row) -> np.ndarray:
                 bboxes[i][1] = int(bboxes[i][1] + ymin)
                 bboxes[i][2] = int(bboxes[i][2] + xmin)
                 bboxes[i][3] = int(bboxes[i][3] + ymin)
+                
             face_feature = np.array([rec.get(image, kps) for kps in kpss])
+            
+            kpss[:,:,0] = kpss[:,:,0].astype(int) + xmin
+            kpss[:,:,1] = kpss[:,:,1].astype(int) + ymin
+            
             return (bboxes, face_feature, kpss)
 
 
