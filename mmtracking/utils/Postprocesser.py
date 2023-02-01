@@ -20,6 +20,11 @@ def delete_short_id(df:pd.DataFrame, fps:int, sec:int=5)-> pd.DataFrame:
             df.loc[df['track_id'] == trk_id,'track_id'] = np.NaN
     return df
 
+def delete_nan_rows(df:pd.DataFrame)-> pd.DataFrame:
+    df = df.copy()
+    return df[np.isnan(df['track_id']) == False]
+
+
 def clip(df:pd.DataFrame, meta_info:dict)-> pd.DataFrame:
     df = df.copy()
     df['track_body_xmin'] = df['track_body_xmin'].clip(0, meta_info['width'])
@@ -37,7 +42,6 @@ def count_overlap(df:pd.DataFrame)->pd.DataFrame:
     overlap_array = []
     n_peoples_array = []
     isfront_array = []
-
     frame_list = [] # for each frame df
 
     for frame_num in sorted(df['frame'].unique()): #iter each frame
@@ -168,6 +172,7 @@ def divide_ids_by_IOU(df: pd.DataFrame,
 
 
 def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=1):
+    
     # clip the dataframe
     df = clip(df, meta_info)
     
@@ -179,6 +184,9 @@ def postprocessing(df:pd.DataFrame, meta_info:dict, sec:int=1):
 
     # add overlap column, 
     df = count_overlap(df)
+
+    # delete nan rows
+    df = delete_nan_rows(df)
 
     return df
 

@@ -138,7 +138,7 @@ def video_generator(df1,meta_info,member,pred, save_dir):
             if ('{0:06d}.jpg'.format(idx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)]['face_pred'].values)):
                 _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
                 face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
-                print(face_keypoints)
+                # print(face_keypoints)
                 eye = face_keypoints[0] + face_keypoints[1]
                 center_x = (float(eye[0]))/2    
                 center_y = (float(eye[1]))/2
