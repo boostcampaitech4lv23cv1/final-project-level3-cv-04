@@ -135,7 +135,9 @@ def video_generator(df1,meta_info,member,pred, save_dir):
         if idx > img_len:   # img 범위 벗어나면 while문 탈출
             break
         else:   #img 범위 내
-            if ('{0:06d}.jpg'.format(idx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)]['face_pred'].values)):
+            mem_in_img = list(face_df['face_pred'][(face_df['filename']=='{0:06}.jpg'.format(idx))])
+            mem_in_img.append(['temp'])
+            if member in mem_in_img[0]:
                 _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
                 face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
                 # print(face_keypoints)
@@ -162,9 +164,11 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                 fcount = 0
                 #몇 frame동안 카리나 없는지 확인 -> fcount에 저장
                 while True:
+                    mem_in_img = list(face_df['face_pred'][(face_df['filename']=='{0:06}.jpg'.format(fidx))])
+                    mem_in_img.append(['temp'])
                     if fidx >= img_len:    #총 이미지 수 보다 커지면 while문 탈출
                         break
-                    elif ('{0:06d}.jpg'.format(fidx) in face_df['filename'].unique()) and (member in chain.from_iterable(face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)]['face_pred'].values)): # 사진도있고 사진에 카리나도 있으면
+                    elif member in mem_in_img[0]: # 사진도있고 사진에 카리나도 있으면
                         _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)].iloc[0]
                         face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
                         eye = face_keypoints[0] + face_keypoints[1]
