@@ -12,6 +12,9 @@ from torchvision.transforms import (
 )
 import torch
 from torch.utils.data import DataLoader, Dataset
+import os.path as osp
+import pickle
+import json
 
 transform_te = Compose([
         Resize((300, 150)), # (800,400) -> l2_norm : 300~700 정도, (160, 80) -> l2_norm : 5e-12~7e-12 정도
@@ -33,7 +36,7 @@ def load_model():
 
 model = load_model()
 
-### generate_body_anchor
+### generate body anchor
 def make_body_img_list(df1, df2_member_sorted, meta_info=None, img_num=None):
     '''
         df1 : tracked bbox info about all frame
@@ -104,79 +107,47 @@ def mkcol_face_pred_confi(df2):
     df2['face_pred_confi'] = face_confidence_series
     return df2
 
-def make_anchor_save_dir(save_dir):
+def make_anchor_save_dir(save_dir, member):
     anchor_save_dir = os.path.join(save_dir, 'anchor_images')
-    if not os.path.exists(anchor_save_dir):
-         os.makedirs(anchor_save_dir)
+    os.makedirs(anchor_save_dir, exist_ok=True)
     # 이미지 저장 경로 생성
-    karina_anchor_dir = os.path.join(anchor_save_dir, 'karina_anchor')
-    winter_anchor_dir = os.path.join(anchor_save_dir, 'winter_anchor')
-    ningning_anchor_dir = os.path.join(anchor_save_dir, 'ningning_anchor')
-    giselle_anchor_dir = os.path.join(anchor_save_dir, 'giselle_anchor')
-    if not os.path.exists(karina_anchor_dir) or not os.path.exists(winter_anchor_dir) or not os.path.exists(ningning_anchor_dir) or not os.path.exists(giselle_anchor_dir):
-        os.makedirs(karina_anchor_dir)
-        os.makedirs(winter_anchor_dir)
-        os.makedirs(ningning_anchor_dir)
-        os.makedirs(giselle_anchor_dir)
-    return karina_anchor_dir, winter_anchor_dir, ningning_anchor_dir, giselle_anchor_dir
+    member_anchor_dir = os.path.join(anchor_save_dir, member) # ex) '/opt/ml/torchkpop/result/VhHicXLaDos/60/anchor_images/aespa_karina'
+    os.makedirs(member_anchor_dir, exist_ok=True)
+    return member_anchor_dir
 
-def save_anchor_images(img_list_karina, img_list_winter, img_list_ningning, img_list_giselle,
-                       karina_anchor_dir, winter_anchor_dir, ningning_anchor_dir, giselle_anchor_dir):
-    for i, img in enumerate(img_list_karina):
-        save_path = os.path.join(karina_anchor_dir, f'karina_anchor_{i+1}.jpg')
-        img.save(save_path, "JPEG")
-    for i, img in enumerate(img_list_winter):
-        save_path = os.path.join(winter_anchor_dir, f'winter_anchor_{i+1}.jpg')
-        img.save(save_path, "JPEG")
-    for i, img in enumerate(img_list_ningning):
-        save_path = os.path.join(ningning_anchor_dir, f'ningning_anchor_{i+1}.jpg')
-        img.save(save_path, "JPEG")
-    for i, img in enumerate(img_list_giselle):
-        save_path = os.path.join(giselle_anchor_dir, f'giselle_anchor_{i+1}.jpg')
+def save_anchor_images(member_img_list, member_anchor_dir, member):
+    for i, img in enumerate(member_img_list):
+        save_path = os.path.join(member_anchor_dir, f'{i+1}.jpg')
         img.save(save_path, "JPEG")
 
-def make_anchor_img_lists(df1, 
-                       df2_karina_sorted, df2_winter_sorted, df2_ningning_sorted, df2_giselle_sorted, 
-                       meta_info):
-    try: # karina 대표 이미지 9장으로 뽑는 중...
-        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=9)
-    except: # karina 대표 이미지 6장으로 뽑는 중...
-        body_img_list_karina = make_body_img_list(df1, df2_karina_sorted, meta_info, img_num=6)
-    try: # winter 대표 이미지 9장 뽑는 중...
-        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=9)
-    except: # winter 대표 이미지 6장 뽑는 중...
-        body_img_list_winter = make_body_img_list(df1, df2_winter_sorted, meta_info, img_num=6)
-    try:
-        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=9)
+def make_anchor_img_list(df1, df2_member_sorted, meta_info):
+    try: # karina 대표 이미지 8장으로 뽑는 중...
+        body_img_list_member = make_body_img_list(df1, df2_member_sorted, meta_info, img_num=8)
     except:
-        body_img_list_ningning = make_body_img_list(df1, df2_ningning_sorted, meta_info, img_num=6)
-    try:
-        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=9)
-    except:
-        body_img_list_giselle = make_body_img_list(df1, df2_giselle_sorted, meta_info, img_num=6)
-    return body_img_list_karina, body_img_list_winter, body_img_list_ningning, body_img_list_giselle
+        try: # karina 대표 이미지 4장으로 뽑는 중...
+            body_img_list_member = make_body_img_list(df1, df2_member_sorted, meta_info, img_num=4)
+        except:
+            try: # karina 대표 이미지 2장으로 뽑는 중...
+                body_img_list_member = make_body_img_list(df1, df2_member_sorted, meta_info, img_num=2)
+            except: # karina 대표 이미지 1장으로 뽑는 중...
+                body_img_list_member = make_body_img_list(df1, df2_member_sorted, meta_info, img_num=1)
+    return body_img_list_member
 
-def make_anchors(model, 
-                 body_img_list_karina, body_img_list_winter, body_img_list_ningning, body_img_list_giselle
-                 ):
-    anchor_karina = make_anchor(body_img_list_karina, model)
-    del body_img_list_karina
-    anchor_winter = make_anchor(body_img_list_winter, model)
-    del body_img_list_winter
-    anchor_ningning = make_anchor(body_img_list_ningning, model)
-    del body_img_list_ningning
-    anchor_giselle = make_anchor(body_img_list_giselle, model)
-    del body_img_list_giselle
+def generate_member_body_anchor(df1, df2, save_dir, meta_info, member): # 멤버 1명의 body anchor 생성
+    # df2['face_pred'=member] 만 추출해서 confi_score 순으로 정렬
+    df2_member_sorted = df2[df2['face_pred'] == f'{member}'].sort_values(by='face_pred_confi', ascending=False)
     
-    anchors = {
-        'aespa_karina' : anchor_karina, 
-        'aespa_winter' : anchor_winter, 
-        'aespa_ningning' : anchor_ningning, 
-        'aespa_giselle' : anchor_giselle
-    }
-    return anchors
+    # make save_dir for anchor images
+    member_anchor_dir = make_anchor_save_dir(save_dir, member)
+    member_img_list = make_anchor_img_list(df1, df2_member_sorted, meta_info)
+    
+    # body anchor에 쓰인 이미지 저장
+    save_anchor_images(member_img_list, member_anchor_dir, member)
+    
+    anchor = make_anchor(member_img_list, model)
+    return anchor
 
-def generate_body_anchor(df1, df2, save_dir, group_name='aespa', meta_info=None):    
+def generate_body_anchor(df1, df2, save_dir, meta_info):    
     # csv 저장과정 dict->str 이슈 해결
     if type(df2['face_confidence'].loc[0]) == str:
         df2 = str_to_dict(df2)
@@ -184,23 +155,12 @@ def generate_body_anchor(df1, df2, save_dir, group_name='aespa', meta_info=None)
     # face_pred_confi 컬럼 추가 - pred한 인물에 대한 confi
     df2 = mkcol_face_pred_confi(df2)
     
-    # df2 멤버별로 분리 후 confi_score 순으로 정렬
-    df2_karina_sorted = df2[df2['face_pred'] == 'aespa_karina'].sort_values(by='face_pred_confi', ascending=False)
-    df2_winter_sorted = df2[df2['face_pred'] == 'aespa_winter'].sort_values(by='face_pred_confi', ascending=False)
-    df2_ningning_sorted = df2[df2['face_pred'] == 'aespa_ningning'].sort_values(by='face_pred_confi', ascending=False)
-    df2_giselle_sorted = df2[df2['face_pred'] == 'aespa_giselle'].sort_values(by='face_pred_confi', ascending=False)
+    group = meta_info['group']
+    member_list = meta_info['member_list']
     
-    # make save_dir for anchor images
-    karina_anchor_dir, winter_anchor_dir, ningning_anchor_dir, giselle_anchor_dir = make_anchor_save_dir(save_dir)
-    
-    img_list_karina, img_list_winter, img_list_ningning, img_list_giselle = make_anchor_img_lists(df1, df2_karina_sorted, df2_winter_sorted, df2_ningning_sorted, df2_giselle_sorted, meta_info)
-    
-    # body anchor에 쓰인 이미지 저장
-    save_anchor_images(img_list_karina, img_list_winter, img_list_ningning, img_list_giselle,
-                       karina_anchor_dir, winter_anchor_dir, ningning_anchor_dir, giselle_anchor_dir)
-    
-    # 멤버별 대표 이미지로 anchor embedding 생성 [512]
-    anchors = make_anchors(model, img_list_karina, img_list_winter, img_list_ningning, img_list_giselle)
+    anchors = {}
+    for member in member_list:
+        anchors[member] = generate_member_body_anchor(df1, df2, save_dir, meta_info, member)
     
     return anchors
 
@@ -230,16 +190,15 @@ def my_softmax(scores):
     output = exp_scores / sum_exp_scores # [4] / 값
     return output # [4]
 
-def compute_scores(body_anchors, pred):
-    karina_score = compute_cossim(body_anchors['aespa_karina'], pred)
-    winter_score = compute_cossim(body_anchors['aespa_winter'], pred)
-    ningning_score = compute_cossim(body_anchors['aespa_ningning'], pred)
-    giselle_score = compute_cossim(body_anchors['aespa_giselle'], pred) # torch.Tensor, size : [1]
-    
-    scores = [karina_score.item(), winter_score.item(), ningning_score.item(), giselle_score.item()]
+def compute_scores(body_anchors, pred, meta_info):
+    member_list = meta_info['member_list']
+    scores = []
+    for member in member_list:
+        scores.append(compute_cossim(body_anchors[member], pred).item())
     softmax_scores = my_softmax(scores) # [4] 
-    scores_dict = {'aespa_karina':round(softmax_scores[0],4), 'aespa_winter':round(softmax_scores[1],4), 
-                        'aespa_ningning':round(softmax_scores[2],4), 'aespa_giselle':round(softmax_scores[3],4)}
+    scores_dict = {}
+    for i, member in enumerate(member_list):
+        scores_dict[member] = round(softmax_scores[i], 4)
     return scores_dict
 
 def add_body_columns(df2, body_embedding, body_confidence, body_pred):
@@ -252,7 +211,7 @@ def add_body_columns(df2, body_embedding, body_confidence, body_pred):
     
     return df2
 
-### body_embedding_extractor
+### body embedding extractor
 def body_embedding_extractor(df1, df2, body_anchors, meta_info):
     '''
         add (body_embedding, body_confidence, body_pred) columns to df2
@@ -271,10 +230,27 @@ def body_embedding_extractor(df1, df2, body_anchors, meta_info):
         
         for i in range(len(batch_pred)): # batch_pred[i] : [512]
             body_embedding.append(batch_pred[i].detach().numpy())
-            scores_dict = compute_scores(body_anchors, batch_pred[i])
+            scores_dict = compute_scores(body_anchors, batch_pred[i], meta_info)
             body_confidence.append(scores_dict)
             winner = max(scores_dict, key=scores_dict.get)
             body_pred.append(winner)
     
     df2 = add_body_columns(df2, body_embedding, body_confidence, body_pred)
     return df2
+
+if __name__ == '__main__':
+    YOUTUBE_LINK = 'https://www.youtube.com/watch?v=VhHicXLaDos'
+    video_sec = 60
+    youtube_id = YOUTUBE_LINK.split('=')[-1]
+    save_dir = osp.join('/opt/ml/torchkpop/result', youtube_id, str(video_sec))
+    with open('/opt/ml/torchkpop/result/VhHicXLaDos/60/csv/df1_face.pickle', 'rb') as df1_face_pickle:
+        df1 = pickle.load(df1_face_pickle)
+    with open('/opt/ml/torchkpop/result/VhHicXLaDos/60/csv/df2_out_of_face_embedding.pickle', 'rb') as df2_out_of_face_embedding_pickle:
+        df2 = pickle.load(df2_out_of_face_embedding_pickle)
+    with open('/opt/ml/torchkpop/result/VhHicXLaDos/60/VhHicXLaDos.json', 'rb') as file: 
+        meta_info = json.load(file)
+    meta_info['group'] = 'aespa'
+    meta_info['member_list'] = ['aespa_karina', 'aespa_winter', 'aespa_ningning', 'aespa_giselle']
+    body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info)
+    df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
+    print(df2)
