@@ -20,6 +20,7 @@ def visualize_sample(df1_postprocessed, df2_sampled, save_dir, meta_info=None):
     
     for i in range(len(df2_sampled)):
         # body_img 가져오기
+        track_id = df2_sampled.iloc[i]['track_id']
         df1_idx = df2_sampled.iloc[i]['df1_index']
 
         x_min = df1_postprocessed.loc[df1_idx]['track_body_xmin']
@@ -40,7 +41,7 @@ def visualize_sample(df1_postprocessed, df2_sampled, save_dir, meta_info=None):
         
         # 이미지 저장
         filename = os.path.splitext(filename)[0]
-        save_path = os.path.join(sample_save_dir, f'{filename}_{df1_idx}_{face_pred}_{body_pred}.jpg')
+        save_path = os.path.join(sample_save_dir, f'{track_id}_{filename}_{df1_idx}_{face_pred}_{body_pred}.jpg')
         body_img.save(save_path, "JPEG")
 
 
