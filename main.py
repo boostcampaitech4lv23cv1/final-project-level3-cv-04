@@ -153,10 +153,10 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
 
 if __name__ == "__main__":
     # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=Yw_I29NKvbI" # target video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=kZlLTnE1y1Q" # target video
     # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    video_sec=60
+    video_sec=253
     
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_karina')
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_winter')

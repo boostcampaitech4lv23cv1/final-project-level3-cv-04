@@ -1,9 +1,7 @@
 import os
 import os.path as osp
-from matplotlib import pyplot as plt 
 from glob import glob
 import cv2
-from tqdm import tqdm
 import csv
 import pandas as pd
 import natsort
@@ -12,7 +10,9 @@ from itertools import chain
 
 
 def crop_img(idx, px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h):
-
+    '''
+    이미지 crop해서 저장까지
+    '''
     img = cv2.imread(path + '{0:06d}.jpg'.format(idx))
     h, w, _ = img.shape # 이미지 크기 받기
     # 사진 padding
@@ -33,7 +33,13 @@ def full_img(idx,video_size_w,video_size_h,path,make_video_img_dir):
     cv2.imwrite(make_video_img_dir+str(idx)+'.jpg',resize_img)
     return
 
-def img_padding(img,px,mx,py,my,w,h):   #top, bottom, left, right
+def img_padding(img,px,mx,py,my,w,h):   # img 사이즈 범위 밖으로 벗어나면 그에맞게 padding
+    '''
+    px : top
+    mx : bottom
+    py : left
+    my : right
+    '''
     if px > w:
         img = cv2.copyMakeBorder(img, 0,0,0,px-w,cv2.BORDER_CONSTANT)
         
@@ -51,9 +57,15 @@ def img_padding(img,px,mx,py,my,w,h):   #top, bottom, left, right
         
     return img,px,mx,py,my
 
-def video_df(df1,pred,member):
+def video_df(df1,pred,member):  # 들어온 df를 깔끔하게 정리
     df1 = df1.drop('face_embedding',axis=1)
-    df1 = df1.drop('face_confidence',axis=1)
+    df1 = df1.drop('track_body_xmin',axis=1)
+    df1 = df1.drop('track_body_ymin',axis=1)
+    df1 = df1.drop('track_body_xmax',axis=1)
+    df1 = df1.drop('track_body_ymax',axis=1)
+    df1 = df1.drop('num_overlap_bboxes',axis=1)
+    df1 = df1.drop('intercept_iou',axis=1)
+    df1 = df1.drop('isfront',axis=1)
     trackID_by_member = []
     for k, v in pred.items():
         if v == member:
@@ -65,8 +77,12 @@ def video_df(df1,pred,member):
 
 def interpolation(start,end,frame):
     '''
-    start : (s_xmin,s_ymin,s_xmax,s_ymax)
-    end : (e_xmin,e_ymin,e_xmax,e_ymax)
+    input
+        start : (s_xmin,s_ymin,s_xmax,s_ymax)
+        end : (e_xmin,e_ymin,e_xmax,e_ymax)
+    
+    output
+        start좌표와 end좌표를 frame수로 평균낸만큼 각 frame별로 이동시킨 좌표를 2차원리스트에 저장
     '''
     
     s_xmin,s_ymin,s_xmax,s_ymax = start
@@ -79,7 +95,7 @@ def interpolation(start,end,frame):
     av_ymax = (e_ymax - s_ymax)/frame
     
     coordinates = []
-    for _ in range(frame-1):    #frame이 0인 경우 없는지 확인해볼 것
+    for _ in range(frame-1):
         s_xmin = int(s_xmin+av_xmin)
         s_ymin = int(s_ymin+av_ymin)
         s_xmax = int(s_xmax+av_xmax)
@@ -90,26 +106,24 @@ def interpolation(start,end,frame):
     return coordinates
 
 
-def video_generator(df1,meta_info,member,pred, save_dir):
+def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.4):
     '''
     input
         df1 : filename,bbox,track_id
-        img_list : image들의 path
+        meta_info : 영상 정보(image_root, width, height, frame)
+        save_dir : 이미지, 영상 저장 경로
         member(str형) : user가 원하는 member
         pred : predictor 거쳐서 나온 prediction -> 구조: pred = {'track_id' : 'aespa_karina'}
-        full_video(boolean) ->  True  : ex) 카리나 없는 부분은 전체화면으로
-                                False : ex) 카리나 없는 부분은 skip
-
+        face_loc : face_location (1~10)
+        video_size : crop된 영상의 비율 조절 (0~1)
     output
         얼굴 좌표 고려해서 항상 정중앙에 올 수 있게 + 상반신 보이게 crop해서
-        output으로 .mp4파일 내뱉음
+        output으로 영상 저장경로 내뱉음.
     '''
     
     ######################################################
-    video_size_w = 1280 # 최종 video 크기 (가로)
-    video_size_h = 720  # 최종 video 크기 (세로)
-    # make_video_img_dir =  './result/' + meta_info["image_root"].split('/')[-1] + '/img/'  # 사진 저장할 폴더
-    # video_path = './result/' + meta_info["image_root"].split('/')[-1] + '/video/'   # 비디오 저장할 폴더
+    video_size_w = int(meta_info['width'] * video_size)
+    video_size_h = int(meta_info['height'] * video_size)
     make_video_img_dir = osp.join(save_dir, f'make_video_img_{member}') + '/'
     save_video_dir = osp.join(save_dir, f'make_video_video_{member}') + '/'
     frame = meta_info["fps"]  # 비디오 프레임
@@ -137,17 +151,17 @@ def video_generator(df1,meta_info,member,pred, save_dir):
         else:   #img 범위 내
             mem_in_img = list(face_df['face_pred'][(face_df['filename']=='{0:06}.jpg'.format(idx))])
             mem_in_img.append(['temp'])
-            if member in mem_in_img[0]:
+            if member in mem_in_img[0]: #image에 member가 있을 경우
                 _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
                 face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
                 # print(face_keypoints)
                 eye = face_keypoints[0] + face_keypoints[1]
                 center_x = (float(eye[0]))/2    
                 center_y = (float(eye[1]))/2
-                px = int(center_x + video_size_w/2)
-                mx = int(center_x - video_size_w/2)
-                py = int(center_y + video_size_h/2)
-                my = int(center_y - video_size_h/2)
+                px = int(center_x + video_size_w/2)                 # 오른쪽 아래 x 좌표
+                mx = int(center_x - video_size_w/2)                 # 왼쪽 위 x 좌표
+                py = int(center_y + video_size_h*(10-face_loc)/10)  # 오른쪽 아래 y 좌표
+                my = int(center_y - video_size_h*face_loc/10)       # 왼쪽 위 y 좌표
 
 
                 #좌표 저장
@@ -159,8 +173,8 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                 crop_img(idx,px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h)
                 idx += 1
 
-            else:   #해당 이미지가 face_df에 없으면->여기서 카리나 없는 이미지 작업하고 idx도 늘려줘서 두번 작업안하게
-                fidx = idx
+            else:   #그 외의 모든 경우
+                fidx = idx  
                 fcount = 0
                 #몇 frame동안 카리나 없는지 확인 -> fcount에 저장
                 while True:
@@ -168,7 +182,7 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                     mem_in_img.append(['temp'])
                     if fidx >= img_len:    #총 이미지 수 보다 커지면 while문 탈출
                         break
-                    elif member in mem_in_img[0]: # 사진도있고 사진에 카리나도 있으면
+                    elif member in mem_in_img[0]: # image에 member가 존재하면
                         _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)].iloc[0]
                         face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
                         eye = face_keypoints[0] + face_keypoints[1]
@@ -176,8 +190,8 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                         center_y = (float(eye[1]))/2
                         px = int(center_x + video_size_w/2)
                         mx = int(center_x - video_size_w/2)
-                        py = int(center_y + video_size_h/2)
-                        my = int(center_y - video_size_h/2)
+                        py = int(center_y + video_size_h*(10-face_loc)/10)
+                        my = int(center_y - video_size_h*face_loc/10)
                         #좌표 저장
                         end_px = px    
                         end_mx = mx
@@ -201,7 +215,6 @@ def video_generator(df1,meta_info,member,pred, save_dir):
                             idx += 1
                     #prev 좌표가 0,0이 아닌 경우 -> 이전 좌표로 crop        
                     else:
-
                         start = (prev_mx,prev_my,prev_px,prev_py)
                         end = (end_mx,end_my,end_px,end_py)
                         coordinates = interpolation(start,end,fcount+1)
