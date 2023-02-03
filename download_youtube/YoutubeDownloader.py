@@ -6,6 +6,8 @@ from datetime import date, datetime, timezone, timedelta
 import json
 import ffmpeg
 import glob
+from moviepy.editor import *
+import shutil
 
 
 
@@ -30,7 +32,26 @@ def download_audio(yt:YouTube,  output_path: str, filename:str) -> None:
         if "mp4a" in stream.audio_codec:
             stream.download(output_path = output_path, filename = f"{filename.split('.')[0]}_audio.mp4")
 
-def download_and_capture(youtube_url, video_sec, save_dir): # save_dir = './data'
+
+def clip_audio(meta_info:dict, start_sec:int=0, end_sec:int=60):
+    print('audio clip')
+    audio_path = meta_info['audio_root']
+    audio = AudioFileClip(audio_path).subclip(start_sec, end_sec)
+    audio.write_audiofile('./temp_audio.mp3')
+    # delete original mp4 audio
+    os.remove(audio_path)
+    
+    audio_filename = osp.basename(audio_path).split('.')[0] + '.mp3' # file name change to mp3
+    audio_dir = osp.dirname(audio_path)
+    audio_file_relpath = osp.relpath(osp.join(audio_dir, audio_filename))
+
+    # move mp3 file rename
+    shutil.move('./temp_audio.mp3', audio_file_relpath)
+    meta_info['audio_root'] = './'+audio_file_relpath
+
+    return None
+
+def download_and_capture(youtube_url:int, start_sec:int, end_sec:int, save_dir:str):
     print(f"download: {youtube_url}")
     
     youtube_id = youtube_url.split('=')[-1]
@@ -53,8 +74,14 @@ def download_and_capture(youtube_url, video_sec, save_dir): # save_dir = './data
 
     ## download video by pytube
     stream.download(output_path = save_dir, filename=meta_info["filename"]) # download video
+    print('video download finish')
+
     ## download audio by pytube, audio is mp4 extension
     download_audio(yt, save_dir, meta_info["filename"]) # download audio
+    print('audio download finish')
+
+    ## clip audio
+    clip_audio(meta_info, start_sec, end_sec)
 
     ## [width, height] checked by ffmpeg-python
     file_path = osp.join(save_dir, meta_info["filename"]) # -> 
@@ -70,10 +97,13 @@ def download_and_capture(youtube_url, video_sec, save_dir): # save_dir = './data
     img_capture_dir_path = osp.join(save_dir, 'captures')
     os.makedirs(img_capture_dir_path, exist_ok=True)
 
-    # os.system("chmod u+x ./ffmpeg-torchkpop") # 
+    ## change timestamp format 
+    start_timestamp = str(timedelta(seconds=start_sec))
+    end_timestamp = str(timedelta(seconds=end_sec))
+
     os.system("ffmpeg " + 
     f"-i {file_path} " +
-            f"-ss 00:00:0 -t {video_sec} " + # if you want slice videos input -t <sec> command -t 60 
+            f"-ss {start_timestamp} -to {end_timestamp} " + # if you want slice videos input -t <sec> command -t 60 
                 f"-r {str(meta_info['fps'])} " +
                     "-f image2 " + img_capture_dir_path + "/%d.jpg")
 
