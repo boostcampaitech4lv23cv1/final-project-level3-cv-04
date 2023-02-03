@@ -89,6 +89,12 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     GR.register_dataframes(df1 = df1, df2 = df2)
     meta_info = GR.guess_group()
     
+    # 3-2. Make new anchor face dict containing current group members
+    current_face_anchors = dict()
+    for k, v in anchor_face_embedding.items():
+        if k in meta_info['member_list']:
+            current_face_anchors[k] = v
+    
     
     #  4. sampling for extract body, face feature 
     df1_face_path = osp.join(save_dir, "csv/df1_face.pickle")
@@ -98,7 +104,7 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
         print(f'🎉 face_embedding_extractor_all 함수 skip')
         print(f'load 경로 : {df1_face_path}')
     else:
-        df1 = face_embedding.face_embedding_extractor_all(df1, df2, anchor_face_embedding, meta_info)
+        df1 = face_embedding.face_embedding_extractor_all(df1, df2, current_face_anchors, meta_info)
         save_pickle(df1_face_path, df1) ## save    
 
     #  5. query face similarity 
@@ -109,7 +115,7 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
         print(f'🎉 face_embedding_extractor 함수 skip')
         print(f'load 경로 : {df2_out_of_face_embedding_path}')
     else:
-        df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
+        df2 = face_embedding.face_embedding_extractor(df1, df2, current_face_anchors, meta_info)
         save_pickle(df2_out_of_face_embedding_path, df2) ## save
 
 
@@ -163,12 +169,13 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
 
 if __name__ == "__main__":
     # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=vvSGDIGPiPk" # target video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
     # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    video_sec=215
+    video_sec=30
     
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_karina')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_winter')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_giselle')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_ningning')
+    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_minji')
+    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_hyein')
+    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_danielle')
+    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_haerin')
+    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_hanni')
