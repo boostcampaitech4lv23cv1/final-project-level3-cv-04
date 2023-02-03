@@ -63,24 +63,16 @@ def draw_face_bbox(per_id_frames:pd.DataFrame, image_path:str, color:tuple):
 
 
 def make_video(captured_imgs_path:str, output_dir_path:str, meta_info:dict):
-    # make dir
-    JUST_ONE_TIME = True
     output_file_path = osp.join(output_dir_path, 'torch_kpop_face_tracking_video.mp4')
     out = cv2.VideoWriter(output_file_path, cv2.VideoWriter_fourcc(*'mp4v'), meta_info['fps'], (meta_info['width'], meta_info['height']))
     
     for img_file_name in tqdm(natsort.natsorted(os.listdir(captured_imgs_path))):
         img_path = osp.join(captured_imgs_path, img_file_name)
-
-        if JUST_ONE_TIME:
-            print(img_path)
-            JUST_ONE_TIME = False
-        
         img = cv2.imread(img_path)
         out.write(img)
     
     out.release()
 
-    # 제대로 열렸는지 확인
     if not out.isOpened():
         print('video open failed!')
     
@@ -106,20 +98,28 @@ def assign_color(member_names:list)->dict:
 
 # func, make full video by final result
 def make_facecame_full_resolution(RESULT_DIR_PATH:str) -> None:
-    # copy from all capture frame to full_resolution_face_video dir
+
+    # copy from all capture img for drawing bboxes 
     captured_imgs_path = osp.join(RESULT_DIR_PATH, 'full_resolution_face_imgs')
 
+    # if already copyed captured frame img → program fin
     try:
         shutil.copytree(osp.join(RESULT_DIR_PATH, 'captures'), captured_imgs_path)
     except OSError as e:
         return print('Created folder already exists. The folder must be deleted to function normally. 🙅‍♂️')
 
+    # load meta_info
     meta_info = load_meta(RESULT_DIR_PATH)
 
     csv_dir = osp.join(RESULT_DIR_PATH, 'csv')
+
+    # load df1
     df1 = load_df1(csv_dir)
     
+    # load df2
     df2_out_of_body_embedding = load_df2(csv_dir)
+
+    # load pred, pred is assinged member each track_id
     pred = load_pred(csv_dir)
 
     # drop useless columns
@@ -145,26 +145,32 @@ def make_facecame_full_resolution(RESULT_DIR_PATH:str) -> None:
     # track_id type change float to int
     df1['track_id'] = df1['track_id'].astype('int')
     
-    # assing pred
+    # assign pred value in df1 columns
     for k,v in pred.items():
         df1.loc[df1['track_id'].astype('int') == k, 'pred'] = v
     
     # assing member color
     color_dict = assign_color(df1['pred'].unique())
     
+    # print mapping color info
+    print('member color BGR value ↓')
     print(color_dict)
+    print("red=(0,0,255) blue=(255,51,0) green=(0,204,51)")
+    print("yellow=(51,255,255) emerald=(255,255,0) purple=(255,51,153)")
+    print("orange=(0,153,255)")
 
     print('drawing rectangle process...')
-    for id in tqdm(df1['track_id'].unique()):
+    for id in tqdm(df1['track_id'].unique()): # iter per track_id
         per_id_frames = df1[df1['track_id'] == id]
         assigned_name = per_id_frames['pred'].unique()[0]
-        if type(assigned_name) is not str:
+        if type(assigned_name) is not str: # for assinged name nan filtering
             continue
-        color = color_dict[assigned_name]
-        print(f'    drawing bbox {assigned_name} face (id: {id})')
-        per_id_frames = draw_face_bbox(per_id_frames, captured_imgs_path, color) # draw bboxes
+        color = color_dict[assigned_name] # get color
+        # print(f'    drawing bbox {assigned_name} face (id: {id})') # comment
+        per_id_frames = draw_face_bbox(per_id_frames, captured_imgs_path, color) # draw face bboxes
 
     print('making video process...')
+     # making video
     make_video(captured_imgs_path, RESULT_DIR_PATH, meta_info)
 
     # delete captured_img_path
