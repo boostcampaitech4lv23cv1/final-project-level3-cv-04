@@ -12,6 +12,7 @@ from mmtracking.utils.Postprocesser import postprocessing # 형훈
 from timeline.TimeLineMaker import make_timeline
 import sampler                              # 영동
 import face_embedding                       # 영동
+import group_recognizer
 import predictor                            # 영동
 
 
@@ -78,9 +79,16 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
         df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
         save_pickle(df2_sampled_path, df2) ## save
 
-    ## load pretraine face embedding 
-    with open("./pretrained_weight/anchor_face_embedding.json", "r", encoding="utf-8") as f:
+    ## load pretrained face embedding 
+    with open("./pretrained_weight/integrated_face_embedding.json", "r", encoding="utf-8") as f:
         anchor_face_embedding = json.load(f)
+
+
+    #  3-1. Group Recognizer
+    GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
+    GR.register_dataframes(df1 = df1, df2 = df2)
+    meta_info = GR.guess_group()
+    
     
     #  4. sampling for extract body, face feature 
     df1_face_path = osp.join(save_dir, "csv/df1_face.pickle")
@@ -103,6 +111,8 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     else:
         df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
         save_pickle(df2_out_of_face_embedding_path, df2) ## save
+
+
 
     #  6. make body representation 
     df2_out_of_body_embedding_path = osp.join(save_dir, 'csv/df2_out_of_body_embedding.pickle')
@@ -152,10 +162,11 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video(asepa illusion dance training)
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=9qyt9baCsQc" # hard sample
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=vvSGDIGPiPk" # target video
+    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    video_sec=60
+    video_sec=215
     
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_karina')
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_winter')
