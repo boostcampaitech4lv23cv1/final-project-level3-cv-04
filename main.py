@@ -104,11 +104,6 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
         df2 = face_embedding.face_embedding_extractor(df1, df2, anchor_face_embedding, meta_info)
         save_pickle(df2_out_of_face_embedding_path, df2) ## save
 
-    # 🛠🛠 group 판별 코드가 완성되면 지워야합니다.
-    if 'group' not in meta_info.keys() or 'member_list' not in meta_info.keys():
-        meta_info['group'] = 'aespa'
-        meta_info['member_list'] = ['aespa_karina', 'aespa_winter', 'aespa_ningning', 'aespa_giselle']
-
     #  6. make body representation 
     df2_out_of_body_embedding_path = osp.join(save_dir, 'csv/df2_out_of_body_embedding.pickle')
     if osp.exists(df2_out_of_body_embedding_path):
@@ -117,7 +112,7 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
         print(f'🎉 generate_body_anchor, body_embedding_extractor 함수 skip')
         print(f'load 경로 : {df2_out_of_body_embedding_path}')
     else:
-        body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info)
+        body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info) #, group_name="aespa"
         df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
         save_pickle(df2_out_of_body_embedding_path, df2) ## save
             
@@ -140,16 +135,16 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     video_path = osp.join(save_dir, f'make_video_video_{member}', f'{member}_output.mp4')
     if not osp.exists(video_path):
         print('🔥 video_generator 함수 실행')
-        print(f'🔥 저장 경로 : {video_path}')
         video_path = video_generator(df1, meta_info, member=member, pred=pred, save_dir=save_dir)
+        print(f'🔥 저장 경로 : {video_path}')
 
     #  9. audio mix
     file_name = osp.basename(video_path).split('.')[0] + "_mixed_audio.mp4" # final name
     mix_audio_video_path = osp.join(save_dir, file_name)
     if not osp.exists(mix_audio_video_path):
         print('🔥 mix_audio_video 함수 실행')
-        print(f'저장 경로 : {video_path}')
         mix_audio_video(video_path, meta_info, save_dir)
+        print(f'저장 경로 : {video_path}')
 
     return mix_audio_video_path
 
@@ -157,11 +152,10 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=kZlLTnE1y1Q" # target video
-    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video(asepa illusion dance training)
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=9qyt9baCsQc" # hard sample
     
-    video_sec=253
+    video_sec=60
     
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_karina')
     result = main(YOUTUBE_LINK, video_sec=video_sec, member='aespa_winter')

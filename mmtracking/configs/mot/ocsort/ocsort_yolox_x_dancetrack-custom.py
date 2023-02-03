@@ -4,18 +4,25 @@ _base_ = [
     '../../_base_/adamw_runtime.py'
 ]
 
-# img_scale = (800, 800)
+## augment
+# num_frames_retain 30 to 20
+# add mosaic
+# add random affine
+# add border clip
+# add rgb norm
+
+img_scale = (600, 800)
 samples_per_gpu = 4
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 
 model = dict(
     type='OCSORT',
     detector=dict(
-        input_size=(600, 800),
+        input_size=img_scale,
         random_size_range=(18, 32),
         bbox_head=dict(num_classes=1),
         test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.7)),
-
-        # delete for prevent confuse
         init_cfg=dict(
             type='Pretrained',
             checkpoint=  # noqa: E251
@@ -32,15 +39,102 @@ model = dict(
         num_tentatives=3,
         vel_consist_weight=0.2,
         vel_delta_t=3,
-        num_frames_retain=30))
+        num_frames_retain=30,
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint=  # noqa: E251
+            '/opt/ml/final-project-level3-cv-04/pretrained_weight/ocsort_yolox_x_crowdhuman_mot17-private-half.pth'  # noqa: E501
+        )
+        ))
+
+train_pipeline = [
+    dict(
+        type='Mosaic', # ⭐ add mosaic
+        img_scale=img_scale,
+        pad_val=114.0,
+        bbox_clip_border=False),
+    dict(
+        type='RandomAffine', # ⭐ add random affine
+        scaling_ratio_range=(0.1, 2),
+        border=(-img_scale[0] // 2, -img_scale[1] // 2),
+        bbox_clip_border=False),
+    dict(type='YOLOXHSVRandomAug'),
+    dict(
+        type='Resize',
+        img_scale=img_scale,
+        keep_ratio=True,
+        bbox_clip_border=True), # ⭐ change border clip
+    dict(type='Normalize', **img_norm_cfg), # ⭐ add rgb norm
+    dict(type='Pad', size_divisor=32, pad_val=dict(img=(114.0, 114.0, 114.0))),
+    dict(type='RandomFlip', flip_ratio=0.0),
+    dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1), keep_empty=False),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
+]
+
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=img_scale,
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip', flip_ratio = 0.0),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True), # ⭐ add rgb norm
+            dict(
+                type='Pad',
+                size_divisor=32,
+                pad_val=dict(img=(114.0, 114.0, 114.0))),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='VideoCollect', keys=['img'])
+        ])
+]
+
+data = dict(
+    samples_per_gpu=samples_per_gpu,
+    workers_per_gpu=4,
+    persistent_workers=True,
+    train=dict(
+        _delete_=True,
+        type='MultiImageMixDataset',
+        dataset=dict(
+            type='CocoDataset',
+            ann_file=[
+                'data/dancetrack/annotations/train_cocoformat.json',
+                'data/dancetrack/annotations/val_cocoformat.json'
+            ],
+            img_prefix=[
+                'data/dancetrack/train',
+                'data/dancetrack/val'
+            ],
+            classes=('pedestrian', ),
+            pipeline=[
+                dict(type='LoadImageFromFile'),
+                dict(type='LoadAnnotations', with_bbox=True)
+            ],
+            filter_empty_gt=False),
+        pipeline=train_pipeline),
+    val=dict(
+        pipeline=test_pipeline,
+        interpolate_tracks_cfg=dict(min_num_frames=5, max_num_frames=20)),
+    test=dict(
+        pipeline=test_pipeline,
+        interpolate_tracks_cfg=dict(min_num_frames=5, max_num_frames=20)))
+
 
 # some hyper parameters
-total_epochs = 10
-num_last_epochs = 1
+total_epochs = 50
+num_last_epochs = 50
 resume_from = None
-interval = 5
-val_interval = 25
-chpt_interval = 5
+interval = 1
 
 # learning policy
 lr_config = dict(
@@ -55,10 +149,10 @@ lr_config = dict(
 
 # hooks
 custom_hooks = [
-    dict(
-        type='YOLOXModeSwitchHook',
-        num_last_epochs=num_last_epochs,
-        priority=48),
+    # dict(
+    #     type='YOLOXModeSwitchHook',
+    #     num_last_epochs=num_last_epochs,
+    #     priority=48),
     dict(
         type='SyncNormHook',
         num_last_epochs=num_last_epochs,
@@ -72,8 +166,8 @@ custom_hooks = [
 ]
 
 # save config
-checkpoint_config = dict(interval=chpt_interval)
-evaluation = dict(metric=['bbox', 'track'], interval=val_interval)
+checkpoint_config = dict(interval=interval)
+evaluation = dict(metric=['bbox', 'track'], interval=100)
 search_metrics = ['MOTA', 'IDF1', 'FN', 'FP', 'IDs', 'MT', 'ML']
 
 # you need to set mode='dynamic' if you are using pytorch<=1.5.0
