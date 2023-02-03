@@ -40,4 +40,5 @@ pip install monai
 pip install gdown
 pip install insightface
 pip install natsort
+pip install plotly
 ```
