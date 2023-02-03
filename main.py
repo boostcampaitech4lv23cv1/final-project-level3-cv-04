@@ -30,10 +30,10 @@ def save_pickle(path, obj):
     with open(path, "wb") as f:
         pickle.dump(obj, f)
 
-def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
+def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
     # DOWNLOAD_PATH = './data' 
     youtube_id = YOUTUBE_LINK.split('=')[-1]
-    save_dir = osp.join('./result', youtube_id, str(video_sec))
+    save_dir = osp.join('./result', youtube_id, str(end_sec))
     print(f'save_dir : {save_dir}') # save_dir : /opt/ml/torchkpop/result/0lXwMdnpoFQ/60
     
     #  0. mp4 download and frame capture
@@ -46,7 +46,7 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     else: # mp4 download and frame capture
         os.makedirs(save_dir, exist_ok=True) # make dir if not exist
         os.makedirs(osp.join(save_dir, 'csv'), exist_ok=True) # create dir : save_dir/csv 
-        meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, video_sec, save_dir)
+        meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, start_sec, end_sec, save_dir)
 
     #  1. tracking 
     raw_df1_path = osp.join(save_dir, 'csv/df1_raw.csv')
@@ -168,14 +168,15 @@ def main(YOUTUBE_LINK, video_sec=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
     # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    video_sec=30
+    start_sec = 0
+    end_sec=30
     
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_minji')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_hyein')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_danielle')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_haerin')
-    result = main(YOUTUBE_LINK, video_sec=video_sec, member='newjeans_hanni')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hanni')
