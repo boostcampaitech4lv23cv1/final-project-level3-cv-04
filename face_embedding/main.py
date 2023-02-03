@@ -259,6 +259,21 @@ def face_embedding_extractor_all(
     return df1
 
 
+## group recognizer 용
+def detect_face_and_extract_feature(
+    image: np.ndarray
+) -> np.ndarray:
+    bboxes, keypoints = detector.autodetect(image, max_num=1)
+    if bboxes.shape[0] == 0:
+        # return (np.array([-1.0 for _ in range(512)]))
+        return 'FLAG'
+    else:
+        face_feature = np.array([rec.get(image, kps) for kps in keypoints])
+    return face_feature
+
+
+
+
 ########################################################################################
 ########################################################################################
 

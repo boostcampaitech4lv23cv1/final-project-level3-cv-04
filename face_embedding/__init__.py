@@ -1,1 +1,1 @@
-from face_embedding.main import face_embedding_extractor, detect_face, face_embedding_extractor_all
+from face_embedding.main import face_embedding_extractor, detect_face, face_embedding_extractor_all, detect_face_and_extract_feature, compute_face_confidence_all
