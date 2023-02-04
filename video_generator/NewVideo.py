@@ -109,7 +109,7 @@ def interpolation(start,end,frame):
 def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.4):
     '''
     input
-        df1 : filename,bbox,track_id
+        df1 : filename,face_keypoint,track_id,face_pred
         meta_info : 영상 정보(image_root, width, height, frame)
         save_dir : 이미지, 영상 저장 경로
         member(str형) : user가 원하는 member
@@ -134,8 +134,8 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
     
     print('video_generator실행중')
     face_df = video_df(df1,pred,member)
-    prev_px,prev_mx,prev_py,prev_my = 0,0,0,0
-    end_px,end_mx,end_py,end_my= 0,0,0,0
+    prev_px,prev_mx,prev_py,prev_my = 0,0,0,0   # 시작 좌표
+    end_px,end_mx,end_py,end_my= 0,0,0,0    # 끝 좌표
     
     #이미지 주소
     path = meta_info["image_root"]+'/'
@@ -176,7 +176,7 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
             else:   #그 외의 모든 경우
                 fidx = idx  
                 fcount = 0
-                #몇 frame동안 카리나 없는지 확인 -> fcount에 저장
+                #몇 frame동안 해당 멤버 없는지 확인 -> fcount에 저장
                 while True:
                     mem_in_img = list(face_df['face_pred'][(face_df['filename']=='{0:06}.jpg'.format(fidx))])
                     mem_in_img.append(['temp'])
@@ -193,12 +193,12 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
                         py = int(center_y + video_size_h*(10-face_loc)/10)
                         my = int(center_y - video_size_h*face_loc/10)
                         #좌표 저장
-                        end_px = px    
+                        end_px = px
                         end_mx = mx
                         end_py = py
                         end_my = my
                         break
-                    else:   # 카리나 없으면
+                    else:   # 해당 멤버 없으면
                         fcount += 1
                         fidx += 1
 
