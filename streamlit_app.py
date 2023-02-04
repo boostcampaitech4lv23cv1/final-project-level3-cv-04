@@ -4,9 +4,12 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import json
+import os
+import os.path as osp
+import shutil
 
-from app_timeline_maker import app_timeline_maker
-from app_video_maker import app_video_maker
+from streamlit_timeline_maker import app_timeline_maker
+from streamlit_video_maker import app_video_maker
 
 # for on_click
 def session_change_to_timeline():
@@ -20,15 +23,21 @@ def session_change_to_video():
 def main_page():
     st.title("Torch-kpop")
     st.title("AI makes personal videos for you 😍")
-    url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=KXX3F4j1xjo")
-    
-    
+    url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=KXX3F4j1xjo")    
+    youtube_id = url.split('=')[-1]
+    start_sec = 0  # ⭐
+    end_sec = 30  # ⭐
+    save_dir = osp.join('./streamlit_output', youtube_id, str(end_sec))
     # if input btn clicked
     if st.button("SHOW TARGET VIDEO"):
         # check youtube url  # regex reference from https://stackoverflow.com/questions/19377262/regex-for-youtube-url
         if re.match("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", url):
             # if matching youtube url, show input video, and if you click SHOW TIMELINE button, session_change_to_timeline
             st.session_state.url = url
+            st.session_state.youtube_id = youtube_id
+            st.session_state.start_sec = start_sec # ⭐
+            st.session_state.end_sec = end_sec # ⭐
+            st.session_state.save_dir = save_dir
             st.video(url)
             if st.button("SHOW TIMELINE", on_click=session_change_to_timeline): # 
                 pass
@@ -36,38 +45,36 @@ def main_page():
             st.write("Input is not youtube URL, check URL")        
 
 # make timeline
-def get_timeline_fig(timeline):
-    karina_timeline = list(set(timeline['aespa_karina']))
-    winter_timeline = list(set(timeline['aespa_winter']))
-    ningning_timeline = list(set(timeline['aespa_ningning']))
-    giselle_timeline = list(set(timeline['aespa_giselle']))
-
-    df_karina = pd.DataFrame(np.ones_like(karina_timeline)*1, columns=['karina'], index=karina_timeline)
-    df_winter = pd.DataFrame(np.ones_like(winter_timeline)*2, columns=['winter'], index=winter_timeline)
-    df_ningning = pd.DataFrame(np.ones_like(ningning_timeline)*3, columns=['ningning'], index=ningning_timeline)
-    df_giselle = pd.DataFrame(np.ones_like(giselle_timeline)*4, columns=['giselle'], index=giselle_timeline)
-
-    df_aespa = pd.concat([df_karina, df_winter, df_ningning, df_giselle], axis=1)
-    df_aespa = df_aespa.replace(1, 'karina').replace(2, 'winter').replace(3, 'ningning').replace(4, 'giselle')
-    
-    fig = px.scatter(df_aespa)
-    
+def get_timeline_fig(timeline, meta_info):
+    member_list = meta_info['member_list']
+    df_timeline_list = []
+    for i, member in enumerate(member_list): # member 예시 : 'aespa_karina'
+        member_timeline = list(set(timeline[member]))
+        df_member_timeline = pd.DataFrame(np.ones_like(member_timeline) * (i+1), columns=[member], index=member_timeline)
+        df_timeline_list.append(df_member_timeline)
+        
+    df_group = pd.concat(df_timeline_list, axis=1)
+    for i, member in enumerate(member_list):
+        df_group.replace(i+1, member)
+    fig = px.scatter(df_group)
     return fig
 
 # timeline page
 def timeline_page():
-
     # show text
     st.title("Timeline 🎥")
     
     # get timeline by inference
     with st.spinner('please wait...'):
-        df1_name_tagged, timeline, meta_info, pred = app_timeline_maker(st.session_state.url)
+        start_sec = st.session_state.start_sec # ⭐
+        end_sec = st.session_state.end_sec # ⭐
+        url = st.session_state.url
+        save_dir = st.session_state.save_dir
+        df1_name_tagged, timeline, meta_info, pred = app_timeline_maker(url, save_dir, start_sec, end_sec)
 
     # timeline
-    timeline_fig = get_timeline_fig(timeline)
+    timeline_fig = get_timeline_fig(timeline, meta_info)
     st.plotly_chart(timeline_fig, use_container_width=False)
-    
     st.session_state.df1_name_tagged_GT = df1_name_tagged
     st.session_state.meta_info = meta_info
     st.session_state.pred = pred
@@ -79,31 +86,30 @@ def timeline_page():
 def video_page():
     st.title("show all members Video 🎵")
 
-    # print(st.session_state.df1_name_tagged_GT)
-    # print(st.session_state.pred)
-
     with st.spinner('please wait...'):
-        members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
+        df1 = st.session_state.df1_name_tagged_GT
+        meta_info = st.session_state.meta_info
+        pred = st.session_state.pred
+        save_dir = st.session_state.save_dir
+        members_video_paths = app_video_maker(df1, meta_info, pred, save_dir)
     
-    print(members_video_paths)
+    for video_path in members_video_paths:
+        # encoding h264(dst)
+        src = video_path
+        dst = "./temp.mp4"
+        os.system("ffmpeg " + 
+            f"-i {src} " +
+                    f"-c:v h264 " +
+                        f"-c:a copy {dst}")
+        # delete mp4v(src)
+        os.remove(src)
+        # move (dst) to (src)
+        shutil.move(dst, src)
 
     for member_video_path in members_video_paths:
         video_file_per_member = open(member_video_path, 'rb')
         video_bytes_per_member = video_file_per_member.read()
         st.video(video_bytes_per_member)
-
-    """
-    File "/opt/conda/envs/torchkpop/lib/python3.7/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 565, in _run_script
-    exec(code, module.__dict__)
-File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 104, in <module>
-    video_page()
-File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 83, in video_page
-    members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
-File "/opt/ml/final-project-level3-cv-04/app_video_maker.py", line 5, in app_video_maker
-    import cv2
-File "/opt/ml/final-project-level3-cv-04/video_generator/MakingVideo.py", line 91, in video_generator
-    if face_embedding_result[0][0] == -1.0 and face_embedding_result[0][1] == -1.0:   # 얼굴이 없는 경우
-    """
         
     st.text("!🎉 End 🎉!")
     
