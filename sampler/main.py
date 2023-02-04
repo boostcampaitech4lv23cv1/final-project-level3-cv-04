@@ -56,11 +56,16 @@ def sampler(
     else:
         frame_per_track = []
         for track in track_ids:
-            frame_per_track.append(
+            temp_frame_per_track = (
                 len(_df1[_df1["track_id"] == track])
                 / meta_info["fps"]
                 // seconds_per_frame
             )
+            if temp_frame_per_track == 0:
+                frame_per_track.append(1)
+            else:
+                frame_per_track.append(temp_frame_per_track)
+
         frame_per_track = np.array(frame_per_track, dtype=int)
         df2 = pd.DataFrame(
             {"track_id": np.repeat(track_ids, repeats=frame_per_track), "df1_index": 0}
@@ -81,6 +86,5 @@ def sampler(
         for idx in closest_df1_index:
             df2["df1_index"][counter] = idx
             counter += 1
-        # df2[df2["track_id"] == track]['df1_index'] = closest_df1_index
 
     return df2
