@@ -4,8 +4,6 @@ import pickle
 from copy import deepcopy
 import json
 
-# {"karina":[1,2,3,5,6,7,8,9], "winter":[1,2,3,4,5,6]} # for test
-
 def make_timeline(df1:pd.DataFrame, pred:dict, save=False) -> tuple:
     
     # for streamlit

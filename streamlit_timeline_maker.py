@@ -25,7 +25,7 @@ def save_pickle(path, obj):
     with open(path, "wb") as f:
         pickle.dump(obj, f)
 
-def app_timeline_maker(YOUTUBE_LINK, save_dir, video_sec=None): # 🛠 추후에 video_sec=None 이면 풀영상 뽑도록 수정 예정
+def app_timeline_maker(YOUTUBE_LINK, save_dir, start_sec, end_sec): # 🛠 추후에 video_sec=None 이면 풀영상 뽑도록 수정 예정
     # DOWNLOAD_PATH = './data' 
     youtube_id = YOUTUBE_LINK.split('=')[-1]
 
@@ -39,7 +39,7 @@ def app_timeline_maker(YOUTUBE_LINK, save_dir, video_sec=None): # 🛠 추후에
     else: # mp4 download and frame capture
         os.makedirs(save_dir, exist_ok=True) # make dir if not exist
         os.makedirs(osp.join(save_dir, 'csv'), exist_ok=True) # create dir : save_dir/csv 
-        meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, video_sec, save_dir)
+        meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, start_sec, end_sec, save_dir)
 
     #  1. tracking 
     raw_df1_path = osp.join(save_dir, 'csv/df1_raw.csv')
@@ -69,7 +69,7 @@ def app_timeline_maker(YOUTUBE_LINK, save_dir, video_sec=None): # 🛠 추후에
         print(f'🎉 sampler 함수 skip')
         print(f'load 경로 : {df2_sampled_path}')
     else:
-        df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
+        df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
         save_pickle(df2_sampled_path, df2) ## save
 
     ## load pretrained face embedding 
@@ -142,10 +142,10 @@ def app_timeline_maker(YOUTUBE_LINK, save_dir, video_sec=None): # 🛠 추후에
 
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
-
-    df1_name_tagged.to_csv("./streamlit_output/df1_name_tagged.csv")
-
-    with open("./streamlit_output/timeline.pickle", "wb") as df1_pickel_file:
-        pickle.dump(df1_name_tagged, df1_pickel_file)
+    
+    df1_name_tagged_path = osp.join(save_dir, 'csv/df1_name_tagged.csv')
+    df1_name_tagged.to_csv(df1_name_tagged_path) ## save
+    timeline_path = osp.join(save_dir, 'csv/timeline.pickle')
+    save_pickle(timeline_path, timeline_info) ## save
     
     return df1_name_tagged, timeline_info, meta_info, pred

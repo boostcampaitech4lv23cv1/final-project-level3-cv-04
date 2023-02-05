@@ -4,9 +4,42 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import json
+import os
+import os.path as osp
+import shutil
 
-from app_timeline_maker import app_timeline_maker
-from app_video_maker import app_video_maker
+from streamlit_timeline_maker import app_timeline_maker
+from streamlit_video_maker import app_video_maker
+
+import sys
+import pickle
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "face_embedding"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "body_embedding"))
+
+import download_youtube.YoutubeDownloader as ytdownload
+from mmtracking.utils.Tracker import tracking
+from mmtracking.utils.Postprocesser import postprocessing
+from timeline.TimeLineMaker import make_timeline
+import sampler
+import face_embedding
+import group_recognizer
+import predictor
+from body_embedding.BodyEmbed import body_embedding_extractor
+from body_embedding.BodyEmbed import generate_body_anchor
+from visualization.sampling_visualization import visualize_sample
+
+
+
+### 1️. module code startline ###
+
+def save_pickle(path, obj):
+    with open(path, "wb") as f:
+        pickle.dump(obj, f)
+
+### 1. module code endline ###
+
+### 2. streamlit code startline ###
 
 # for on_click
 def session_change_to_timeline():
@@ -20,15 +53,21 @@ def session_change_to_video():
 def main_page():
     st.title("Torch-kpop")
     st.title("AI makes personal videos for you 😍")
-    url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=KXX3F4j1xjo")
-    
-    
+    url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=KXX3F4j1xjo")    
+    youtube_id = url.split('=')[-1]
+    start_sec = 0  # ⭐
+    end_sec = 40  # ⭐
+    save_dir = osp.join('./streamlit_output', youtube_id, str(end_sec))
     # if input btn clicked
     if st.button("SHOW TARGET VIDEO"):
         # check youtube url  # regex reference from https://stackoverflow.com/questions/19377262/regex-for-youtube-url
         if re.match("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", url):
             # if matching youtube url, show input video, and if you click SHOW TIMELINE button, session_change_to_timeline
             st.session_state.url = url
+            st.session_state.youtube_id = youtube_id
+            st.session_state.start_sec = start_sec # ⭐
+            st.session_state.end_sec = end_sec # ⭐
+            st.session_state.save_dir = save_dir
             st.video(url)
             if st.button("SHOW TIMELINE", on_click=session_change_to_timeline): # 
                 pass
@@ -36,38 +75,184 @@ def main_page():
             st.write("Input is not youtube URL, check URL")        
 
 # make timeline
-def get_timeline_fig(timeline):
-    karina_timeline = list(set(timeline['aespa_karina']))
-    winter_timeline = list(set(timeline['aespa_winter']))
-    ningning_timeline = list(set(timeline['aespa_ningning']))
-    giselle_timeline = list(set(timeline['aespa_giselle']))
-
-    df_karina = pd.DataFrame(np.ones_like(karina_timeline)*1, columns=['karina'], index=karina_timeline)
-    df_winter = pd.DataFrame(np.ones_like(winter_timeline)*2, columns=['winter'], index=winter_timeline)
-    df_ningning = pd.DataFrame(np.ones_like(ningning_timeline)*3, columns=['ningning'], index=ningning_timeline)
-    df_giselle = pd.DataFrame(np.ones_like(giselle_timeline)*4, columns=['giselle'], index=giselle_timeline)
-
-    df_aespa = pd.concat([df_karina, df_winter, df_ningning, df_giselle], axis=1)
-    df_aespa = df_aespa.replace(1, 'karina').replace(2, 'winter').replace(3, 'ningning').replace(4, 'giselle')
-    
-    fig = px.scatter(df_aespa)
-    
+def get_timeline_fig(timeline, meta_info):
+    member_list = meta_info['member_list']
+    df_timeline_list = []
+    for i, member in enumerate(member_list): # member 예시 : 'aespa_karina'
+        member_timeline = list(set(timeline[member]))
+        df_member_timeline = pd.DataFrame(np.ones_like(member_timeline) * int(i+1), columns=[member], index=member_timeline)
+        df_timeline_list.append(df_member_timeline)
+        
+    df_group = pd.concat(df_timeline_list, axis=1)
+    print(df_group)
+    for i, member in enumerate(member_list):
+        df_group.replace(i+1, member)
+    print(df_group)
+    fig = px.scatter(df_group, width=1000, labels={'index':'\nframe', 'value':'member'})
     return fig
+
+def get_meta_info():
+    start_sec = st.session_state.start_sec # ⭐
+    end_sec = st.session_state.end_sec # ⭐
+    YOUTUBE_LINK = st.session_state.url
+    save_dir = st.session_state.save_dir
+    youtube_id = YOUTUBE_LINK.split('=')[-1]
+    meta_info_path = osp.join(save_dir, f'{youtube_id}.json')
+    if osp.exists(meta_info_path):
+        with open(meta_info_path) as meta_info_file:
+            meta_info = json.load(meta_info_file)
+        print(f'🎉 download_and_capture 함수 skip')
+        print(f'load 경로 : {meta_info_path}')
+    else: # mp4 download and frame capture
+        os.makedirs(save_dir, exist_ok=True) # make dir if not exist
+        os.makedirs(osp.join(save_dir, 'csv'), exist_ok=True) # create dir : save_dir/csv 
+        meta_info = ytdownload.download_and_capture(YOUTUBE_LINK, start_sec, end_sec, save_dir)
+    return meta_info
+
+def get_raw_df1(meta_info):
+    save_dir = st.session_state.save_dir
+    
+    raw_df1_path = osp.join(save_dir, 'csv/df1_raw.csv')
+    if osp.exists(raw_df1_path):
+        print(f'🎉 tracking 함수 skip')
+        print(f'load 경로 : {raw_df1_path}')
+        raw_df1 = pd.read_csv(raw_df1_path)
+    else:
+        clipped_df1, raw_df1 = tracking(meta_info, output=save_dir, ANALYSIS=False) # output is save dir
+    return raw_df1
 
 # timeline page
 def timeline_page():
-
     # show text
     st.title("Timeline 🎥")
     
     # get timeline by inference
     with st.spinner('please wait...'):
-        df1_name_tagged, timeline, meta_info, pred = app_timeline_maker(st.session_state.url)
+        start_sec = st.session_state.start_sec # ⭐
+        end_sec = st.session_state.end_sec # ⭐
+        YOUTUBE_LINK = st.session_state.url
+        save_dir = st.session_state.save_dir
+        
+        # DOWNLOAD_PATH = './data' 
+        youtube_id = YOUTUBE_LINK.split('=')[-1]
 
-    # timeline
-    timeline_fig = get_timeline_fig(timeline)
-    st.plotly_chart(timeline_fig, use_container_width=False)
+        #  0. mp4 download and frame capture
+        meta_info = get_meta_info()
+        st.info('🎉 Download and Capture complete')
+
+        #  1. tracking 
+        raw_df1 = get_raw_df1(meta_info)
+        st.info('🎉 Tracking complete')
+        
+        #  2. postprocessing 
+        df1_postprocessed_path = osp.join(save_dir, "csv/df1_postprocessed.pickle")
+        if os.path.exists(df1_postprocessed_path):
+            with open(df1_postprocessed_path, 'rb') as df1_postprocessed_pickle:
+                df1 = pickle.load(df1_postprocessed_pickle)
+            print(f'🎉 Postprocessing 함수 skip')
+            print(f'load 경로 : {df1_postprocessed_path}')
+        else:
+            df1 = postprocessing(raw_df1, meta_info, sec=1)
+            save_pickle(df1_postprocessed_path, df1) ## save
+        st.info('🎉 Postprocessing complete')
+        
+        #  3. sampling for extract body, face feature 
+        df2_sampled_path = osp.join(save_dir, "csv/df2_sampled.pickle")
+        if os.path.exists(df2_sampled_path):
+            with open(df2_sampled_path, 'rb') as df2_sampled_pickle:
+                df2 = pickle.load(df2_sampled_pickle)
+            print(f'🎉 sampler 함수 skip')
+            print(f'load 경로 : {df2_sampled_path}')
+        else:
+            df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
+            save_pickle(df2_sampled_path, df2) ## save
+        st.info('🎉 Sampler complete')
+
+        ## load pretrained face embedding 
+        with open("./pretrained_weight/integrated_face_embedding.json", "r", encoding="utf-8") as f:
+            anchor_face_embedding = json.load(f)
+
+
+        #  3-1. Group Recognizer
+        GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
+        GR.register_dataframes(df1 = df1, df2 = df2)
+        meta_info = GR.guess_group()
+        
+        # 3-2. Make new anchor face dict containing current group members
+        current_face_anchors = dict()
+        for k, v in anchor_face_embedding.items():
+            if k in meta_info['member_list']:
+                current_face_anchors[k] = v
+        st.info('🎉 Group Recognizer complete')
+        
+        
+        #  4. sampling for extract body, face feature 
+        df1_face_path = osp.join(save_dir, "csv/df1_face.pickle")
+        if osp.exists(df1_face_path):
+            with open(df1_face_path, 'rb') as df1_face_pickle:
+                df1 = pickle.load(df1_face_pickle)
+            print(f'🎉 face_embedding_extractor_all 함수 skip')
+            print(f'load 경로 : {df1_face_path}')
+        else:
+            df1 = face_embedding.face_embedding_extractor_all(df1, df2, current_face_anchors, meta_info)
+            save_pickle(df1_face_path, df1) ## save    
+        st.info('🎉 Face Embedding Extractor All complete')
+
+        #  5. query face similarity 
+        df2_out_of_face_embedding_path = osp.join(save_dir, 'csv/df2_out_of_face_embedding.pickle')
+        if osp.exists(df2_out_of_face_embedding_path):
+            with open(df2_out_of_face_embedding_path, 'rb') as df2_out_of_face_embedding_pickle:
+                df2 = pickle.load(df2_out_of_face_embedding_pickle)
+            print(f'🎉 face_embedding_extractor 함수 skip')
+            print(f'load 경로 : {df2_out_of_face_embedding_path}')
+        else:
+            df2 = face_embedding.face_embedding_extractor(df1, df2, current_face_anchors, meta_info)
+            save_pickle(df2_out_of_face_embedding_path, df2) ## save
+        st.info('🎉 Face Embedding Extractor complete')
+
+
+        #  6. make body representation 
+        df2_out_of_body_embedding_path = osp.join(save_dir, 'csv/df2_out_of_body_embedding.pickle')
+        if osp.exists(df2_out_of_body_embedding_path):
+            with open(df2_out_of_body_embedding_path, 'rb') as df2_out_of_body_embedding_pickle:
+                df2 = pickle.load(df2_out_of_body_embedding_pickle)
+            print(f'🎉 generate_body_anchor, body_embedding_extractor 함수 skip')
+            print(f'load 경로 : {df2_out_of_body_embedding_path}')
+        else:
+            body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info) #, group_name="aespa"
+            df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
+            save_pickle(df2_out_of_body_embedding_path, df2) ## save
+        st.info('🎉 Body Embedding Extractor complete')
+        
+        #  extra. sampling df2 visualization
+        visualize_sample(df1, df2, save_dir, meta_info=meta_info)
+        
+        #  7. predictor
+        pred_path = osp.join(save_dir, 'csv/pred.pickle')
+        if osp.exists(pred_path):
+            with open(pred_path, 'rb') as pred_pickle:
+                pred = pickle.load(pred_pickle)
+            print(f'🎉 predictor 함수 skip')
+            print(f'load 경로 : {pred_path}')
+        else:
+            pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
+            save_pickle(pred_path, pred)
+        st.info('🎉 Predictor complete')
+        
+        # timeline maker
+        df1_name_tagged, timeline = make_timeline(df1, pred)
+        
+        df1_name_tagged_path = osp.join(save_dir, 'csv/df1_name_tagged.csv')
+        df1_name_tagged.to_csv(df1_name_tagged_path) ## save
+        timeline_path = osp.join(save_dir, 'csv/timeline.pickle')
+        save_pickle(timeline_path, timeline) ## save
     
+    # show group name
+    st.info(f'{meta_info["group"]} tilem 영상입니다!')
+        
+    # get timeline figure
+    timeline_fig = get_timeline_fig(timeline, meta_info)
+    st.plotly_chart(timeline_fig, use_container_width=False)
     st.session_state.df1_name_tagged_GT = df1_name_tagged
     st.session_state.meta_info = meta_info
     st.session_state.pred = pred
@@ -79,31 +264,33 @@ def timeline_page():
 def video_page():
     st.title("show all members Video 🎵")
 
-    # print(st.session_state.df1_name_tagged_GT)
-    # print(st.session_state.pred)
-
     with st.spinner('please wait...'):
-        members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
+        df1 = st.session_state.df1_name_tagged_GT
+        meta_info = st.session_state.meta_info
+        pred = st.session_state.pred
+        save_dir = st.session_state.save_dir
+        members_video_paths = app_video_maker(df1, meta_info, pred, save_dir)
+    member_list = meta_info['member_list']
     
-    print(members_video_paths)
+    for video_path in members_video_paths:
+        # encoding h264(dst)
+        src = video_path
+        dst = "./temp.mp4"
+        os.system("ffmpeg " + 
+            f"-i {src} " +
+                    f"-c:v h264 " +
+                        f"-c:a copy {dst}")
+        # delete mp4v(src)
+        os.remove(src)
+        # move (dst) to (src)
+        shutil.move(dst, src)
 
-    for member_video_path in members_video_paths:
+    for i, member_video_path in enumerate(members_video_paths):
+        member_name = member_list[i]
+        st.subheader(f'{member_name} 영상')
         video_file_per_member = open(member_video_path, 'rb')
         video_bytes_per_member = video_file_per_member.read()
         st.video(video_bytes_per_member)
-
-    """
-    File "/opt/conda/envs/torchkpop/lib/python3.7/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 565, in _run_script
-    exec(code, module.__dict__)
-File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 104, in <module>
-    video_page()
-File "/opt/ml/final-project-level3-cv-04/streamlit_app.py", line 83, in video_page
-    members_video_paths = app_video_maker(st.session_state.df1_name_tagged_GT, st.session_state.meta_info, st.session_state.pred)
-File "/opt/ml/final-project-level3-cv-04/app_video_maker.py", line 5, in app_video_maker
-    import cv2
-File "/opt/ml/final-project-level3-cv-04/video_generator/MakingVideo.py", line 91, in video_generator
-    if face_embedding_result[0][0] == -1.0 and face_embedding_result[0][1] == -1.0:   # 얼굴이 없는 경우
-    """
         
     st.text("!🎉 End 🎉!")
     
