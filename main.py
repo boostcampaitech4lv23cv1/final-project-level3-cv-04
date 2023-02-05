@@ -173,9 +173,10 @@ if __name__ == "__main__":
     # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
     start_sec = 0
-    end_sec=30
+    end_sec=60
     
     result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')
