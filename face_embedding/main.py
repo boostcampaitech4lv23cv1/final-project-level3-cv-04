@@ -100,7 +100,7 @@ def face_embedding_extractor(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
 
-    df2["face_embedding-face_det_confidence"] = df2.progress_apply(compute_face_feature, axis=1)
+    df2["face_embedding-face_det_confidence"] = df2.apply(compute_face_feature, axis=1)
     df2["face_embedding"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[0])
     df2["face_det_confidence"] = df2['face_embedding-face_det_confidence'].map(lambda x: x[1])
     df2.drop(["face_embedding-face_det_confidence"], axis=1, inplace=True)
@@ -231,6 +231,7 @@ def face_embedding_extractor_all(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
 
+    print('face detection & face recognition in progress')
     df1["face_bbox-face_embedding-face_keypoint"] = df1.progress_apply(compute_face_feature_all, axis=1)
     df1["face_bbox"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[0])
     df1["face_embedding"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[1])
