@@ -28,6 +28,7 @@ import predictor
 from body_embedding.BodyEmbed import body_embedding_extractor
 from body_embedding.BodyEmbed import generate_body_anchor
 from visualization.sampling_visualization import visualize_sample
+from video_generator.NewVideo import video_generator
 
 
 
@@ -146,11 +147,20 @@ def get_df2_sampled(df1, meta_info, seconds_per_frame=1):
         df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
         save_pickle(df2_sampled_path, df2) ## save
     return df2
-    
+
 def get_group_recognized_meta_info(meta_info, anchor_face_embedding, df1, df2):
-    GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
-    GR.register_dataframes(df1 = df1, df2 = df2)
-    meta_info = GR.guess_group()
+    save_dir = st.session_state.save_dir
+    meta_info_path = osp.join(save_dir, "csv/meta_info.json")
+    if osp.exists(meta_info_path):
+        with open(meta_info_path) as meta_info_file:
+            meta_info = json.load(meta_info_file)
+        print(f'🎉 group_recognizer 함수 skip')
+        print(f'load 경로 : {meta_info_path}')
+    else:
+        GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
+        GR.register_dataframes(df1 = df1, df2 = df2)
+        meta_info = GR.guess_group()
+        json.dump(meta_info, open(meta_info_path, 'w'), indent=4, ensure_ascii=False)
     return meta_info
 
 def get_current_face_anchors(meta_info, anchor_face_embedding):
@@ -174,6 +184,7 @@ def get_df1_face(df1, df2, current_face_anchors, meta_info):
     return df1
 
 def get_df2_out_of_face_embedding(df1, df2, current_face_anchors, meta_info):
+    save_dir = st.session_state.save_dir
     df2_out_of_face_embedding_path = osp.join(save_dir, 'csv/df2_out_of_face_embedding.pickle')
     if osp.exists(df2_out_of_face_embedding_path):
         with open(df2_out_of_face_embedding_path, 'rb') as df2_out_of_face_embedding_pickle:
@@ -210,6 +221,8 @@ def get_pred(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True
         pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
         save_pickle(pred_path, pred)
     return pred
+
+
 
 # timeline page
 def timeline_page():
@@ -250,7 +263,7 @@ def timeline_page():
         meta_info = get_group_recognized_meta_info(meta_info, anchor_face_embedding, df1, df2)
         # 3-2. Make new anchor face dict containing current group members
         current_face_anchors = get_current_face_anchors(meta_info, anchor_face_embedding)
-        st.info(f'🎉 Group Recognizer complete \ngroup : {meta_info["group"]}')
+        st.info(f'🎉 Group Recognizer complete 🔥 group : {meta_info["group"]}')
         
         #  4. sampling for extract body, face feature 
         df1 = get_df1_face(df1, df2, current_face_anchors, meta_info)
@@ -302,28 +315,32 @@ def video_page():
         meta_info = st.session_state.meta_info
         pred = st.session_state.pred
         save_dir = st.session_state.save_dir
-        members_video_paths = app_video_maker(df1, meta_info, pred, save_dir)
-    member_list = meta_info['member_list']
-    
-    for video_path in members_video_paths:
-        # encoding h264(dst)
-        src = video_path
-        dst = "./temp.mp4"
-        os.system("ffmpeg " + 
-            f"-i {src} " +
-                    f"-c:v h264 " +
-                        f"-c:a copy {dst}")
-        # delete mp4v(src)
-        os.remove(src)
-        # move (dst) to (src)
-        shutil.move(dst, src)
-
-    for i, member_video_path in enumerate(members_video_paths):
-        member_name = member_list[i]
-        st.subheader(f'{member_name} 직캠')
-        video_file_per_member = open(member_video_path, 'rb')
-        video_bytes_per_member = video_file_per_member.read()
-        st.video(video_bytes_per_member)
+        member_list = meta_info['member_list']
+        
+        for member in member_list:
+            member_video_path = osp.join(save_dir, f'make_video_video_{member}', f'{member}_output.mp4') # 저장할 곳에 video 파일이 이미 있으면 그대로 사용
+            if osp.exists(member_video_path): # 저장할 곳에 video 파일이 이미 존재하면 load
+                print(f'The {member} video file already exists.')    
+            else: # 저장할 곳에 video 파일이 없으면 generate
+                print(member)
+                member_video_path = video_generator(df1, meta_info, member, pred, save_dir, face_loc=3, video_size=0.4)    
+                # encoding h264(dst)
+                src = member_video_path
+                dst = "./temp.mp4"
+                os.system("ffmpeg " + 
+                    f"-i {src} " +
+                            f"-c:v h264 " +
+                                f"-c:a copy {dst}")
+                # delete mp4v(src)
+                os.remove(src)
+                # move (dst) to (src)
+                shutil.move(dst, src)
+                
+            # show video
+            st.subheader(f'{member} 직캠')
+            video_file_per_member = open(member_video_path, 'rb')
+            video_bytes_per_member = video_file_per_member.read()
+            st.video(video_bytes_per_member)
         
     st.text("!🎉 End 🎉!")
     
