@@ -121,6 +121,95 @@ def get_raw_df1(meta_info):
         clipped_df1, raw_df1 = tracking(meta_info, output=save_dir, ANALYSIS=False) # output is save dir
     return raw_df1
 
+def get_df1_postprocessed(raw_df1, meta_info, sec=1):
+    save_dir = st.session_state.save_dir
+    df1_postprocessed_path = osp.join(save_dir, "csv/df1_postprocessed.pickle")
+    if os.path.exists(df1_postprocessed_path):
+        with open(df1_postprocessed_path, 'rb') as df1_postprocessed_pickle:
+            df1 = pickle.load(df1_postprocessed_pickle)
+        print(f'🎉 Postprocessing 함수 skip')
+        print(f'load 경로 : {df1_postprocessed_path}')
+    else:
+        df1 = postprocessing(raw_df1, meta_info, sec=1)
+        save_pickle(df1_postprocessed_path, df1) ## save
+    return df1
+
+def get_df2_sampled(df1, meta_info, seconds_per_frame=1):
+    save_dir = st.session_state.save_dir
+    df2_sampled_path = osp.join(save_dir, "csv/df2_sampled.pickle")
+    if os.path.exists(df2_sampled_path):
+        with open(df2_sampled_path, 'rb') as df2_sampled_pickle:
+            df2 = pickle.load(df2_sampled_pickle)
+        print(f'🎉 sampler 함수 skip')
+        print(f'load 경로 : {df2_sampled_path}')
+    else:
+        df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
+        save_pickle(df2_sampled_path, df2) ## save
+    return df2
+    
+def get_group_recognized_meta_info(meta_info, anchor_face_embedding, df1, df2):
+    GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
+    GR.register_dataframes(df1 = df1, df2 = df2)
+    meta_info = GR.guess_group()
+    return meta_info
+
+def get_current_face_anchors(meta_info, anchor_face_embedding):
+    current_face_anchors = dict()
+    for k, v in anchor_face_embedding.items():
+        if k in meta_info['member_list']:
+            current_face_anchors[k] = v
+
+def get_df1_face(df1, df2, current_face_anchors, meta_info):
+    save_dir = st.session_state.save_dir
+    df1_face_path = osp.join(save_dir, "csv/df1_face.pickle")
+    if osp.exists(df1_face_path):
+        with open(df1_face_path, 'rb') as df1_face_pickle:
+            df1 = pickle.load(df1_face_pickle)
+        print(f'🎉 face_embedding_extractor_all 함수 skip')
+        print(f'load 경로 : {df1_face_path}')
+    else:
+        df1 = face_embedding.face_embedding_extractor_all(df1, df2, current_face_anchors, meta_info)
+        save_pickle(df1_face_path, df1) ## save
+    return df1
+
+def get_df2_out_of_face_embedding(df1, df2, current_face_anchors, meta_info):
+    df2_out_of_face_embedding_path = osp.join(save_dir, 'csv/df2_out_of_face_embedding.pickle')
+    if osp.exists(df2_out_of_face_embedding_path):
+        with open(df2_out_of_face_embedding_path, 'rb') as df2_out_of_face_embedding_pickle:
+            df2 = pickle.load(df2_out_of_face_embedding_pickle)
+        print(f'🎉 face_embedding_extractor 함수 skip')
+        print(f'load 경로 : {df2_out_of_face_embedding_path}')
+    else:
+        df2 = face_embedding.face_embedding_extractor(df1, df2, current_face_anchors, meta_info)
+        save_pickle(df2_out_of_face_embedding_path, df2) ## save
+    return df2
+
+def get_df2_out_of_body_embedding(df1, df2, save_dir, meta_info):
+    df2_out_of_body_embedding_path = osp.join(save_dir, 'csv/df2_out_of_body_embedding.pickle')
+    if osp.exists(df2_out_of_body_embedding_path):
+        with open(df2_out_of_body_embedding_path, 'rb') as df2_out_of_body_embedding_pickle:
+            df2 = pickle.load(df2_out_of_body_embedding_pickle)
+        print(f'🎉 generate_body_anchor, body_embedding_extractor 함수 skip')
+        print(f'load 경로 : {df2_out_of_body_embedding_path}')
+    else:
+        body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info) #, group_name="aespa"
+        df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
+        save_pickle(df2_out_of_body_embedding_path, df2) ## save
+    return df2
+
+def get_pred(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True):
+    save_dir = st.session_state.save_dir
+    pred_path = osp.join(save_dir, 'csv/pred.pickle')
+    if osp.exists(pred_path):
+        with open(pred_path, 'rb') as pred_pickle:
+            pred = pickle.load(pred_pickle)
+        print(f'🎉 predictor 함수 skip')
+        print(f'load 경로 : {pred_path}')
+    else:
+        pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
+        save_pickle(pred_path, pred)
+
+
 # timeline page
 def timeline_page():
     # show text
@@ -145,98 +234,41 @@ def timeline_page():
         st.info('🎉 Tracking complete')
         
         #  2. postprocessing 
-        df1_postprocessed_path = osp.join(save_dir, "csv/df1_postprocessed.pickle")
-        if os.path.exists(df1_postprocessed_path):
-            with open(df1_postprocessed_path, 'rb') as df1_postprocessed_pickle:
-                df1 = pickle.load(df1_postprocessed_pickle)
-            print(f'🎉 Postprocessing 함수 skip')
-            print(f'load 경로 : {df1_postprocessed_path}')
-        else:
-            df1 = postprocessing(raw_df1, meta_info, sec=1)
-            save_pickle(df1_postprocessed_path, df1) ## save
+        df1 = get_df1_postprocessed(raw_df1, meta_info, sec=1)
         st.info('🎉 Postprocessing complete')
         
         #  3. sampling for extract body, face feature 
-        df2_sampled_path = osp.join(save_dir, "csv/df2_sampled.pickle")
-        if os.path.exists(df2_sampled_path):
-            with open(df2_sampled_path, 'rb') as df2_sampled_pickle:
-                df2 = pickle.load(df2_sampled_pickle)
-            print(f'🎉 sampler 함수 skip')
-            print(f'load 경로 : {df2_sampled_path}')
-        else:
-            df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
-            save_pickle(df2_sampled_path, df2) ## save
+        df2 = get_df2_sampled(df1, meta_info, seconds_per_frame=1)
         st.info('🎉 Sampler complete')
 
         ## load pretrained face embedding 
         with open("./pretrained_weight/integrated_face_embedding.json", "r", encoding="utf-8") as f:
             anchor_face_embedding = json.load(f)
 
-
-        #  3-1. Group Recognizer
-        GR = group_recognizer.GroupRecognizer(meta_info = meta_info, anchors = anchor_face_embedding)
-        GR.register_dataframes(df1 = df1, df2 = df2)
-        meta_info = GR.guess_group()
-        
+        # 3-1. Group Recognizer
+        meta_info = get_group_recognized_meta_info(meta_info, anchor_face_embedding, df1, df2)
         # 3-2. Make new anchor face dict containing current group members
-        current_face_anchors = dict()
-        for k, v in anchor_face_embedding.items():
-            if k in meta_info['member_list']:
-                current_face_anchors[k] = v
+        current_face_anchors = get_current_face_anchors(meta_info, anchor_face_embedding)
         st.info('🎉 Group Recognizer complete')
         
-        
         #  4. sampling for extract body, face feature 
-        df1_face_path = osp.join(save_dir, "csv/df1_face.pickle")
-        if osp.exists(df1_face_path):
-            with open(df1_face_path, 'rb') as df1_face_pickle:
-                df1 = pickle.load(df1_face_pickle)
-            print(f'🎉 face_embedding_extractor_all 함수 skip')
-            print(f'load 경로 : {df1_face_path}')
-        else:
-            df1 = face_embedding.face_embedding_extractor_all(df1, df2, current_face_anchors, meta_info)
-            save_pickle(df1_face_path, df1) ## save    
+        df1 = get_df1_face(df1, df2, current_face_anchors, meta_info)
         st.info('🎉 Face Embedding Extractor All complete')
 
-        #  5. query face similarity 
-        df2_out_of_face_embedding_path = osp.join(save_dir, 'csv/df2_out_of_face_embedding.pickle')
-        if osp.exists(df2_out_of_face_embedding_path):
-            with open(df2_out_of_face_embedding_path, 'rb') as df2_out_of_face_embedding_pickle:
-                df2 = pickle.load(df2_out_of_face_embedding_pickle)
-            print(f'🎉 face_embedding_extractor 함수 skip')
-            print(f'load 경로 : {df2_out_of_face_embedding_path}')
-        else:
-            df2 = face_embedding.face_embedding_extractor(df1, df2, current_face_anchors, meta_info)
-            save_pickle(df2_out_of_face_embedding_path, df2) ## save
+        #  5. query face similarity
+        df2 = get_df2_out_of_face_embedding(df1, df2, current_face_anchors, meta_info)
         st.info('🎉 Face Embedding Extractor complete')
 
 
         #  6. make body representation 
-        df2_out_of_body_embedding_path = osp.join(save_dir, 'csv/df2_out_of_body_embedding.pickle')
-        if osp.exists(df2_out_of_body_embedding_path):
-            with open(df2_out_of_body_embedding_path, 'rb') as df2_out_of_body_embedding_pickle:
-                df2 = pickle.load(df2_out_of_body_embedding_pickle)
-            print(f'🎉 generate_body_anchor, body_embedding_extractor 함수 skip')
-            print(f'load 경로 : {df2_out_of_body_embedding_path}')
-        else:
-            body_anchors = generate_body_anchor(df1, df2, save_dir, meta_info=meta_info) #, group_name="aespa"
-            df2 = body_embedding_extractor(df1, df2, body_anchors, meta_info=meta_info)
-            save_pickle(df2_out_of_body_embedding_path, df2) ## save
+        df2 = get_df2_out_of_body_embedding(df1, df2, save_dir, meta_info=meta_info)
         st.info('🎉 Body Embedding Extractor complete')
         
         #  extra. sampling df2 visualization
         visualize_sample(df1, df2, save_dir, meta_info=meta_info)
         
         #  7. predictor
-        pred_path = osp.join(save_dir, 'csv/pred.pickle')
-        if osp.exists(pred_path):
-            with open(pred_path, 'rb') as pred_pickle:
-                pred = pickle.load(pred_pickle)
-            print(f'🎉 predictor 함수 skip')
-            print(f'load 경로 : {pred_path}')
-        else:
-            pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
-            save_pickle(pred_path, pred)
+        pred = get_pred(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
         st.info('🎉 Predictor complete')
         
         # timeline maker
