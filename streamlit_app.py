@@ -84,10 +84,10 @@ def get_timeline_fig(timeline, meta_info):
         df_timeline_list.append(df_member_timeline)
         
     df_group = pd.concat(df_timeline_list, axis=1)
-    print(df_group)
+    
     for i, member in enumerate(member_list):
         df_group.replace(i+1, member)
-    print(df_group)
+    
     fig = px.scatter(df_group, width=1000, labels={'index':'\nframe', 'value':'member'})
     return fig
 
@@ -158,6 +158,7 @@ def get_current_face_anchors(meta_info, anchor_face_embedding):
     for k, v in anchor_face_embedding.items():
         if k in meta_info['member_list']:
             current_face_anchors[k] = v
+    return current_face_anchors
 
 def get_df1_face(df1, df2, current_face_anchors, meta_info):
     save_dir = st.session_state.save_dir
@@ -208,7 +209,7 @@ def get_pred(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True
     else:
         pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
         save_pickle(pred_path, pred)
-
+    return pred
 
 # timeline page
 def timeline_page():
@@ -249,7 +250,7 @@ def timeline_page():
         meta_info = get_group_recognized_meta_info(meta_info, anchor_face_embedding, df1, df2)
         # 3-2. Make new anchor face dict containing current group members
         current_face_anchors = get_current_face_anchors(meta_info, anchor_face_embedding)
-        st.info('🎉 Group Recognizer complete')
+        st.info(f'🎉 Group Recognizer complete \ngroup : {meta_info["group"]}')
         
         #  4. sampling for extract body, face feature 
         df1 = get_df1_face(df1, df2, current_face_anchors, meta_info)
@@ -280,7 +281,7 @@ def timeline_page():
         save_pickle(timeline_path, timeline) ## save
     
     # show group name
-    st.info(f'{meta_info["group"]} tilem 영상입니다!')
+    st.subheader(f'{meta_info["group"]} timeline')
         
     # get timeline figure
     timeline_fig = get_timeline_fig(timeline, meta_info)
@@ -319,7 +320,7 @@ def video_page():
 
     for i, member_video_path in enumerate(members_video_paths):
         member_name = member_list[i]
-        st.subheader(f'{member_name} 영상')
+        st.subheader(f'{member_name} 직캠')
         video_file_per_member = open(member_video_path, 'rb')
         video_bytes_per_member = video_file_per_member.read()
         st.video(video_bytes_per_member)
