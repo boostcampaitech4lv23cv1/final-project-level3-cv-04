@@ -142,10 +142,10 @@ def app_timeline_maker(YOUTUBE_LINK, save_dir, start_sec, end_sec): # 🛠 추�
 
     # timeline maker
     df1_name_tagged, timeline_info = make_timeline(df1, pred)
-
-    df1_name_tagged.to_csv("./streamlit_output/df1_name_tagged.csv")
-
-    with open("./streamlit_output/timeline.pickle", "wb") as df1_pickel_file:
-        pickle.dump(df1_name_tagged, df1_pickel_file)
+    
+    df1_name_tagged_path = osp.join(save_dir, 'csv/df1_name_tagged.csv')
+    df1_name_tagged.to_csv(df1_name_tagged_path) ## save
+    timeline_path = osp.join(save_dir, 'csv/timeline.pickle')
+    save_pickle(timeline_path, timeline_info) ## save
     
     return df1_name_tagged, timeline_info, meta_info, pred
