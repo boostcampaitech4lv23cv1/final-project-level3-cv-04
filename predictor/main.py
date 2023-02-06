@@ -8,7 +8,10 @@ from collections import Counter
 def body_or_face(row, face_coefficient, body_coefficient, threshold_1, threshold_2):
 
     if type(row["face_det_confidence"]) == str:
-        return Counter()
+        # return Counter()
+        return Counter(
+            {k: v * body_coefficient * 1 for k, v in row["face_confidence"].items()}
+        )
 
     face_det_conf = float(row["face_det_confidence"])
 
