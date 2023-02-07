@@ -4,11 +4,19 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-__all__ = ['osnet_ain_x1_0']
+__all__ = [
+    'osnet_ain_x1_0', 'osnet_ain_x0_75', 'osnet_ain_x0_5', 'osnet_ain_x0_25'
+]
 
 pretrained_urls = {
     'osnet_ain_x1_0':
-    'https://drive.google.com/uc?id=1-CaioD9NaqbHK_kzSMW8VE4_3KcsRjEo'
+    'https://drive.google.com/uc?id=1-CaioD9NaqbHK_kzSMW8VE4_3KcsRjEo',
+    'osnet_ain_x0_75':
+    'https://drive.google.com/uc?id=1apy0hpsMypqstfencdH-jKIUEFOW4xoM',
+    'osnet_ain_x0_5':
+    'https://drive.google.com/uc?id=1KusKvEYyKGDTUBVRxRiz55G31wkihB6l',
+    'osnet_ain_x0_25':
+    'https://drive.google.com/uc?id=1SxQt2AvmEcgWNhaRb2xC4rP6ZwVDP0Wt'
 }
 
 
@@ -304,7 +312,7 @@ class OSNet(nn.Module):
     Reference:
         - Zhou et al. Omni-Scale Feature Learning for Person Re-Identification. ICCV, 2019.
         - Zhou et al. Learning Generalisable Omni-Scale Representations
-          for Person Re-Identification. arXiv preprint, 2019.
+          for Person Re-Identification. TPAMI, 2021.
     """
 
     def __init__(
@@ -352,7 +360,7 @@ class OSNet(nn.Module):
             self.feature_dim, channels[3], dropout_p=None
         )
         # identity classification layer
-        self.classifier = nn.Linear(self.feature_dim, num_classes)
+        self.classifier = nn.Linear(self.feature_dim, num_classes) # feature_dim = 512
 
         self._init_params()
 
@@ -373,13 +381,12 @@ class OSNet(nn.Module):
 
         layers = []
         for dim in fc_dims:
-            layers.append(nn.Linear(input_dim, dim))
+            layers.append(nn.Linear(input_dim, dim)) # dim = 512
             layers.append(nn.BatchNorm1d(dim))
             layers.append(nn.ReLU())
             if dropout_p is not None:
                 layers.append(nn.Dropout(p=dropout_p))
             input_dim = dim
-
         self.feature_dim = fc_dims[-1]
 
         return nn.Sequential(*layers)
@@ -423,17 +430,29 @@ class OSNet(nn.Module):
 
     def forward(self, x, return_featuremaps=False):
         x = self.featuremaps(x)
+        # print(f"### after featuremaps(x) size : {x.size()}")
+        # print(x)
         if return_featuremaps:
-            return x
+            return x # 2 x 512 x 50 X 25
         v = self.global_avgpool(x)
+        # print(f"### after global_avgpooling size(x) : {v.size()}") # 2x 512 x 1 x 1
+        # print(v)
         v = v.view(v.size(0), -1)
+        # print(f"### after v.view() size : {v.size()}") # 2 x 512
+        # print(v)
         if not self.training:
-            return v
+            # print("####################### self.training == Flase 여서 반환합니다~ ##########")
+            return v # <- 이거 반환함
+        # fc layer 들어가면 이상하게 모든 이미지에 대한 feature embedding이 다 같아져서 그냥 자리 바꿈
         if self.fc is not None:
-            v = self.fc(v)
-        raise Exception("classifier에 접근하려고 할 때 생기는 에러입니다. 우리는 feature vector만 가져오면 되기 때문에 필요없어요!")
+            v = self.fc(v) # 2 x 512 ✅
+            # print(f"### after fc layer size : {v.size()}") # 2 x 512 <- 여기 feature embedding 쓸게영~~~~~
+            # print(v)
+
         y = self.classifier(v)
+                        # print(f"y size : {y.size()}") # 2 x 751
         if self.loss == 'softmax':
+            print(f"return y size : {y.size()}")
             return y
         elif self.loss == 'triplet':
             return y, v
@@ -539,4 +558,64 @@ def osnet_ain_x1_0(
     )
     if pretrained:
         init_pretrained_weights(model, key='osnet_ain_x1_0')
+    return model
+
+
+def osnet_ain_x0_75(
+    num_classes=1000, pretrained=True, loss='softmax', **kwargs
+):
+    model = OSNet(
+        num_classes,
+        blocks=[
+            [OSBlockINin, OSBlockINin], [OSBlock, OSBlockINin],
+            [OSBlockINin, OSBlock]
+        ],
+        layers=[2, 2, 2],
+        channels=[48, 192, 288, 384],
+        loss=loss,
+        conv1_IN=True,
+        **kwargs
+    )
+    if pretrained:
+        init_pretrained_weights(model, key='osnet_ain_x0_75')
+    return model
+
+
+def osnet_ain_x0_5(
+    num_classes=1000, pretrained=True, loss='softmax', **kwargs
+):
+    model = OSNet(
+        num_classes,
+        blocks=[
+            [OSBlockINin, OSBlockINin], [OSBlock, OSBlockINin],
+            [OSBlockINin, OSBlock]
+        ],
+        layers=[2, 2, 2],
+        channels=[32, 128, 192, 256],
+        loss=loss,
+        conv1_IN=True,
+        **kwargs
+    )
+    if pretrained:
+        init_pretrained_weights(model, key='osnet_ain_x0_5')
+    return model
+
+
+def osnet_ain_x0_25(
+    num_classes=1000, pretrained=True, loss='softmax', **kwargs
+):
+    model = OSNet(
+        num_classes,
+        blocks=[
+            [OSBlockINin, OSBlockINin], [OSBlock, OSBlockINin],
+            [OSBlockINin, OSBlock]
+        ],
+        layers=[2, 2, 2],
+        channels=[16, 64, 96, 128],
+        loss=loss,
+        conv1_IN=True,
+        **kwargs
+    )
+    if pretrained:
+        init_pretrained_weights(model, key='osnet_ain_x0_25')
     return model

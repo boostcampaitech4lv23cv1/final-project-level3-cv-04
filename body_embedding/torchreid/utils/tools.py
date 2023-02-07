@@ -4,7 +4,6 @@ import sys
 import json
 import time
 import errno
-import cv2
 import numpy as np
 import random
 import os.path as osp
@@ -15,7 +14,8 @@ from PIL import Image
 
 __all__ = [
     'mkdir_if_missing', 'check_isfile', 'read_json', 'write_json',
-    'set_random_seed', 'download_url', 'read_image', 'read_masks', 'collect_env_info', 'perc'
+    'set_random_seed', 'download_url', 'read_image', 'collect_env_info',
+    'listdir_nohidden'
 ]
 
 
@@ -83,7 +83,7 @@ def download_url(url, dst):
             return
         duration = time.time() - start_time
         progress_size = int(count * block_size)
-        speed = int(progress_size / (1024*duration))
+        speed = 0 if duration == 0 else int(progress_size / (1024*duration))
         percent = int(count * block_size * 100 / total_size)
         sys.stdout.write(
             '\r...%d%%, %d MB, %d KB/s, %d seconds passed' %
@@ -109,8 +109,7 @@ def read_image(path):
         raise IOError('"{}" does not exist'.format(path))
     while not got_img:
         try:
-            img = cv2.imread(path)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = Image.open(path).convert('RGB')
             got_img = True
         except IOError:
             print(
@@ -118,32 +117,6 @@ def read_image(path):
                 .format(path)
             )
     return img
-
-
-def read_masks(masks_path):
-    """Reads part-based masks information from path.
-
-    Args:
-        path (str): path to an image. Part-based masks information is stored in a .npy file with image name as prefix
-
-    Returns:
-        Numpy array of size N x H x W where N is the number of part-based masks
-    """
-
-    got_masks = False
-    if not osp.exists(masks_path):
-        raise IOError('Masks file"{}" does not exist'.format(masks_path))
-    while not got_masks:
-        try:
-            masks = np.load(masks_path)
-            masks = np.transpose(masks, (1, 2, 0))
-            got_masks = True
-        except IOError:
-            print(
-                'IOError incurred when reading "{}". Will redo. Don\'t worry. Just chill.'
-                .format(masks_path)
-            )
-    return masks
 
 
 def collect_env_info():
@@ -157,5 +130,14 @@ def collect_env_info():
     return env_str
 
 
-def perc(val, decimals=2):
-    return np.around(val*100, decimals)
+def listdir_nohidden(path, sort=False):
+    """List non-hidden items in a directory.
+
+    Args:
+         path (str): directory path.
+         sort (bool): sort the items.
+    """
+    items = [f for f in os.listdir(path) if not f.startswith('.')]
+    if sort:
+        items.sort()
+    return items

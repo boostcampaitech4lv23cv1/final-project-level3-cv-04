@@ -52,7 +52,8 @@ class VideoSoftmaxEngine(ImageSoftmaxEngine):
         )
         engine.run(
             max_epoch=60,
-            save_dir='log/resnet50-softmax-mars'
+            save_dir='log/resnet50-softmax-mars',
+            print_freq=10
         )
     """
 
@@ -61,31 +62,27 @@ class VideoSoftmaxEngine(ImageSoftmaxEngine):
         datamanager,
         model,
         optimizer,
-        writer,
         scheduler=None,
         use_gpu=True,
         label_smooth=True,
-        pooling_method='avg',
-        save_model_flag=False
+        pooling_method='avg'
     ):
         super(VideoSoftmaxEngine, self).__init__(
             datamanager,
             model,
             optimizer,
-            writer,
             scheduler=scheduler,
             use_gpu=use_gpu,
-            label_smooth=label_smooth,
-            save_model_flag=save_model_flag
+            label_smooth=label_smooth
         )
         self.pooling_method = pooling_method
 
     def parse_data_for_train(self, data):
-        imgs = data[0]
-        pids = data[1]
+        imgs = data['img']
+        pids = data['pid']
         if imgs.dim() == 5:
             # b: batch size
-            # s: sequence length
+            # s: sqeuence length
             # c: channel depth
             # h: height
             # w: width
@@ -97,7 +94,7 @@ class VideoSoftmaxEngine(ImageSoftmaxEngine):
 
     def extract_features(self, input):
         # b: batch size
-        # s: sequence length
+        # s: sqeuence length
         # c: channel depth
         # h: height
         # w: width

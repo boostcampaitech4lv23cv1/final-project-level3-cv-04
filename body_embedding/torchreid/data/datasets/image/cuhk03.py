@@ -22,7 +22,6 @@ class CUHK03(ImageDataset):
     """
     dataset_dir = 'cuhk03'
     dataset_url = None
-    eval_metric = 'default'
 
     def __init__(
         self,
@@ -104,7 +103,7 @@ class CUHK03(ImageDataset):
             return
 
         import h5py
-        from scipy.misc import imsave
+        import imageio
         from scipy.io import loadmat
 
         mkdir_if_missing(self.imgs_detected_dir)
@@ -137,7 +136,7 @@ class CUHK03(ImageDataset):
                 )
                 img_path = osp.join(save_dir, img_name)
                 if not osp.isfile(img_path):
-                    imsave(img_path, img)
+                    imageio.imwrite(img_path, img)
                 img_paths.append(img_path)
             return img_paths
 

@@ -1,9 +1,8 @@
 from __future__ import division, print_function, absolute_import
 import torch
 
-from torchreid.data.masks_transforms import masks_preprocess_transforms
 from torchreid.data.sampler import build_train_sampler
-from torchreid.data.datasets import init_image_dataset, init_video_dataset, get_image_dataset
+from torchreid.data.datasets import init_image_dataset, init_video_dataset
 from torchreid.data.transforms import build_transforms
 
 
@@ -25,7 +24,6 @@ class DataManager(object):
 
     def __init__(
         self,
-        config,
         sources=None,
         targets=None,
         height=256,
@@ -33,16 +31,12 @@ class DataManager(object):
         transforms='random_flip',
         norm_mean=None,
         norm_std=None,
-        use_gpu=False,
-        use_masks=False,
-        masks_dir='',
+        use_gpu=False
     ):
         self.sources = sources
         self.targets = targets
         self.height = height
         self.width = width
-        self.masks_dir = masks_dir
-        self.config = config
 
         if self.sources is None:
             raise ValueError('sources must not be None')
@@ -56,19 +50,12 @@ class DataManager(object):
         if isinstance(self.targets, str):
             self.targets = [self.targets]
 
-        masks_config = get_image_dataset(self.sources[0]).get_masks_config(self.masks_dir)
         self.transform_tr, self.transform_te = build_transforms(
             self.height,
             self.width,
-            config,
             transforms=transforms,
             norm_mean=norm_mean,
-            norm_std=norm_std,
-            remove_background_mask=masks_config[1] if masks_config is not None else False,
-            masks_preprocess=config.model.bpbreid.masks.preprocess,
-            softmax_weight=config.model.bpbreid.masks.softmax_weight,
-            background_computation_strategy=config.model.bpbreid.masks.background_computation_strategy,
-            mask_filtering_threshold=config.model.bpbreid.masks.mask_filtering_threshold,
+            norm_std=norm_std
         )
 
         self.use_gpu = (torch.cuda.is_available() and use_gpu)
@@ -111,6 +98,10 @@ class ImageDataManager(DataManager):
         width (int, optional): target image width. Default is 128.
         transforms (str or list of str, optional): transformations applied to model training.
             Default is 'random_flip'.
+        k_tfm (int): number of times to apply augmentation to an image
+            independently. If k_tfm > 1, the transform function will be
+            applied k_tfm times to an image. This variable will only be
+            useful for training and is currently valid for image datasets only.
         norm_mean (list or None, optional): data mean. Default is None (use imagenet mean).
         norm_std (list or None, optional): data std. Default is None (use imagenet std).
         use_gpu (bool, optional): use gpu. Default is True.
@@ -124,6 +115,10 @@ class ImageDataManager(DataManager):
         workers (int, optional): number of workers. Default is 4.
         num_instances (int, optional): number of instances per identity in a batch.
             Default is 4.
+        num_cams (int, optional): number of cameras to sample in a batch (when using
+            ``RandomDomainSampler``). Default is 1.
+        num_datasets (int, optional): number of datasets to sample in a batch (when
+            using ``RandomDatasetSampler``). Default is 1.
         train_sampler (str, optional): sampler. Default is RandomSampler.
         train_sampler_t (str, optional): sampler for target train loader. Default is RandomSampler.
         cuhk03_labeled (bool, optional): use cuhk03 labeled images.
@@ -157,14 +152,13 @@ class ImageDataManager(DataManager):
 
     def __init__(
         self,
-        config,
         root='',
         sources=None,
         targets=None,
         height=256,
         width=128,
-        mask_scale=8,
         transforms='random_flip',
+        k_tfm=1,
         norm_mean=None,
         norm_std=None,
         use_gpu=True,
@@ -175,13 +169,13 @@ class ImageDataManager(DataManager):
         batch_size_test=32,
         workers=4,
         num_instances=4,
+        num_cams=1,
+        num_datasets=1,
         train_sampler='RandomSampler',
         train_sampler_t='RandomSampler',
         cuhk03_labeled=False,
         cuhk03_classic_split=False,
-        market1501_500k=False,
-        use_masks=False,
-        masks_dir=None,
+        market1501_500k=False
     ):
 
         super(ImageDataManager, self).__init__(
@@ -192,10 +186,7 @@ class ImageDataManager(DataManager):
             transforms=transforms,
             norm_mean=norm_mean,
             norm_std=norm_std,
-            use_gpu=use_gpu,
-            use_masks=use_masks,
-            masks_dir=masks_dir,
-            config=config
+            use_gpu=use_gpu
         )
 
         print('=> Loading train (source) dataset')
@@ -203,19 +194,15 @@ class ImageDataManager(DataManager):
         for name in self.sources:
             trainset_ = init_image_dataset(
                 name,
-                config=config,
-                transform_tr=self.transform_tr,
-                transform_te=self.transform_te,
+                transform=self.transform_tr,
+                k_tfm=k_tfm,
                 mode='train',
                 combineall=combineall,
                 root=root,
                 split_id=split_id,
                 cuhk03_labeled=cuhk03_labeled,
                 cuhk03_classic_split=cuhk03_classic_split,
-                market1501_500k=market1501_500k,
-                use_masks=use_masks,
-                masks_dir=masks_dir,
-                load_masks=self.config.model.bpbreid.masks.preprocess in masks_preprocess_transforms,
+                market1501_500k=market1501_500k
             )
             trainset.append(trainset_)
         trainset = sum(trainset)
@@ -229,7 +216,9 @@ class ImageDataManager(DataManager):
                 trainset.train,
                 train_sampler,
                 batch_size=batch_size_train,
-                num_instances=num_instances
+                num_instances=num_instances,
+                num_cams=num_cams,
+                num_datasets=num_datasets
             ),
             batch_size=batch_size_train,
             shuffle=False,
@@ -249,19 +238,15 @@ class ImageDataManager(DataManager):
             for name in self.targets:
                 trainset_t_ = init_image_dataset(
                     name,
-                    config=config,
-                    transform_tr=self.transform_tr,
-                    transform_te=self.transform_te,
+                    transform=self.transform_tr,
+                    k_tfm=k_tfm,
                     mode='train',
                     combineall=False, # only use the training data
                     root=root,
                     split_id=split_id,
                     cuhk03_labeled=cuhk03_labeled,
                     cuhk03_classic_split=cuhk03_classic_split,
-                    market1501_500k=market1501_500k,
-                    use_masks=use_masks,
-                    masks_dir=masks_dir,
-                    load_masks=self.config.model.bpbreid.masks.preprocess in masks_preprocess_transforms,
+                    market1501_500k=market1501_500k
                 )
                 trainset_t.append(trainset_t_)
             trainset_t = sum(trainset_t)
@@ -272,7 +257,9 @@ class ImageDataManager(DataManager):
                     trainset_t.train,
                     train_sampler_t,
                     batch_size=batch_size_train,
-                    num_instances=num_instances
+                    num_instances=num_instances,
+                    num_cams=num_cams,
+                    num_datasets=num_datasets
                 ),
                 batch_size=batch_size_train,
                 shuffle=False,
@@ -301,19 +288,14 @@ class ImageDataManager(DataManager):
             # build query loader
             queryset = init_image_dataset(
                 name,
-                config=config,
-                transform_tr=self.transform_tr,
-                transform_te=self.transform_te,
+                transform=self.transform_te,
                 mode='query',
                 combineall=combineall,
                 root=root,
                 split_id=split_id,
                 cuhk03_labeled=cuhk03_labeled,
                 cuhk03_classic_split=cuhk03_classic_split,
-                market1501_500k=market1501_500k,
-                use_masks=use_masks,
-                masks_dir=masks_dir,
-                load_masks=self.config.model.bpbreid.masks.preprocess in masks_preprocess_transforms,
+                market1501_500k=market1501_500k
             )
             self.test_loader[name]['query'] = torch.utils.data.DataLoader(
                 queryset,
@@ -327,9 +309,7 @@ class ImageDataManager(DataManager):
             # build gallery loader
             galleryset = init_image_dataset(
                 name,
-                config=config,
-                transform_tr=self.transform_tr,
-                transform_te=self.transform_te,
+                transform=self.transform_te,
                 mode='gallery',
                 combineall=combineall,
                 verbose=False,
@@ -337,10 +317,7 @@ class ImageDataManager(DataManager):
                 split_id=split_id,
                 cuhk03_labeled=cuhk03_labeled,
                 cuhk03_classic_split=cuhk03_classic_split,
-                market1501_500k=market1501_500k,
-                use_masks=use_masks,
-                masks_dir=masks_dir,
-                load_masks=self.config.model.bpbreid.masks.preprocess in masks_preprocess_transforms,
+                market1501_500k=market1501_500k
             )
             self.test_loader[name]['gallery'] = torch.utils.data.DataLoader(
                 galleryset,
@@ -370,7 +347,6 @@ class ImageDataManager(DataManager):
         print('\n')
 
 
-
 class VideoDataManager(DataManager):
     r"""Video data manager.
 
@@ -394,6 +370,10 @@ class VideoDataManager(DataManager):
         workers (int, optional): number of workers. Default is 4.
         num_instances (int, optional): number of instances per identity in a batch.
             Default is 4.
+        num_cams (int, optional): number of cameras to sample in a batch (when using
+            ``RandomDomainSampler``). Default is 1.
+        num_datasets (int, optional): number of datasets to sample in a batch (when
+            using ``RandomDatasetSampler``). Default is 1.
         train_sampler (str, optional): sampler. Default is RandomSampler.
         seq_len (int, optional): how many images to sample in a tracklet. Default is 15.
         sample_method (str, optional): how to sample images in a tracklet. Default is "evenly".
@@ -430,7 +410,6 @@ class VideoDataManager(DataManager):
 
     def __init__(
         self,
-        config,
         root='',
         sources=None,
         targets=None,
@@ -446,13 +425,14 @@ class VideoDataManager(DataManager):
         batch_size_test=3,
         workers=4,
         num_instances=4,
+        num_cams=1,
+        num_datasets=1,
         train_sampler='RandomSampler',
         seq_len=15,
         sample_method='evenly'
     ):
 
         super(VideoDataManager, self).__init__(
-            config=config,
             sources=sources,
             targets=targets,
             height=height,
@@ -486,7 +466,9 @@ class VideoDataManager(DataManager):
             trainset.train,
             train_sampler,
             batch_size=batch_size_train,
-            num_instances=num_instances
+            num_instances=num_instances,
+            num_cams=num_cams,
+            num_datasets=num_datasets
         )
 
         self.train_loader = torch.utils.data.DataLoader(

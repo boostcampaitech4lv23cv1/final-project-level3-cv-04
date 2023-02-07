@@ -3,12 +3,12 @@ import os
 import sys
 import os.path as osp
 
-from torchreid.utils.tools import mkdir_if_missing
+from .tools import mkdir_if_missing
 
-__all__ = ['StdoutLogger', 'RankLogger']
+__all__ = ['Logger', 'RankLogger']
 
 
-class StdoutLogger(object):
+class Logger(object):
     """Writes console output to external text file.
 
     Imported from `<https://github.com/Cysu/open-reid/blob/master/reid/utils/logging.py>`_
