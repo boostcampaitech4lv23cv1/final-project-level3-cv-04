@@ -33,8 +33,8 @@ def save_pickle(path, obj):
 def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
     # DOWNLOAD_PATH = './data' 
     youtube_id = YOUTUBE_LINK.split('=')[-1]
-    save_dir = osp.join('./result', youtube_id, str(end_sec))
-    print(f'save_dir : {save_dir}') # save_dir : /opt/ml/torchkpop/result/0lXwMdnpoFQ/60
+    save_dir = osp.join('./result', youtube_id, f"{start_sec}_{end_sec}") # save_dir_name chage from endtime to starttime_endtime
+    print(f'save_dir : {save_dir}') # ex) if you assign start time 30 and end time 60sec so save_dir: "./result/0lXwMdnpoFQ/30_60"
     
     #  0. mp4 download and frame capture
     meta_info_path = osp.join(save_dir, f'{youtube_id}.json') 
@@ -168,15 +168,16 @@ def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
-    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # aespa baseline video(illusion)
+    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # aespa hardcore video(illusion)
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=13aW5zJ832U" # newjeans cherry pick video(cookie)
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # newjeans hypeboy video
     
-    start_sec = 0
-    end_sec=60
+    start_sec = 20
+    end_sec = 40
     
     result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
-    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')

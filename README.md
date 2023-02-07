@@ -41,4 +41,5 @@ pip install gdown
 pip install insightface
 pip install natsort
 pip install plotly
+pip install moviepy
 ```
