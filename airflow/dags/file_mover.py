@@ -10,8 +10,8 @@ import shutil
 
 def executer_filterout(target_path, remainder_names):
     for item in os.listdir(target_path):
-        path = os.path.join(target_path, item)
-        if os.path.isdir(path):
+        path = osp.join(target_path, item)
+        if osp.isdir(path):
             if item not in remainder_names:
                 shutil.rmtree(path)
                 print("removed folder :", path)
@@ -20,14 +20,14 @@ def executer_filterout(target_path, remainder_names):
             print("removed file:", path)
 
 
-def executer_getsamples(target_path, samples_foldername, save_path):
+def executer_getsamples(target_path, linkID, vidSEC, samples_foldername, save_path):
     target_path = osp.join(target_path, samples_foldername)
     if not osp.isdir(target_path):
         print("INFO - no sampled images folder found!")
         return
-    
-    os.makedirs(save_target_path, exist_ok=True)
-    
+
+    os.makedirs(save_path, exist_ok=True)
+
     for filename in os.listdir(target_path):
         tags = filename.rstrip(".jpg").split("_")
         trackID = tags[0]
@@ -37,9 +37,15 @@ def executer_getsamples(target_path, samples_foldername, save_path):
         pred2 = tags[6]
         if pred1 == pred2:
             src = osp.join(target_path, filename)
+
+            foldername = linkID + "_" + vidSEC + "_" + groupname + "_" + pred1
+
             newname = trackID + "_" + dfIndex + "_" + groupname + "_" + pred1
-            os.makedirs(osp.join(save_path, pred1), exist_ok=True)
-            dest = osp.join(save_path, pred1, newname + ".jpg")
+
+            os.makedirs(osp.join(save_path, foldername), exist_ok=True)
+
+            dest = osp.join(save_path, foldername, newname + ".jpg")
+
             os.replace(src, dest)
             print("sample saved at", dest)
 
@@ -47,25 +53,78 @@ def executer_getsamples(target_path, samples_foldername, save_path):
     print("removed folder :", target_path)
 
 
-def executer(*args):
+def executer(target_path, save_path):
     # executer should take 'result' folder's path
     # executer should take Destination folder's path to save train images
-    TARGET_PATH = args[0]
-    SAVE_PATH = args[1]
-    for linkID in os.listdir(TARGET_PATH):
-        if osp.isdir(osp.join(TARGET_PATH, linkID)) and len(linkID) == 11:
-            current_linkID = osp.join(TARGET_PATH, linkID)
+
+    # save_path 내부의 파일 모두 삭제
+    for filename in os.listdir(save_path):
+        current = osp.join(save_path, filename)
+        if osp.isdir(current):
+            shutil.rmtree(current)
+            print("removed folder:", current)
+        else:
+            os.remove(current)
+            print("removed file:", current)
+
+    for linkID in os.listdir(target_path):
+        if osp.isdir(osp.join(target_path, linkID)) and len(linkID) == 11:
+            current_linkID = osp.join(target_path, linkID)
             for vidSEC in os.listdir(current_linkID):
                 if osp.isdir(osp.join(current_linkID, vidSEC)):
                     current_vidSEC = osp.join(current_linkID, vidSEC)
-                    
+
                     # csv 폴더와 sampled_images 폴더만 남기고 지움
                     executer_filterout(current_vidSEC, ["csv", "sampled_images"])
-                    
-                    save_target_path = osp.join(SAVE_PATH, linkID+'_'+vidSEC)
-                    
+
                     # sampled_images 폴더 안에서 save_target_path 폴더로 샘플 이미지 가져옴
-                    executer_getsamples(current_vidSEC, "sampled_images", save_target_path)
+                    executer_getsamples(
+                        current_vidSEC, linkID, vidSEC, "sampled_images", save_path
+                    )
+
+
+def formatter(target_path):
+
+    train_folder = osp.join(target_path, "train")
+    os.makedirs(train_folder, exist_ok=True)
+    query_folder = osp.join(target_path, "query")
+    os.makedirs(query_folder, exist_ok=True)
+    gallery_folder = osp.join(target_path, "gallery")
+    os.makedirs(gallery_folder, exist_ok=True)
+
+    for folder in os.listdir(target_path):
+        if folder in ["train", "gallery", "query"]:
+            continue
+
+        current_path = osp.join(target_path, folder)
+        if not osp.isdir(current_path):
+            continue
+
+        linkID, vidsec = (
+            folder.split("_")[0],
+            folder.split("_")[1] + "_" + folder.split("_")[2],
+        )
+
+        len_images = len(os.listdir(current_path))
+
+        for i, filename in enumerate(os.listdir(current_path)):
+            now_file = osp.join(current_path, filename)
+            dest_filename = linkID + "_" + vidsec + "_" + filename
+
+            ratio = (i + 1) / len_images
+            # gallery
+            if ratio < 0.5:
+                os.replace(now_file, osp.join(gallery_folder, dest_filename))
+
+            # train
+            elif 0.5 <= ratio < 0.83:
+                os.replace(now_file, osp.join(train_folder, dest_filename))
+
+            # query
+            elif ratio >= 0.83:
+                os.replace(now_file, osp.join(query_folder, dest_filename))
+
+        shutil.rmtree(osp.join(target_path, folder))
 
 
 default_args = dict(
@@ -88,8 +147,15 @@ with DAG(
         python_callable=executer,
         op_args=[
             "/opt/ml/torchkpop/result",
-            "/opt/ml/torchkpop/body_embedding/train_images",
+            "/opt/ml/torchkpop/body_embedding/data/kpop",
         ],
     )
 
-    execute
+    formatter = PythonOperator(
+        task_id="format_moved_images",
+        python_callable=formatter,
+        op_args=["/opt/ml/torchkpop/body_embedding/data/kpop"],
+    )
+
+    execute >> formatter
+
