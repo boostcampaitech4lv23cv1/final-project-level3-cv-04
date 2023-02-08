@@ -76,7 +76,7 @@ def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
         print(f'🎉 sampler 함수 skip')
         print(f'load 경로 : {df2_sampled_path}')
     else:
-        df2 = sampler.sampler(df1, meta_info, seconds_per_frame=5)
+        df2 = sampler.sampler(df1, meta_info, seconds_per_frame=1)
         save_pickle(df2_sampled_path, df2) ## save
 
     ## load pretrained face embedding 
@@ -168,17 +168,19 @@ def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # aespa baseline video(illusion)
-    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # aespa hardcore video(illusion)
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=13aW5zJ832U" # newjeans cherry pick video(cookie)
-    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # newjeans hypeboy video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=13aW5zJ832U" # target video
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
+    # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    start_sec = 20
-    end_sec = 40
+    start_sec = 0
+    end_sec=240
     
-    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
-    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
-    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
-    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')
-    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hanni')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_ningning')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_giselle')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_minji')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hanni')

@@ -81,4 +81,4 @@ def vis_debug(INPUT_PATH, remove_captures_afterward = True):
     
     
 if __name__ == '__main__':
-    vis_debug('/opt/ml/torchkpop/result/jUmeh5yvy0M/33')
+    vis_debug('/opt/ml/torchkpop/result/0lXwMdnpoFQ/199')
