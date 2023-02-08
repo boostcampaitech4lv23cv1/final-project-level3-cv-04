@@ -170,7 +170,7 @@ def img_padding(img, xmin, ymin, xmax, ymax, w, h):
     return img, xmin, ymin, xmax, ymax
 
 
-def moving_avg_untrackrow(df, keep_threshold):
+def moving_avg_untrackrow(df, keep_threshold, meta_info):
     df['increase_decrease_bbox'] = [None] * len(df)
     df.at[0, 'increase_decrease_bbox'] = df.at[0, 'shift_bbox']
     cnt=0
@@ -178,7 +178,7 @@ def moving_avg_untrackrow(df, keep_threshold):
     df['is_track_update'] = [False]*len(df)
     for i in range(1, len(df)):
         # if untrack case
-        if df.at[i, 'shift_bbox'] == [0,0,2880,2160] and df.at[i, 'is_track'] == False:
+        if df.at[i, 'shift_bbox'] == [0,0,meta_info['width'],meta_info['height']] and df.at[i, 'is_track'] == False:
             # increase cnt
             cnt+=1
             if i > 0 and i < len(df) - 1:
@@ -198,15 +198,21 @@ def moving_avg_untrackrow(df, keep_threshold):
                 df.at[i, 'increase_decrease_bbox'] = df.at[i-1, 'shift_bbox']
         # if tracked appeared
         else:
-            # update short track_state
+            # short_lange untrack case
             if 0<cnt<keep_threshold:
                 for j in range(cnt):
                     target_idx = i-(j+1)
                     df.at[target_idx, 'increase_decrease_bbox'] = last_state
                     df.at[target_idx, 'is_track_update'] = True # if short time state update
+            # long_lange untrack case
+                
+            elif cnt>=keep_threshold:
+                pass
+            
             cnt=0
             df.at[i, 'increase_decrease_bbox'] = df.at[i, 'shift_bbox']
             last_state=df.at[i, 'shift_bbox']
+        
     df['need_padding'] = df['is_track'] | df['is_track_update']
     return df
 
@@ -239,6 +245,7 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
         else: # untracked
             if mode == 'normal': 
                 img = cv2.resize(img, dsize=(window_width, window_height), interpolation=cv2.INTER_CUBIC)
+                xmin, ymin, xmax, ymax = 0, 0, window_width, window_height
         # append
         padded_box.append([xmin, ymin, xmax, ymax])
         # if unmatching window img print size
@@ -251,12 +258,19 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
     return df, dir_path
 
 
-def enlarge_with_padding(img, crop_width, crop_height, window_width, window_height, padding_tag):
+def enlarge_with_padding(img, crop_width, crop_height, window_width, window_height, padding_tag, path):
     if padding_tag == True:
         padded_img = np.zeros((window_height, window_width, 3), dtype=np.uint8)
         x_offset = int((window_width - crop_width) / 2)
         y_offset = int((window_height - crop_height) / 2)
-        padded_img[y_offset:y_offset+crop_height, x_offset:x_offset+crop_width, :] = img
+        try:
+           padded_img[y_offset:y_offset+crop_height, x_offset:x_offset+crop_width, :] = img
+        except:
+            print(f"error occur in enlarge_with_padding, file:{path}")
+            print("input img size:", img.shape)
+            print(f"window size: ({window_height}, {window_width})" )
+            print("so just resize")
+            padded_img = cv2.resize(img, (window_width, window_height), interpolation=cv2.INTER_CUBIC)
     else:
         padded_img = cv2.resize(img, (window_width, window_height), interpolation=cv2.INTER_CUBIC)
     return padded_img
@@ -291,7 +305,7 @@ def make_video(dir_path, df, meta_info, save_dir, window_height, window_width, n
         # enlarge_with_padding(img, crop_width, crop_height, window_width, window_height)
         if tag == 'vertical' or tag=='horizontal':
             # def enlarge_with_padding(img, crop_width, crop_height, window_width, window_height, padding_tag):
-            img = enlarge_with_padding(img, crop_w, crop_h,window_width, window_height, padding_tag)
+            img = enlarge_with_padding(img, crop_w, crop_h, window_width, window_height, padding_tag, path)
         # if normal don't need post processing
         out.write(img)
     out.release()
@@ -302,7 +316,7 @@ def make_video(dir_path, df, meta_info, save_dir, window_height, window_width, n
 
 def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:str,
               window_ratio:float, aespect_ratio:float, shift_bb:float):
-    print('generation video start...')
+    view_type = None
     # calc window size
     window_height = int(meta_info['height']*window_ratio)
     window_width = int(meta_info['width']*window_ratio)
@@ -338,11 +352,12 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
     # 4. get center_bbox(bbox center is key_point)
     df['center_bbox'] = df['center_point'].apply(lambda x: keypoint_center_bounding_box(x, crop_height, crop_width))
 
-    # 5. shifting bbox, if undetected keypoints or unmatching preds bbox is full
+    # 5. shifting bbox, if undetected keypoints or unmatching preds bbox is [0, 0, meta_info['width'], meta_info['height']]
     df['shift_bbox'] = df['center_bbox'].apply(lambda x: shift_bounding_box(x, shift_bb, meta_info))
 
     # 6. extract selected member
     df = df[df['name'] == member]
+    print(f'after member select {len(df)} rows left.')
 
     # 7. get all captures img filenames
     img_dir_path = meta_info['image_root'].replace('.','..') # change for current path
@@ -350,19 +365,24 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
 
     # 8. add missing rows
     df = add_missing_files(df, img_files, member, meta_info)
+    print(f'after add missing_images {len(df)} rows left.')
 
     # 9. tagging untracked frame
     df['is_track'] = df['shift_bbox'].apply(lambda x: tagging_untrack_frame(x, meta_info))
     
     # 10. trim, drop useless column
     df = trim(df)
-
+    
     # 11. moving avg untrack row
-    df = moving_avg_untrackrow(df, keep_threshold=meta_info['fps']) # df add column increase_decrease_bbox
-
+    df = moving_avg_untrackrow(df, meta_info['fps']*5, meta_info) # df add column increase_decrease_bbox
+    
     # option. smoothing
     df = smoothing(df, 'increase_decrease_bbox') # df add column smoothed_bbox
-
+    
+    # Remove duplicate rows in column A and keep the first occurrence
+    df = df.drop_duplicates(subset='filename', keep='first')
+    print(f'after del duplicates {len(df)} rows left.')
+    
     # 12. clip img for over bbox, if long untracked frame made by resume
     df, crop_img_path = crop_resize_save_img(df, 
                                              img_dir_path, 
@@ -373,6 +393,8 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
                                              crop_height, 
                                              crop_width, 
                                              mode)
+    print(f'after clip {len(df)} rows left.')
+
     
     # 13. making video
     video_path = make_video(crop_img_path, df, meta_info, save_dir, window_height, window_width, member)

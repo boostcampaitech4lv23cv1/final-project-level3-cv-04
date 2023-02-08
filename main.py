@@ -168,15 +168,16 @@ def main(YOUTUBE_LINK, start_sec:int, end_sec:int=60, member='aespa_karina'):
     
 
 if __name__ == "__main__":
-    YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
+    # YOUTUBE_LINK = "https://www.youtube.com/watch?v=0lXwMdnpoFQ" # target video
     # YOUTUBE_LINK = "https://www.youtube.com/watch?v=rpyjbG6DC4g" # target video
+    YOUTUBE_LINK = "https://www.youtube.com/watch?v=13aW5zJ832U" # newjeans
     # YOUTUBE_LINK = "https://youtu.be/fPpbfQiisA0" # hard sample
     
-    start_sec = 0
-    end_sec=60
+    start_sec=0
+    end_sec=120
     
-    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_karina')
-    result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
+    result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_minji')
+    # result = main(YOUTUBE_LINK, start_sec, end_sec, member='aespa_winter')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_hyein')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_danielle')
     # result = main(YOUTUBE_LINK, start_sec, end_sec, member='newjeans_haerin')

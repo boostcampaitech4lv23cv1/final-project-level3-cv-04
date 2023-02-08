@@ -7,7 +7,9 @@ mmdetection
 mmtracking/work_dirs
 mmtracking/*.txt
 mmtracking/data/*
-video_generator/aespa_ninging
+video_generator/*/*.jpg
+video_generator/*/*.ipynb
+
 # sangheon
 visualization/sampled_bbox_img
 improve_body/*
