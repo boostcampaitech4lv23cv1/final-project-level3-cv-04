@@ -59,10 +59,10 @@ def img_padding(img,px,mx,py,my,w,h):   # img 사이즈 범위 밖으로 벗어�
 
 def video_df(df1,pred,member):  # 들어온 df를 깔끔하게 정리
     df1 = df1.drop('face_embedding',axis=1)
-    df1 = df1.drop('track_body_xmin',axis=1)
-    df1 = df1.drop('track_body_ymin',axis=1)
-    df1 = df1.drop('track_body_xmax',axis=1)
-    df1 = df1.drop('track_body_ymax',axis=1)
+    df1 = df1.drop('det_body_xmin',axis=1)
+    df1 = df1.drop('det_body_ymin',axis=1)
+    df1 = df1.drop('det_body_xmax',axis=1)
+    df1 = df1.drop('det_body_ymax',axis=1)
     df1 = df1.drop('num_overlap_bboxes',axis=1)
     df1 = df1.drop('intercept_iou',axis=1)
     df1 = df1.drop('isfront',axis=1)
@@ -105,6 +105,8 @@ def interpolation(start,end,frame):
         
     return coordinates
 
+def find_indexes(lst, target):
+    return [i for i, x in enumerate(lst) if x == target]
 
 def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.4):
     '''
@@ -151,13 +153,47 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
         else:   #img 범위 내
             mem_in_img = list(face_df['face_pred'][(face_df['filename']=='{0:06}.jpg'.format(idx))])
             mem_in_img.append(['temp'])
+            
             if member in mem_in_img[0]: #image에 member가 있을 경우
-                _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
-                face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
-                # print(face_keypoints)
-                eye = face_keypoints[0] + face_keypoints[1]
-                center_x = (float(eye[0]))/2    
-                center_y = (float(eye[1]))/2
+                indexes = find_indexes(mem_in_img[0], member)
+                if len(indexes) > 1:
+                    body_xmin = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_xmin'].values[0])
+                    body_ymin = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_ymin'].values[0])
+                    body_xmax = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_xmax'].values[0])
+                    body_ymax = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_ymax'].values[0])
+                    print('bbb:',body_xmin)
+                    print(type(body_xmin))
+                    body_center_x = (body_xmax - body_xmin)/2 + body_xmin
+                    body_center_y = (body_ymax - body_ymin)/10 + body_ymin
+                    distances = []
+                    centers_x = []
+                    centers_y = []
+                    face_keypoints  = list(face_df['face_keypoint'][(face_df['filename']=='{0:06}.jpg'.format(idx))])
+                    for i in indexes:
+                        eye = face_keypoints[0][i][0] +  face_keypoints[0][i][1]
+                        print('eyes:',eye)
+                        center_x = (float(eye[0]))/2    
+                        center_y = (float(eye[1]))/2
+                        centers_x.append(center_x)
+                        centers_y.append(center_y)
+                        print('dis : ', (center_x - body_center_x)**2 + (center_y - body_center_y)**2)
+                        distances.append((center_x - body_center_x)**2 + (center_y - body_center_y)**2)
+                        
+                        
+                    whichface = distances.index(min(distances))
+                    print(distances)
+                    print(distances.index(min(distances)))
+                    center_x = centers_x[whichface]
+                    center_y = centers_y[whichface]
+                    print(center_x,center_y)
+                else:
+                    _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(idx)].iloc[0]
+                    face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
+                    # print(face_keypoints)
+                    eye = face_keypoints[0] + face_keypoints[1]
+                    center_x = (float(eye[0]))/2    
+                    center_y = (float(eye[1]))/2
+                    
                 px = int(center_x + video_size_w/2)                 # 오른쪽 아래 x 좌표
                 mx = int(center_x - video_size_w/2)                 # 왼쪽 위 x 좌표
                 py = int(center_y + video_size_h*(10-face_loc)/10)  # 오른쪽 아래 y 좌표
@@ -183,11 +219,40 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
                     if fidx >= img_len:    #총 이미지 수 보다 커지면 while문 탈출
                         break
                     elif member in mem_in_img[0]: # image에 member가 존재하면
-                        _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)].iloc[0]
-                        face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
-                        eye = face_keypoints[0] + face_keypoints[1]
-                        center_x = (float(eye[0]))/2    
-                        center_y = (float(eye[1]))/2
+                        indexes = find_indexes(mem_in_img[0], member)
+                        if len(indexes) > 1:
+                            body_xmin = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(fidx) ]['track_body_xmin'].values[0])
+                            body_ymin = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(fidx) ]['track_body_ymin'].values[0])
+                            body_xmax = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(fidx) ]['track_body_xmax'].values[0])
+                            body_ymax = float(face_df[face_df['filename'] =='{0:06}.jpg'.format(fidx) ]['track_body_ymax'].values[0])
+                            body_center_x = (body_xmax - body_xmin)/2 + body_xmin
+                            body_center_y = (body_ymax - body_ymin)/10 + body_ymin
+                            face_keypoints  = list(face_df['face_keypoint'][(face_df['filename']=='{0:06}.jpg'.format(fidx))])
+                            distances = []
+                            centers_x = []
+                            centers_y = []
+                            for i in indexes:
+                                eye = face_keypoints[0][i][0] +  face_keypoints[0][i][1]
+                                print('eyes:',eye)
+                                center_x = (float(eye[0]))/2    
+                                center_y = (float(eye[1]))/2
+                                centers_x.append(center_x)
+                                centers_y.append(center_y)
+                                print('dis : ', (center_x - body_center_x)**2 + (center_y - body_center_y)**2)
+                                distances.append((center_x - body_center_x)**2 + (center_y - body_center_y)**2)                 
+                            whichface = distances.index(min(distances))
+                            print(distances)
+                            print(distances.index(min(distances)))
+                            center_x = centers_x[whichface]
+                            center_y = centers_y[whichface]
+                            print(center_x,center_y)
+                        else:
+                            _series = face_df[face_df['filename'] == '{0:06d}.jpg'.format(fidx)].iloc[0]
+                            face_keypoints = list(_series['face_keypoint'][_series['face_pred'].index(member)])   # xmin, ymin xmax,ymax
+                            # print(face_keypoints)
+                            eye = face_keypoints[0] + face_keypoints[1]
+                            center_x = (float(eye[0]))/2    
+                            center_y = (float(eye[1]))/2
                         px = int(center_x + video_size_w/2)
                         mx = int(center_x - video_size_w/2)
                         py = int(center_y + video_size_h*(10-face_loc)/10)
