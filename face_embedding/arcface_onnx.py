@@ -63,10 +63,15 @@ class ArcFaceONNX:
         if ctx_id < 0:
             self.session.set_providers(["CPUExecutionProvider"])
 
-    def get(self, img, kps):
+    def get(self, img, kps, mode='original'):
         aimg = face_align.norm_crop(img, landmark=kps, image_size=self.input_size[0])
-        embedding = self.get_feat(aimg).flatten()
-        return embedding
+        
+        if mode != 'original':
+            return aimg
+        
+        else:
+            embedding = self.get_feat(aimg).flatten()
+            return embedding
 
     def compute_sim(self, feat1, feat2):
         from numpy.linalg import norm

@@ -9,7 +9,16 @@ from scrfd import SCRFD
 from arcface_onnx import ArcFaceONNX
 from tqdm import tqdm
 
+
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
+import onnx
+from onnx2torch import convert
+from collections import Counter
+
 tqdm.pandas()
+
+
 
 def detect_face(image: np.ndarray) -> np.ndarray:
     # image = cv2.imread(image)
@@ -93,9 +102,7 @@ def face_embedding_extractor(
         drop=True
     )
 
-    # df2["filename"] = df2["filename"].map(
-    #     lambda x: os.path.join("/opt/ml/data/frame_1080p", x)
-    # )
+
     df2["filename"] = df2["filename"].map(
         lambda x: os.path.join(meta_info["image_root"], x)
     )
@@ -117,12 +124,6 @@ def face_embedding_extractor(
         inplace=True,
     )
 
-    # df2["face_embedding"] = (
-    #     df1.loc[df2["df1_index"]]["filename"]
-    #     .map(lambda x: os.path.join("/opt/ml/data/frame_1080p", x))
-    #     .map(compute_face_feature)
-    #     .reset_index(drop=True)
-    # )
 
     df2["face_confidence"] = (
         df2["face_embedding"]
@@ -132,7 +133,6 @@ def face_embedding_extractor(
 
     df2["face_pred"] = df2["face_confidence"].map(lambda x: max(x, key=x.get))
 
-    # df2.to_csv("/opt/ml/torchkpop/df2.csv", sep=",")
     return df2
 
 
@@ -165,7 +165,7 @@ def compute_face_feature_all(row) -> np.ndarray:
     image = cv2.imread(row["full_filename"])
 
     if np.isnan(row["track_body_xmin"]):
-        return ("FLAG", "FLAG", "FLAG")
+        return ("FLAG", "FLAG")
 
     else:
         xmin = int(row["track_body_xmin"])
@@ -180,22 +180,20 @@ def compute_face_feature_all(row) -> np.ndarray:
 
         bboxes, kpss = detector.autodetect(image, max_num=5, metric="center_high")
         if bboxes.shape[0] == 0:
-            return ("FLAG", "FLAG", "FLAG")
+            return ("FLAG", "FLAG")
 
         else:
-            # bboxes = np.delete(bboxes, 4, axis=1)
+
             for i in range(len(bboxes)):
                 bboxes[i][0] = int(bboxes[i][0] + xmin)
                 bboxes[i][1] = int(bboxes[i][1] + ymin)
                 bboxes[i][2] = int(bboxes[i][2] + xmin)
                 bboxes[i][3] = int(bboxes[i][3] + ymin)
-                
-            face_feature = np.array([rec.get(image, kps) for kps in kpss])
-            
-            kpss[:,:,0] = kpss[:,:,0].astype(int) + xmin
-            kpss[:,:,1] = kpss[:,:,1].astype(int) + ymin
-            
-            return (bboxes, face_feature, kpss)
+
+            kpss[:, :, 0] = kpss[:, :, 0].astype(int) + xmin
+            kpss[:, :, 1] = kpss[:, :, 1].astype(int) + ymin
+
+            return (bboxes, kpss)
 
 
 def compute_face_confidence_all(
@@ -232,11 +230,42 @@ def face_embedding_extractor_all(
     )
 
     print('face detection & face recognition in progress')
-    df1["face_bbox-face_embedding-face_keypoint"] = df1.progress_apply(compute_face_feature_all, axis=1)
-    df1["face_bbox"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[0])
-    df1["face_embedding"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[1])
-    df1["face_keypoint"] = df1["face_bbox-face_embedding-face_keypoint"].map(lambda x: x[2])
-    df1.drop(["face_bbox-face_embedding-face_keypoint"], axis=1, inplace=True)
+
+    #----------------------------------------------------------------------------------------------------
+
+    df1["face_bbox-face_keypoint"] = df1.progress_apply(compute_face_feature_all, axis=1)
+    df1["face_bbox"] = df1["face_bbox-face_keypoint"].map(lambda x: x[0])
+    df1["face_keypoint"] = df1["face_bbox-face_keypoint"].map(lambda x: x[1])
+    df1.drop(["face_bbox-face_keypoint"], axis=1, inplace=True)
+
+
+    MyDataset = CustomDataset(df1["full_filename"].values, df1["face_bbox"], df1['face_keypoint'],transform)
+    MyDataLoader = DataLoader(MyDataset, batch_size=200, shuffle=False, num_workers=5)
+
+    embeddings = []
+    for i, batch in enumerate(tqdm(MyDataLoader)):
+        result = model(batch.cuda())
+        result = result.detach().cpu().numpy()
+        for j in range(len(result)):
+            embeddings.append(result[j][np.newaxis, :])
+
+    flag_checker = df1["face_bbox"].map(lambda x: True if type(x[0]) != str else False).values
+    embeddings = np.array(embeddings)
+
+
+    _series = []
+    tick = 0
+    for count, flag in zip(MyDataset.counts.tolist(), flag_checker):
+        if flag == True:
+            _series.append(np.squeeze(embeddings[tick: tick+count], 1))
+        else:
+            _series.append("FLAG")
+        tick += count
+
+    df1['face_embedding'] = _series
+
+    #----------------------------------------------------------------------------------------------------
+
 
     df1["face_confidence"] = (
         df1["face_embedding"]
@@ -244,9 +273,6 @@ def face_embedding_extractor_all(
         .map(simple_softmax_all)
     )
 
-    # df1["face_pred"] = df1["face_confidence"].map(
-    #     lambda x: [max(y, key=y.get) if type(y) != str else "FLAG" for y in x]
-    # )
     
     used_in_df2 = df2['df1_index'].unique()
     df1['face_embedding'].loc[np.isin(df1.index, used_in_df2, invert=True)] = "FLAG"
@@ -279,19 +305,10 @@ def detect_face_and_extract_feature(
 ########################################################################################
 
 
-# if __name__ == "__main__":
-
-# for meta_json in os.listdir("./data/"):
-#     if os.path.splitext(meta_json)[-1] == ".json":
-#         break
-
-# with open(os.path.join("./data", meta_json), "r", encoding="utf-8") as f:
-#     meta_json = json.load(f)
 
 
 onnxruntime.set_default_logger_severity(3)
 
-# root_dir = "./face_embedding"
 root_dir = "./pretrained_weight"
 
 detector = SCRFD(os.path.join(root_dir, "det_10g.onnx"))
@@ -301,3 +318,55 @@ model_path = os.path.join(root_dir, "w600k_r50.onnx")
 
 rec = ArcFaceONNX(model_path)
 rec.prepare(0)
+
+
+onnx_model = onnx.load(model_path)
+model = convert(onnx_model)
+model.eval()
+model.cuda()
+
+
+transform = transforms.Compose([transforms.ToTensor()])
+
+
+class CustomDataset(Dataset):
+    def __init__(self, full_filename, face_bbox, face_keypoint, transform):
+
+        self.counts = face_bbox.map(lambda x: len(x) if type(x[0]) != str else 1).values
+        self.full_filename = np.repeat(full_filename, self.counts)
+
+        temp = []
+        for y in face_bbox:
+            if type(y[0]) == str:
+                temp.append("FLAG")
+            else:
+                for x in y:
+                    temp.append(x)
+        self.face_bbox = temp
+        
+        temp = []
+        for y in face_keypoint:
+            if type(y[0]) == str:
+                temp.append("FLAG")
+            else:
+                for x in y:
+                    temp.append(x)
+        self.face_keypoint = temp
+        
+        self.transform = transform
+        
+
+    def __len__(self):
+        return len(self.full_filename)
+    
+
+    def __getitem__(self, idx):
+        if type(self.face_bbox[idx]) == str:
+            img = np.zeros(shape=(112, 112, 3), dtype=np.uint8)
+
+        else:
+            keypoint = self.face_keypoint[idx]
+            img = cv2.imread(self.full_filename[idx])
+            img = rec.get(img, keypoint, mode='dataloader')
+
+        return self.transform(img)
