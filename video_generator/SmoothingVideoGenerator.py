@@ -14,7 +14,10 @@ from scipy.signal import savgol_filter
 from PIL import Image
 from tqdm import tqdm
 import shutil
+import matplotlib.pyplot as plt
+import os
 import argparse
+
 
 
 
@@ -102,8 +105,23 @@ def add_missing_files(df, all_files, name, meta_info):
                                     'shift_bbox': [[0,0,meta_info['width'],meta_info['height']] for i in list(missing_files)],
                                     })
         df = df.append(missing_df, ignore_index=True)
+    
     df = df.sort_values(by='frame' ,ascending=True)
     df.reset_index(inplace=True, drop=True)
+    return df
+
+
+def replace_values(row, target_col, width, height):
+    xmin, ymin, xmax, ymax = row[target_col]
+    if xmin == 0 and ymin == 0 and xmax >= width:
+        row[target_col] = [0, 0, width, ymax]
+    if xmin == 0 and ymin == 0 and ymax >= height:
+        row[target_col] = [0, 0, xmax, height]
+    return row
+
+
+def update_overange_bounding_box(df, target_col,width, height):
+    df = df.apply(lambda row: replace_values(row, target_col, width, height), axis=1)
     return df
 
 
@@ -120,8 +138,26 @@ def tagging_untrack_frame(row, meta_info):
         return True
 
 
-#### smoothing
-def smoothing(df, target_column):
+# for plotting time series
+def plot_time_series(df, target_col, prefix, filename, col=2):
+    colname = "xmax" if col==2 else "ymax"
+    # Extract xmax from each row of A and store it as a new column xmax
+    temp = pd.DataFrame()
+    temp['max'] = df[target_col].apply(lambda x: x[col])
+    # Plot xmax as a time series
+    plt.plot(temp['max'])
+    plt.xlabel(colname)
+    plt.ylabel('coorinate')
+    plt.title('Time Series Plot')
+    # Save the plot
+    filename = f'{colname}_plot_{prefix}_{filename}.png'
+    filepath = os.path.join(os.getcwd(), filename)
+    plt.savefig(filepath)
+    return filepath
+
+
+# savitzky_golay smoothing
+def savitzky_golay(df, target_column, output_column):
     # split coordinates
     df['xmin'] = [coordinate[0] for coordinate in df[target_column]]
     df['ymin'] = [coordinate[1] for coordinate in df[target_column]]
@@ -138,8 +174,66 @@ def smoothing(df, target_column):
     df['xmax'] = df['xmax'].astype('int')
     df['ymax'] = df['ymax'].astype('int')
 
-    df['smoothed_bbox'] = df.apply(collect_values, axis=1)
+    df[output_column] = df.apply(collect_values, axis=1)
 
+    return df
+
+
+def moving_average(df, window_size, target_column,  output_column):
+    # split coordinates
+    df['xmin'] = [coordinate[0] for coordinate in df[target_column]]
+    df['ymin'] = [coordinate[1] for coordinate in df[target_column]]
+    df['xmax'] = [coordinate[2] for coordinate in df[target_column]]
+    df['ymax'] = [coordinate[3] for coordinate in df[target_column]]
+
+    def smoothing(row, window):
+        window = row.rolling(window)
+        mean = window.mean()
+        result = np.where(np.isnan(mean), row, mean)
+        return result
+    
+    df['xmin'] = df[['xmin']].apply(smoothing, args=(window_size,))
+    df['ymin'] = df[['ymin']].apply(smoothing, args=(window_size,))
+    df['xmax'] = df[['xmax']].apply(smoothing, args=(window_size,))
+    df['ymax'] = df[['ymax']].apply(smoothing, args=(window_size,))
+
+    df['xmin'] = df['xmin'].astype('int')
+    df['ymin'] = df['ymin'].astype('int')
+    df['xmax'] = df['xmax'].astype('int')
+    df['ymax'] = df['ymax'].astype('int')
+
+    df[output_column] = df.apply(collect_values, axis=1)
+
+    df = df.drop(['xmin', 'ymin', 'xmax', 'ymax'], axis=1)
+    return df
+
+
+def moving_median(df, window_size, target_column,  output_column):
+    # split coordinates
+    df['xmin'] = [coordinate[0] for coordinate in df[target_column]]
+    df['ymin'] = [coordinate[1] for coordinate in df[target_column]]
+    df['xmax'] = [coordinate[2] for coordinate in df[target_column]]
+    df['ymax'] = [coordinate[3] for coordinate in df[target_column]]
+
+    def smoothing(row, window):
+        window = row.rolling(window)
+        mean = window.median()
+        result = np.where(np.isnan(mean), row, mean)
+        return result
+    
+    df['xmin'] = df[['xmin']].apply(smoothing, args=(window_size,))
+    df['ymin'] = df[['ymin']].apply(smoothing, args=(window_size,))
+    df['xmax'] = df[['xmax']].apply(smoothing, args=(window_size,))
+    df['ymax'] = df[['ymax']].apply(smoothing, args=(window_size,))
+
+    df['xmin'] = df['xmin'].astype('int')
+    df['ymin'] = df['ymin'].astype('int')
+    df['xmax'] = df['xmax'].astype('int')
+    df['ymax'] = df['ymax'].astype('int')
+
+    df[output_column] = df.apply(collect_values, axis=1)
+
+    df = df.drop(['xmin', 'ymin', 'xmax', 'ymax'], axis=1)
     return df
 
 
@@ -170,18 +264,20 @@ def img_padding(img, xmin, ymin, xmax, ymax, w, h):
     return img, xmin, ymin, xmax, ymax
 
 
-def moving_avg_untrackrow(df, keep_threshold, meta_info):
-    df['increase_decrease_bbox'] = [None] * len(df)
-    df.at[0, 'increase_decrease_bbox'] = df.at[0, 'shift_bbox']
+def short_untrack_bbox_update(df, target_col_name, new_col_name,keep_threshold, meta_info):
+    df[new_col_name] = [None] * len(df)
+    df.at[0, new_col_name] = df.at[0, target_col_name]
     cnt=0
     last_state=None
     df['is_track_update'] = [False]*len(df)
     for i in range(1, len(df)):
         # if untrack case
-        if df.at[i, 'shift_bbox'] == [0,0,meta_info['width'],meta_info['height']] and df.at[i, 'is_track'] == False:
+        if df.at[i, target_col_name] == [0,0,meta_info['width'],meta_info['height']] and df.at[i, 'is_track'] == False:
             # increase cnt
             cnt+=1
             if i > 0 and i < len(df) - 1:
+                # move avg
+                '''
                 # calculate the average of the previous and next values for each component of shift_bbox
                 xmin = int((df.at[i-1, 'shift_bbox'][0] + df.at[i+1, 'shift_bbox'][0]) / 2)
                 ymin = int((df.at[i-1, 'shift_bbox'][1] + df.at[i+1, 'shift_bbox'][1]) / 2)
@@ -190,34 +286,38 @@ def moving_avg_untrackrow(df, keep_threshold, meta_info):
                 # update the values of shift_bbox in the current row
                 df.at[i, 'increase_decrease_bbox'] = [xmin, ymin, xmax, ymax]
                 # update state
+                '''
+                # keep value
+                df.at[i, new_col_name] = [0,0,meta_info['width'],meta_info['height']]
             elif i == 0:
-                # if the current row is the first row, take the value of the next row
-                df.at[i, 'increase_decrease_bbox'] = df.at[i+1, 'shift_bbox']
+                # if the current row is the first & undetect row, take the value of the next row
+                df.at[i, new_col_name] = df.at[i+1, target_col_name]
             else:
-                # if the current row is the last row, take the value of the previous row
-                df.at[i, 'increase_decrease_bbox'] = df.at[i-1, 'shift_bbox']
+                # if the current row is the last & undetect row, take the value of the previous row
+                df.at[i, new_col_name] = df.at[i-1, target_col_name]
         # if tracked appeared
         else:
-            # short_lange untrack case
+            # short_lange untrack case, fill last_state
             if 0<cnt<keep_threshold:
                 for j in range(cnt):
                     target_idx = i-(j+1)
-                    df.at[target_idx, 'increase_decrease_bbox'] = last_state
+                    df.at[target_idx, new_col_name] = last_state
                     df.at[target_idx, 'is_track_update'] = True # if short time state update
-            # long_lange untrack case
                 
+            # long_lange untrack case, don't care
             elif cnt>=keep_threshold:
                 pass
             
             cnt=0
-            df.at[i, 'increase_decrease_bbox'] = df.at[i, 'shift_bbox']
-            last_state=df.at[i, 'shift_bbox']
+            # untracked case just keep [0, 0, width, height] value
+            df.at[i, new_col_name] = df.at[i, target_col_name]
+            last_state=df.at[i, target_col_name]
         
     df['need_padding'] = df['is_track'] | df['is_track_update']
     return df
 
 
-def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col, window_height, window_width, mode):
+def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col, window_height, window_width, mode, fullscreen):
     mini_df = df[['filename', target_col, 'need_padding']]
     cnt=0
     width = meta_info['width']
@@ -230,8 +330,10 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
     for order, (index, row) in tqdm(enumerate(mini_df.iterrows())):
         # load
         img = cv2.imread(osp.join(img_dir_path, row['filename']))
+        
         # get bbox coordinate
         xmin, ymin, xmax, ymax = row[target_col][0], row[target_col][1], row[target_col][2], row[target_col][3]
+
         if row['need_padding']: # tracked
             # get center-point
             center_y, center_x = (ymin+ymax)//2, (xmin+xmax)//2
@@ -242,10 +344,17 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
                 img, xmin, ymin, xmax, ymax = img_padding(img, xmin, ymin, xmax, ymax, width, height)
             # crop
             img = img[ymin:ymax, xmin:xmax]
+        
         else: # untracked
-            if mode == 'normal': 
-                img = cv2.resize(img, dsize=(window_width, window_height), interpolation=cv2.INTER_CUBIC)
+            if fullscreen==True: # mode == 'normal' 
+                img = cv2.resize(img, dsize=(meta_info['width'], meta_info['height']), interpolation=cv2.INTER_CUBIC)
                 xmin, ymin, xmax, ymax = 0, 0, window_width, window_height
+            else: # fullscreen==False:
+                center_y, center_x = (ymin+ymax)//2, (xmin+xmax)//2
+                # get new xmin, ymin, xmax, ymax
+                xmin, ymin, xmax, ymax = center_x-window_width//2, center_y-window_height//2, center_x+window_width//2, center_y+window_height//2
+                img = img[ymin:ymax, xmin:xmax]
+        
         # append
         padded_box.append([xmin, ymin, xmax, ymax])
         # if unmatching window img print size
@@ -266,7 +375,7 @@ def enlarge_with_padding(img, crop_width, crop_height, window_width, window_heig
         try:
            padded_img[y_offset:y_offset+crop_height, x_offset:x_offset+crop_width, :] = img
         except:
-            print(f"error occur in enlarge_with_padding, file:{path}")
+            print(f"error occur in enlarge_with_padding, file: {path}")
             print("input img size:", img.shape)
             print(f"window size: ({window_height}, {window_width})" )
             print("so just resize")
@@ -314,32 +423,40 @@ def make_video(dir_path, df, meta_info, save_dir, window_height, window_width, n
 
 
 
+
+
 def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:str,
-              window_ratio:float, aespect_ratio:float, shift_bb:float):
+              window_ratio:float, aespect_ratio:float, shift_bb:float, fullscreen=True):
     view_type = None
     # calc window size
     window_height = int(meta_info['height']*window_ratio)
     window_width = int(meta_info['width']*window_ratio)
     
-    print(f'window size: hegiht:{window_height}, width:{window_width}')
-
+    print(f"start making {member}'s facecam")
     # calc crop_size and assign mode
     if aespect_ratio >= 1:
-        print('horizontal mode') # width fix
+        print('horizontal video mode')
         mode = 'horizontal'
         crop_width = window_width # width is Criteria
         crop_height = int(crop_width * 1/aespect_ratio)
+        if fullscreen==False:
+            ValueError(f"{mode} must need full screen")
     elif aespect_ratio==0:
-        print('normal mode')
+        print('normal video mode')
         mode = 'normal'
-        crop_height = window_height
+        crop_height = window_height # hold the original video asepect
         crop_width = window_width
     else:
-        print('vertical mode')
+        print('vertical video mode')
         mode = 'vertical'
-        crop_height = window_height
+        crop_height = window_height # height is Criteria
         crop_width = int(crop_height*aespect_ratio)
+        if fullscreen==False:
+            ValueError(f"{mode} must need full screen")
 
+    print(f'window size: hegiht: {window_height}, width: {window_width}')
+    print(f'video mode: hegiht: {mode}')
+    print(f'show full screen: {fullscreen}')
     # 1. clansing df
     df = clansing(df, pred)
     
@@ -357,7 +474,7 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
 
     # 6. extract selected member
     df = df[df['name'] == member]
-    print(f'after member select {len(df)} rows left.')
+    # print(f'after member select {len(df)} rows left.') # for debugging
 
     # 7. get all captures img filenames
     img_dir_path = meta_info['image_root'].replace('.','..') # change for current path
@@ -365,25 +482,34 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
 
     # 8. add missing rows
     df = add_missing_files(df, img_files, member, meta_info)
-    print(f'after add missing_images {len(df)} rows left.')
+    # img_path = plot_time_series(df, 'shift_bbox', "0", 'add_missing_files', col=2) # for debugging
+    # print(f'img_path: {img_path}')
 
     # 9. tagging untracked frame
     df['is_track'] = df['shift_bbox'].apply(lambda x: tagging_untrack_frame(x, meta_info))
     
     # 10. trim, drop useless column
     df = trim(df)
+
+    # 11. moving avg untrack row, ignore threshold
+    df = short_untrack_bbox_update(df, 'shift_bbox', 'ignore_short_untrack',meta_info['fps']*5, meta_info) # df add column increase_decrease_bbox
+    # img_path = plot_time_series(df, 'ignore_short_untrack', 1, 'ignore_short_untrack', col=2) # for debugging
+    # print(f'img_path: {img_path}') # for debugging
     
-    # 11. moving avg untrack row
-    df = moving_avg_untrackrow(df, meta_info['fps']*5, meta_info) # df add column increase_decrease_bbox
+    # 12. smoothing ⭐
+    df = moving_median(df, meta_info['fps']*1, 'ignore_short_untrack', 'median_bbox')
+    df = moving_average(df, int(meta_info['fps']*.5), 'median_bbox', 'smoothed_bbox')
+    # df = savitzky_golay(df, 'median_bbox', 'smoothed_bbox') # df add column smoothed_bbox
+    # img_path = plot_time_series(df, 'smoothed_bbox', 2, 'moving_median_avg', col=2) # for debugging
+    # print(f'img_path: {img_path}') # for debugging
     
-    # option. smoothing
-    df = smoothing(df, 'increase_decrease_bbox') # df add column smoothed_bbox
-    
-    # Remove duplicate rows in column A and keep the first occurrence
+    # 13. drop_duplicates row
     df = df.drop_duplicates(subset='filename', keep='first')
-    print(f'after del duplicates {len(df)} rows left.')
+    # img_path = plot_time_series(df, 'smoothed_bbox', 3, 'drop_duplicates', col=2) # for debugging
+    # print(f'img_path: {img_path}') # for debugging
     
-    # 12. clip img for over bbox, if long untracked frame made by resume
+    
+    # 14. clip img for over bbox, if long untracked frame made by resume
     df, crop_img_path = crop_resize_save_img(df, 
                                              img_dir_path, 
                                              save_dir, 
@@ -392,24 +518,27 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
                                              'smoothed_bbox', 
                                              crop_height, 
                                              crop_width, 
-                                             mode)
-    print(f'after clip {len(df)} rows left.')
+                                             mode,
+                                             fullscreen)
 
     
-    # 13. making video
+    # 15. making video
     video_path = make_video(crop_img_path, df, meta_info, save_dir, window_height, window_width, member)
     
-    # 14. delete crop imgs
+    # 16. delete crop imgs
     shutil.rmtree(crop_img_path)
     
+    print('video generation finish')
     return video_path
+
+
 
 def get_args_parser():
     parser = argparse.ArgumentParser('SmoothingVideoGenerator', add_help=False)
-    parser.add_argument('--df_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/20/csv/df1_face.pickle', type=str)
-    parser.add_argument('--meta_info_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/20/0lXwMdnpoFQ.json', type=str)
-    parser.add_argument('--member_name', default='aespa_ningning', type=str)
-    parser.add_argument('--pred_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/20/csv/pred.pickle', type=str)
+    parser.add_argument('--df_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/100/csv/df1_face.pickle', type=str)
+    parser.add_argument('--meta_info_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/100/0lXwMdnpoFQ.json', type=str)
+    parser.add_argument('--member_name', default='aespa_winter', type=str)
+    parser.add_argument('--pred_root', default='/opt/ml/final-project-level3-cv-04/result/0lXwMdnpoFQ/100/csv/pred.pickle', type=str)
     parser.add_argument('--save_dir', default='./', type=str)
     parser.add_argument('--window_ratio', default=0.5, type=float)
     parser.add_argument('--aespect_ratio', default=0., type=float)
@@ -418,7 +547,7 @@ def get_args_parser():
     return parser
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser('from jpg root to mp4', parents=[get_args_parser()])
+    parser = argparse.ArgumentParser('from to mp4', parents=[get_args_parser()])
     args = parser.parse_args()
     
     for arg in vars(args):
@@ -441,7 +570,8 @@ if __name__ == "__main__":
                      args.save_dir, 
                      args.window_ratio, 
                      args.aespect_ratio, 
-                     args.shift_bb
+                     args.shift_bb,
+                     True
                      )
 
     print(f'video path is {path}')

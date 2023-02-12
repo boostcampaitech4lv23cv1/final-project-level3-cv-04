@@ -11,7 +11,7 @@ _base_ = [
 # add border clip
 # add rgb norm
 
-img_scale = (648, 864) # ⭐ 600x800 to 648x864
+img_scale = (800, 1440) # ⭐ 600x800 to 648x864
 samples_per_gpu = 4
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
@@ -69,8 +69,11 @@ train_pipeline = [
         type='Resize',
         img_scale=img_scale,
         keep_ratio=True,
-        bbox_clip_border=True), # ⭐ change border clip
-    dict(type='Normalize', **img_norm_cfg), # ⭐ add rgb norm
+        bbox_clip_border=False),
+    dict(type='Normalize', 
+         mean=[0.0, 0.0, 0.0],
+         std=[1.0, 1.0, 1.0],
+         to_rgb=False), # ⭐ add rgb norm
     dict(type='Pad', size_divisor=32, pad_val=dict(img=(114.0, 114.0, 114.0))),
     dict(type='RandomFlip', flip_ratio=0.0),
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1), keep_empty=False),
@@ -137,7 +140,7 @@ data = dict(
 
 
 # some hyper parameters
-total_epochs = 50
+total_epochs = 30
 num_last_epochs = 50
 resume_from = None
 interval = 1
