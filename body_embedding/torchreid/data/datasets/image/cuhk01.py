@@ -21,10 +21,11 @@ class CUHK01(ImageDataset):
         - identities: 971.
         - images: 3884.
         - cameras: 4.
+
+    Note: CUHK01 and CUHK02 overlap.
     """
     dataset_dir = 'cuhk01'
     dataset_url = None
-    eval_metric = 'default'
 
     def __init__(self, root='', split_id=0, **kwargs):
         self.root = osp.abspath(osp.expanduser(root))

@@ -57,8 +57,8 @@ def main_page():
     url = st.text_input(label="Input youtube URL 🔻", placeholder="https://www.youtube.com/watch?v=KXX3F4j1xjo")    
     youtube_id = url.split('=')[-1]
     start_sec = 0  # ⭐
-    end_sec = 40  # ⭐
-    save_dir = osp.join('./streamlit_output', youtube_id, str(end_sec))
+    end_sec = 260  # ⭐
+    save_dir = osp.join('./streamlit_output', youtube_id, str(start_sec) + '_' + str(end_sec))
     # if input btn clicked
     if st.button("SHOW TARGET VIDEO"):
         # check youtube url  # regex reference from https://stackoverflow.com/questions/19377262/regex-for-youtube-url
@@ -221,8 +221,6 @@ def get_pred(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True
         pred = predictor.predictor(df1, df2, face_coefficient=1, body_coefficient=1, no_duplicate=True)
         save_pickle(pred_path, pred)
     return pred
-
-
 
 # timeline page
 def timeline_page():

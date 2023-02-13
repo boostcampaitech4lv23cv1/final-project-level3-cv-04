@@ -83,7 +83,8 @@ class GroupRecognizer():
                 if v > top_conf:
                     top_conf = v
                     top_name = k
-            votes[top_name] += 1
+            if top_name:
+                votes[top_name] += 1
             
         self.votes = votes
         

@@ -27,6 +27,7 @@ def save_meta_info(dict_type_info, file_path):
     print(f"meta-info saved in [{dir_path}], file name is {file_name}")
     return None
 
+
 def download_audio(yt:YouTube,  output_path: str, filename:str) -> None:
     for stream in yt.streams.filter(only_audio=True).order_by("abr").desc():
         if "mp4a" in stream.audio_codec:
@@ -62,7 +63,8 @@ def download_and_capture(youtube_url:int, start_sec:int, end_sec:int, save_dir:s
     meta_info = {}
     meta_info["filename"] = youtube_id+".mp4" # -> 0lXwMdnpoFQ.mp4
     meta_info["title"] = stream.title
-    meta_info["description"] = yt.description
+    meta_info["description"] = yt.description # yt.length
+    meta_info["video_full_length"] = yt.length
     meta_info["vcodec"] = stream.video_codec
     meta_info["fps"] = stream.fps
     meta_info["itag"] = stream.itag
