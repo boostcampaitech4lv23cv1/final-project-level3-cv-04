@@ -111,7 +111,7 @@ def interpolation(start,end,frame):
 def find_indexes(lst, target):
     return [i for i, x in enumerate(lst) if x == target]
 
-def find_center_in_image(mem_idx, idx, df):
+def find_center_in_image(mem_idx, idx, df,member):
     if len(mem_idx) > 1:
         body_xmin = float(df[df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_xmin'].values[0])
         body_ymin = float(df[df['filename'] =='{0:06}.jpg'.format(idx) ]['track_body_ymin'].values[0])
@@ -199,7 +199,7 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
             
             if member in mem_in_img[0]: #image에 member가 있을 경우
                 mem_idx = find_indexes(mem_in_img[0], member)
-                center_x,center_y = find_center_in_image(mem_idx, idx, face_df)
+                center_x,center_y = find_center_in_image(mem_idx, idx, face_df,member)
                 px,mx,py,my = coordinate_for_crop_img(center_x,center_y,video_size_w,video_size_h,face_loc)
 
                 #좌표 저장
@@ -222,7 +222,7 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
                         break
                     elif member in mem_in_img[0]: # image에 member가 존재하면
                         mem_idx = find_indexes(mem_in_img[0], member)
-                        center_x,center_y = find_center_in_image(mem_idx, fidx, face_df)
+                        center_x,center_y = find_center_in_image(mem_idx, fidx, face_df,member)
                         px,mx,py,my = coordinate_for_crop_img(center_x,center_y,video_size_w,video_size_h,face_loc)
 
                         #좌표 저장
