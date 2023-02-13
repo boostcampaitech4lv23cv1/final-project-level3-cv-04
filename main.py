@@ -20,7 +20,7 @@ from body_embedding.BodyEmbed import body_embedding_extractor # 상헌
 from body_embedding.BodyEmbed import generate_body_anchor # 상헌
 import json
 import pandas as pd
-from video_generator.NewVideo import video_generator
+from video_generator.VideoGenerator import video_generator
 from visualization.sampling_visualization import visualize_sample
 from video_generator.AudioMixer import mix_audio_video
 import pickle
