@@ -1,4 +1,5 @@
 # Torch K-pop
+[README_KOREAN](https://github.com/boostcampaitech4lv23cv1/final-project-level3-cv-04/blob/main/README_KOR.md)
 
 ![intro](./document/intro.gif)  
 ## 1. Introduction

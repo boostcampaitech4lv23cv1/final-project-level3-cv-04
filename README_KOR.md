@@ -69,11 +69,12 @@ pip install plotly
 pip install moviepy
 ```
 ### 2) Download pretrain weight
-[OC-SORT](http://www.naver.com): MOT model weight  
-[Face embedding](http://www.naver.com): only newjeans and asepa are now supported.  
-[Face Model name](http://www.naver.com): Face Detection model weight.  
-[Face Recognition model name](http://www.naver.com): Face Recognition model weight.  
-[Re-identification model name](http://www.naver.com): Re-identification model weight.  
+아래 링크를 통해 pretrain weight를 다운 후, ./pretrained_weight 폴더에 저장해주세요.  
+[OC-SORT](https://drive.google.com/file/d/1MW8jcmEZ1ZyzOsM6ro_BPICqG9oIXQ4m/view?usp=sharing): MOT model weight  
+[Face embedding](https://drive.google.com/file/d/1_PJs7Rbq2Rg6kgvyefKYB3BC8JB1R7v5/view?usp=sharing): only newjeans and asepa are now supported.  
+[Face detection model weight](https://drive.google.com/file/d/1JewWuc78KW7KY6MQ99cO52ZGVRk9pkRq/view?usp=sharing): Face Detection model weight.  
+[Face Recognition model weight](https://drive.google.com/file/d/1kmtHgg0HeHbmp4O1bgNIodYYB-HKWXKv/view?usp=share_link): Face Recognition model weight.  
+[Re-identification](https://drive.google.com/file/d/1TGzI4C5HchwIftjM9vh8eeO85DyLWRgV/view?usp=share_link): Re-identification model weight.  
   
 ## 3. Inference 
 ```python
