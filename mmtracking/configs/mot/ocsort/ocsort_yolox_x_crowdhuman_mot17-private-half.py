@@ -30,11 +30,6 @@ model = dict(
         vel_consist_weight=0.2,
         vel_delta_t=3,
         num_frames_retain=30,
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint=  # noqa: E251
-            '/opt/ml/pretrained_weight__mmtracking/ocsort_yolox_x_crowdhuman_mot17-private-half.pth'  # noqa: E501
-        )
         ))
 
 train_pipeline = [
