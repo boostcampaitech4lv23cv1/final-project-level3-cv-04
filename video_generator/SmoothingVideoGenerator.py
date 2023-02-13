@@ -353,6 +353,8 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
                 center_y, center_x = (ymin+ymax)//2, (xmin+xmax)//2
                 # get new xmin, ymin, xmax, ymax
                 xmin, ymin, xmax, ymax = center_x-window_width//2, center_y-window_height//2, center_x+window_width//2, center_y+window_height//2
+                # if xmax>width or xmin<0 or ymax>height or ymin<0:
+                    # img, xmin, ymin, xmax, ymax = img_padding(img, xmin, ymin, xmax, ymax, width, height)
                 img = img[ymin:ymax, xmin:xmax]
         
         # append
@@ -364,6 +366,7 @@ def crop_resize_save_img(df, img_dir_path, save_dir, name, meta_info, target_col
         # write img
         cv2.imwrite(osp.join(dir_path, row['filename']), img)
     df['cropped_box'] = padded_box
+
     return df, dir_path
 
 
@@ -416,6 +419,7 @@ def make_video(dir_path, df, meta_info, save_dir, window_height, window_width, n
             # def enlarge_with_padding(img, crop_width, crop_height, window_width, window_height, padding_tag):
             img = enlarge_with_padding(img, crop_w, crop_h, window_width, window_height, padding_tag, path)
         # if normal don't need post processing
+        img = cv2.resize(img, (window_width, window_height), interpolation=cv2.INTER_CUBIC) ## add resize
         out.write(img)
     out.release()
     h,w,c = img.shape
@@ -425,8 +429,8 @@ def make_video(dir_path, df, meta_info, save_dir, window_height, window_width, n
 
 
 
-def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:str,
-              window_ratio:float, aespect_ratio:float, shift_bb:float, fullscreen=True):
+def smooth_video_generator(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:str,
+                            window_ratio:float, aespect_ratio:float, shift_bb:float, fullscreen=True):
     view_type = None
     # calc window size
     window_height = int(meta_info['height']*window_ratio)
@@ -477,13 +481,15 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
     # print(f'after member select {len(df)} rows left.') # for debugging
 
     # 7. get all captures img filenames
-    img_dir_path = meta_info['image_root'].replace('.','..') # change for current path
+    img_dir_path = meta_info['image_root'] # change for current path
     img_files = os.listdir(img_dir_path)
 
     # 8. add missing rows
     df = add_missing_files(df, img_files, member, meta_info)
     # img_path = plot_time_series(df, 'shift_bbox', "0", 'add_missing_files', col=2) # for debugging
     # print(f'img_path: {img_path}')
+
+    
 
     # 9. tagging untracked frame
     df['is_track'] = df['shift_bbox'].apply(lambda x: tagging_untrack_frame(x, meta_info))
@@ -497,18 +503,18 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
     # print(f'img_path: {img_path}') # for debugging
     
     # 12. smoothing ⭐
-    df = moving_median(df, meta_info['fps']*1, 'ignore_short_untrack', 'median_bbox')
-    df = moving_average(df, int(meta_info['fps']*.5), 'median_bbox', 'smoothed_bbox')
+    df = moving_median(df, int(meta_info['fps']*.5), 'ignore_short_untrack', 'median_bbox')
+    df = moving_average(df, int(meta_info['fps']*.25), 'median_bbox', 'smoothed_bbox')
     # df = savitzky_golay(df, 'median_bbox', 'smoothed_bbox') # df add column smoothed_bbox
     # img_path = plot_time_series(df, 'smoothed_bbox', 2, 'moving_median_avg', col=2) # for debugging
     # print(f'img_path: {img_path}') # for debugging
     
     # 13. drop_duplicates row
+
     df = df.drop_duplicates(subset='filename', keep='first')
     # img_path = plot_time_series(df, 'smoothed_bbox', 3, 'drop_duplicates', col=2) # for debugging
     # print(f'img_path: {img_path}') # for debugging
-    
-    
+
     # 14. clip img for over bbox, if long untracked frame made by resume
     df, crop_img_path = crop_resize_save_img(df, 
                                              img_dir_path, 
@@ -520,7 +526,6 @@ def video_gen(df:pd.DataFrame, meta_info:dict, member:str, pred:dict,  save_dir:
                                              crop_width, 
                                              mode,
                                              fullscreen)
-
     
     # 15. making video
     video_path = make_video(crop_img_path, df, meta_info, save_dir, window_height, window_width, member)
@@ -562,16 +567,16 @@ if __name__ == "__main__":
     with open(args.pred_root, mode='rb') as f:
         pred = pickle.load(f)
 
-    path = video_gen(
-                     df1, 
-                     meta_info, 
-                     args.member_name, 
-                     pred, 
-                     args.save_dir, 
-                     args.window_ratio, 
-                     args.aespect_ratio, 
-                     args.shift_bb,
-                     True
-                     )
+    path = smooth_video_generator(
+                                    df1, 
+                                    meta_info, 
+                                    args.member_name, 
+                                    pred, 
+                                    args.save_dir, 
+                                    args.window_ratio, 
+                                    args.aespect_ratio, 
+                                    args.shift_bb,
+                                    True
+                                    )
 
     print(f'video path is {path}')

@@ -6,7 +6,7 @@ import datetime
 from collections import OrderedDict
 import torch
 from torch.nn import functional as F
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 
 from torchreid import metrics
 from torchreid.utils import (

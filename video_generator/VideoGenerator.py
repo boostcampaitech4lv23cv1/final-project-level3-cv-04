@@ -7,6 +7,7 @@ import pandas as pd
 import natsort
 import numpy as np
 from itertools import chain
+import shutil
 
 
 def crop_img(idx, px,mx,py,my,path,make_video_img_dir,video_size_w,video_size_h):
@@ -171,10 +172,10 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
     video_size_w = int(meta_info['width'] * video_size)
     video_size_h = int(meta_info['height'] * video_size)
     make_video_img_dir = osp.join(save_dir, f'make_video_img_{member}') + '/'
-    save_video_dir = osp.join(save_dir, f'make_video_video_{member}') + '/'
+    # save_video_dir = osp.join(save_dir, f'make_video_video_{member}') + '/'
     frame = meta_info["fps"]  # 비디오 프레임
     os.makedirs(make_video_img_dir,exist_ok=True)
-    os.makedirs(save_video_dir,exist_ok=True)
+    # os.makedirs(save_video_dir,exist_ok=True)
     ######################################################
     
     print('video_generator실행중')
@@ -274,11 +275,13 @@ def video_generator(df1,meta_info,member,pred, save_dir,face_loc=3,video_size=0.
     print('video 생성중...')
     img_list = glob(make_video_img_dir+"*.jpg")
     img_list = natsort.natsorted(img_list)
-    video_path = osp.join(save_video_dir, f'{member}_output.mp4')
+    video_path = osp.join(save_dir, f'{member}_output.mp4')
     out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), frame, (video_size_w,video_size_h))
     for path in img_list:
         img = cv2.imread(path)
         out.write(img)
     out.release()
+    
+    shutil.rmtree(make_video_img_dir) # delete crop img
     
     return video_path

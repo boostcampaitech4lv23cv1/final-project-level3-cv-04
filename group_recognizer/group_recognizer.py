@@ -57,7 +57,7 @@ class GroupRecognizer():
         
     def guess_group(self,
                     ):
-        print('INFO: Gruop Recognizer - extracting features from {} bbox images. . .'.format(len(self.every_samples)))
+        print('INFO: Group Recognizer - extracting features from {} bbox images. . .'.format(len(self.every_samples)))
         every_features = list(map(face_embedding.detect_face_and_extract_feature, tqdm(self.every_samples)))
         detected_features = []
         for f in every_features:
@@ -65,9 +65,9 @@ class GroupRecognizer():
                 continue
             else:
                 detected_features.append(f)
-        print('INFO: Gruop Recognizer - filtered out Non-Face images, {} bbox images remained. . .'.format(len(detected_features)))
+        print('INFO: Group Recognizer - filtered out Non-Face images, {} bbox images remained. . .'.format(len(detected_features)))
         
-        print('INFO: Gruop Recognizer - computing similarity with {} face anchors. . .'.format(len(self.anchors)))
+        print('INFO: Group Recognizer - computing similarity with {} face anchors. . .'.format(len(self.anchors)))
         every_guesses = list(map(lambda x : face_embedding.compute_face_confidence_all(x, self.anchors), tqdm(detected_features)))
         
         votes = dict()
