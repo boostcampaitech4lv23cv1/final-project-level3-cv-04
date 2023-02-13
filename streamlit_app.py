@@ -28,7 +28,7 @@ import predictor
 from body_embedding.BodyEmbed import body_embedding_extractor
 from body_embedding.BodyEmbed import generate_body_anchor
 from visualization.sampling_visualization import visualize_sample
-from video_generator.NewVideo import video_generator
+from video_generator.VideoGenerator import video_generator
 
 
 

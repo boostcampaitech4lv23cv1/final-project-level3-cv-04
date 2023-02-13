@@ -11,7 +11,7 @@ _base_ = [
 # add border clip
 # add rgb norm
 
-img_scale = (600, 800)
+img_scale = (800, 1440) # ⭐ 600x800 to 648x864
 samples_per_gpu = 4
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
@@ -32,14 +32,14 @@ model = dict(
     motion=dict(type='KalmanFilter'),
     tracker=dict(
         type='OCSORTTracker',
-        obj_score_thr=0.3,
-        init_track_thr=0.7,
-        weight_iou_with_det_scores=True,
-        match_iou_thr=0.3,
-        num_tentatives=3,
-        vel_consist_weight=0.2,
-        vel_delta_t=3,
-        num_frames_retain=30,
+        obj_score_thr=0.3, # default 0.3
+        init_track_thr=0.7, # default 0.7 # exp 0.5, 0.9
+        weight_iou_with_det_scores=True, # defalut True # exp False
+        match_iou_thr=0.3, # default 0.3 # exp 0.6 
+        num_tentatives=3, # default 3 # exp 1, 18 ⬅️
+        vel_consist_weight=0.2, # default 0.2 # exp 0.1
+        vel_delta_t=3, # default 3 # exp 1 9
+        num_frames_retain=30, # default 30 # exp 15 60 75
         init_cfg=dict(
             type='Pretrained',
             checkpoint=  # noqa: E251
@@ -52,7 +52,13 @@ train_pipeline = [
         type='Mosaic', # ⭐ add mosaic
         img_scale=img_scale,
         pad_val=114.0,
-        bbox_clip_border=False),
+        bbox_clip_border=True
+        ),
+    # dict(
+    #     type='MinIoURandomCrop', # ⭐ add MinIoURandomCrop
+    #     min_ious=(0.7, 0.8, 0.9),
+    #     min_crop_size=0.8,
+    #     bbox_clip_border=True),
     dict(
         type='RandomAffine', # ⭐ add random affine
         scaling_ratio_range=(0.1, 2),
@@ -63,8 +69,11 @@ train_pipeline = [
         type='Resize',
         img_scale=img_scale,
         keep_ratio=True,
-        bbox_clip_border=True), # ⭐ change border clip
-    dict(type='Normalize', **img_norm_cfg), # ⭐ add rgb norm
+        bbox_clip_border=False),
+    dict(type='Normalize', 
+         mean=[0.0, 0.0, 0.0],
+         std=[1.0, 1.0, 1.0],
+         to_rgb=False), # ⭐ add rgb norm
     dict(type='Pad', size_divisor=32, pad_val=dict(img=(114.0, 114.0, 114.0))),
     dict(type='RandomFlip', flip_ratio=0.0),
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1), keep_empty=False),
@@ -131,7 +140,7 @@ data = dict(
 
 
 # some hyper parameters
-total_epochs = 50
+total_epochs = 30
 num_last_epochs = 50
 resume_from = None
 interval = 1

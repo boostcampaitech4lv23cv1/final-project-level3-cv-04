@@ -8,7 +8,7 @@ import shutil
 from tqdm import tqdm
 
 
-def vis_debug(INPUT_PATH, remove_captures_afterward = True):
+def vis_debug(INPUT_PATH, fps, remove_captures_afterward = True):
     os.makedirs(osp.join(INPUT_PATH, 'debug'), exist_ok=True)
     print('INFO - saving TEMP images at {}'.format(osp.join(INPUT_PATH, 'debug')))
     
@@ -36,8 +36,8 @@ def vis_debug(INPUT_PATH, remove_captures_afterward = True):
         # Pallette
         for i, (member, num) in enumerate(all_members.items()):
             color = MCOLOR[num]
-            img = cv.rectangle(img, (30, 30+30*i), (60, 60+30*i), color, -1)
-            img = cv.putText(img, member, (60, 60+30*i), fontFace=cv.FONT_HERSHEY_PLAIN, fontScale=3, color=color, thickness=2)
+            img = cv.rectangle(img, (60, 60+60*i), (120, 120+60*i), color, -1)
+            img = cv.putText(img, member, (120, 120+60*i), fontFace=cv.FONT_HERSHEY_PLAIN, fontScale=3, color=color, thickness=2)
             
             
         _detections = df1[df1['filename']==filename]
@@ -62,17 +62,18 @@ def vis_debug(INPUT_PATH, remove_captures_afterward = True):
             except:
                 facebboxes = False
             
-            img = cv.rectangle(img, bbox[:2], bbox[2:], boxcolor, thickness=4)
-            img = cv.putText(img, f'{tID}, {label.split("_")[1]}', [bbox[0], bbox[1]-10], fontFace=cv.FONT_HERSHEY_PLAIN, fontScale=3, color=boxcolor, thickness=2)
+            img = cv.rectangle(img, bbox[:2], bbox[2:], boxcolor, thickness=6)
+            img = cv.putText(img, f'{tID}, {label.split("_")[1]}', [bbox[0], bbox[1]-10], fontFace=cv.FONT_HERSHEY_PLAIN, fontScale=5, color=boxcolor, thickness=3)
             
             if type(facebboxes) != bool:
                 for fb, fp in zip(facebboxes, facelabels):
-                    img = cv.rectangle(img, fb[:2], fb[2:4], MCOLOR[all_members[fp]], 3)
+                    img = cv.rectangle(img, fb[:2], fb[2:4], MCOLOR[all_members[fp]], 5)
         
+        cv.resize(img, (1920, 1080))
         cv.imwrite(osp.join(INPUT_PATH, 'debug', filename), img)
     
-    os.system('ffmpeg -f image2 -i {}/%6d.jpg ./debugged1.mp4'.format(osp.join(INPUT_PATH, 'debug')))
-    print('output file created at {}'.format(osp.join(os.path.abspath(__file__), 'debugged.mp4')))
+    os.system('ffmpeg -f image2 -r {} -i {}/%6d.jpg ./debugged.mp4'.format(fps, osp.join(INPUT_PATH, 'debug')))
+    print('output file created at {}'.format(osp.join('.', 'debugged.mp4')))
     
     if remove_captures_afterward:
         shutil.rmtree(osp.join(INPUT_PATH, 'debug'))
@@ -81,4 +82,12 @@ def vis_debug(INPUT_PATH, remove_captures_afterward = True):
     
     
 if __name__ == '__main__':
-    vis_debug('/opt/ml/torchkpop/result/0lXwMdnpoFQ/199')
+    fps = 30
+    
+    # 원본 영상이 4k 정도일때 예쁘게 나옵니다. fhd 수준이라면 문의주십쇼..
+    
+    vis_debug('/opt/ml/torchkpop/result/YLy4iXLu0qI/0_185', fps)
+    
+    
+    
+    
