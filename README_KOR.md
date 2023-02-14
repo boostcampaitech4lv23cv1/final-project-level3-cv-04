@@ -78,9 +78,10 @@ pip install moviepy
   
 ## 3. Inference 
 ```python
-# input: youtube url
-# output: {membername}_output_mixed_audio.mp4
-python3 main.py --member --save_dir --... -youtube helloworld!
+python3 main.py # default inference 
+python3 main.py --smoothing # smoothing apply inference 
+
+python main.py [--url ${YOUTUBE_URL}] [--start ${START_SECOND}] [--end ${END_SECOND}] [--member ${GROUPNAME_MEMBERNAME}] [--smoothing]
 ```
 ## 4. Technical details
   
